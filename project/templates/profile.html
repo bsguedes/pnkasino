@@ -1,0 +1,37 @@
+<!-- templates/profile.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Welcome, {{ name }}!
+</h1>
+
+<h3 class="title">
+  There are {{ count }} available bets to be made!
+</h3>
+
+<table>
+  <tr>
+    <th>Event</th>
+    <th>Max bet</th>
+    <th>Option 1</th>
+    <th>Odds 1</th>
+    <th>X</th>
+    <th>Odds 2</th>
+    <th>Option 2</th>
+  </tr>
+  {% for item in categories %}
+  <TR>
+   <TD class="c1">{{item.question}}</TD>
+   <TD class="c2">{{item.max_bet}}</TD>
+   <TD class="c3">{{item.options[0].name}}</TD>
+   <TD class="c4">{{item.options[0].odds}}</TD>
+   <TD class="c5"><SPAN> X </SPAN></TD>
+   <TD class="c6">{{item.options[1].odds}}</TD>
+   <TD class="c7">{{item.options[1].name}}</TD>
+  </TR>
+  {% endfor %}
+</table>
+
+{% endblock %}
