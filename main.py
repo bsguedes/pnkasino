@@ -68,7 +68,7 @@ def place_post():
     elif int(bet) > current_user.pnkoins or int(bet) <= 0:
         flash('Your bet exceeds the amount of PnKoins you have.', 'error')
     elif int(bet) > Category.query.filter_by(id=category_id).first().max_bet:
-        flash('Your bet exceeds the maximum bet.', 'error')
+        flash('Your bet exceeds the maximum value for this Event.', 'error')
     else:
         option_query = Option.query.filter_by(category_id=category_id).all()
         option = option_query[0] if bet_left is None else option_query[1]
