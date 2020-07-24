@@ -71,7 +71,7 @@ def place_post():
         flash('Your bet exceeds the maximum value for this Event.', 'error')
     else:
         option_query = Option.query.filter_by(category_id=category_id).all()
-        option = option_query[0] if bet_left is None else option_query[1]
+        option = option_query[1] if bet_left is None else option_query[0]
         new_bet = Bet(user_id=current_user.id, option_id=option.id, category_id=category_id, value=int(bet))
         current_user.pnkoins -= int(bet)
         db.session.add(new_bet)
