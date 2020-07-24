@@ -7229,7 +7229,7 @@ a.navbar-item:hover {
 	margin: .5rem 0
 }
 
-@media screen and (max-width:1087px) {
+@media screen and (max-width:400px) {
 	.navbar>.container {
 		display: block
 	}
