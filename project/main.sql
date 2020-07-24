@@ -21,7 +21,7 @@ CREATE TABLE "user" (
 "email"  VARCHAR(100),
 "password"  VARCHAR(100),
 "name"  VARCHAR(1000),
-"pnkoins"  INTEGER NOT NULL,
+"pnkoins"  INTEGER NOT NULL
 );
 
 -- ----------------------------
@@ -44,7 +44,6 @@ CREATE TABLE "category" (
 "state"  VARCHAR(20) NOT NULL,
 "winner_option_id"  INTEGER,
 "league_id"  INTEGER,
-CONSTRAINT "fkey0" FOREIGN KEY ("winner_option_id") REFERENCES "option" ("id"),
 FOREIGN KEY ("league_id") REFERENCES "league" ("id")
 );
 
@@ -59,6 +58,11 @@ CREATE TABLE "option" (
 "odds"  REAL NOT NULL,
 CONSTRAINT "category_id_RK" FOREIGN KEY ("category_id") REFERENCES "category" ("id")
 );
+
+ALTER TABLE "category"
+ADD CONSTRAINT "fkey0" 
+FOREIGN KEY ("winner_option_id") 
+REFERENCES "option" ("id");
 
 
 -- ----------------------------
