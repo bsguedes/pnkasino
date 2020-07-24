@@ -55,8 +55,8 @@
            <td style="color:#363636">{{item.options[1].odds}}</td>
            <td style="color:#363636">{{item.options[1].name}}</td>
            <td><input class="input is-small" form="formbet{{item.id}}" maxlength="5" type="text" name="bet" value="0"/></td>
-           <td><input class="button is-block is-info is-small" form="formbet{{item.id}}" type="submit" name="bet1" value="Bet on {{item.options[0].name}}!" /></td>
-           <td><input class="button is-block is-info is-small" form="formbet{{item.id}}" type="submit" name="bet2" value="Bet on {{item.options[1].name}}!" /></td>
+           <td><input class="button is-block is-info is-small" form="formbet{{item.id}}" type="submit" name="bet1" value="{{item.options[0].name}}!" /></td>
+           <td><input class="button is-block is-info is-small" form="formbet{{item.id}}" type="submit" name="bet2" value="{{item.options[1].name}}!" /></td>
         </tr>
         {% endfor %}
     </tbody>
