@@ -2,7 +2,7 @@
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import Category, Option, Bet
+from .models import User, Category, Option, Bet
 from . import db
 
 main = Blueprint('main', __name__)
@@ -26,8 +26,22 @@ def history():
              {'name': bet.category.options[1].name, 'odds': bet.category.options[1].odds},
          ],
          'result': bet.result()} for bet in user_bets]
-    print(user_bets)
     return render_template('history.html', bets=bets)
+
+
+@main.route('/ranking')
+@login_required
+def ranking():
+    users = User.query.all()
+    user_object = [
+        {
+            'position': i+1,
+            'name': u.name,
+            'pnkoins': u.pnkoins,
+            'betted': sum([b.value for b in u.bets if b.category.state == 'available'])
+        } for u, i in zip(sorted(users, key=lambda u: -u.pnkoins), range(len(users)))]
+
+    return render_template('ranking.html', users=user_object)
 
 
 @main.route('/profile')

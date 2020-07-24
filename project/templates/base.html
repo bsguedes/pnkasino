@@ -17,7 +17,6 @@
         <div class="hero-head">
             <nav class="navbar">
                 <div class="container">
-
                     <div id="navbarMenuHeroA" class="navbar-menu">
                         <div class="navbar-end">
                             <a href="{{ url_for('main.index') }}" class="navbar-item">
@@ -29,6 +28,9 @@
                             </a>
                             <a href="{{ url_for('main.history') }}" class="navbar-item">
                                 History
+                            </a>
+                            <a href="{{ url_for('main.ranking') }}" class="navbar-item">
+                                Ranking
                             </a>
                             {% endif %}
                             {% if not current_user.is_authenticated %}
