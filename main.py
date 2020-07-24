@@ -2,8 +2,8 @@
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from .models import User, Category, Option, Bet
-from . import db
+from models import User, Category, Option, Bet
+from app import db
 
 main = Blueprint('main', __name__)
 

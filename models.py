@@ -1,7 +1,7 @@
 # models.py
 
 from flask_login import UserMixin
-from . import db
+from app import db
 
 
 class League(db.Model):
