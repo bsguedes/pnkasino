@@ -19,6 +19,7 @@ class Category(db.Model):
     max_bet = db.Column(db.Integer)
     state = db.Column(db.String(20))
     options = db.relationship('Option', lazy=True, foreign_keys="Option.category_id")
+    bets = db.relationship('Bet', lazy=True, foreign_keys="Bet.category_id")
     winner_option_id = db.Column(db.Integer, db.ForeignKey('option.id'), nullable=True)
 
 
@@ -34,4 +35,13 @@ class Bet(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     option_id = db.Column(db.Integer, db.ForeignKey('option.id'), nullable=False)
+    category_id = db.Column(db.Integer, db.ForeignKey('category.id'), nullable=False)
     value = db.Column(db.Integer)
+    category = db.relationship("Category", back_populates="bets")
+    option = db.relationship("Option", back_populates="bets")
+
+    def result(self):
+        if self.category.state == 'available':
+            return 'Waiting'
+        else:
+            return 'TODO'
