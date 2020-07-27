@@ -2,7 +2,7 @@
 
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import User, Category, Option, Bet
+from models import User, Category, Option, Bet, League
 from app import db
 
 main = Blueprint('main', __name__)
@@ -39,7 +39,7 @@ def ranking():
             'name': u.name,
             'earnings': u.earnings,
             'pnkoins': u.pnkoins,
-            'betted': sum([b.value for b in u.bets if b.category.state == 'available'])
+            'betted': sum([b.value for b in u.bets if b.category.league.state == 'available'])
         } for u, i in zip(sorted(users, key=lambda u: (-u.earnings, -u.pnkoins)), range(len(users)))]
 
     return render_template('ranking.html', users=user_object)
@@ -48,9 +48,14 @@ def ranking():
 @main.route('/profile')
 @login_required
 def profile():
-    categories = Category.query.filter_by(state='available')
+    leagues = League.query.filter_by(state='available').all()
+    categories = []
+    for league in leagues:
+        for cat in league.categories:
+            if cat.has_winner():
+                categories.append(cat)
     categories_betted = [b.category_id for b in Bet.query.filter_by(user=current_user).all()]
-    valid_categories = [c for c in categories.all() if c.id not in categories_betted]
+    valid_categories = [c for c in categories if c.id not in categories_betted]
     return render_template('profile.html', name=current_user.name,
                            count=len(valid_categories),
                            categories=valid_categories,
