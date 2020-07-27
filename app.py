@@ -32,6 +32,8 @@ from auth import auth as auth_blueprint
 app.register_blueprint(auth_blueprint)
 from main import main as main_blueprint
 app.register_blueprint(main_blueprint)
+from admin import admin as admin_blueprint
+app.register_blueprint(admin_blueprint)
 
 
 if __name__ == '__main__':

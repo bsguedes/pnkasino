@@ -19,6 +19,10 @@ class User(UserMixin, db.Model):
     pnkoins = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
     bets = db.relationship('Bet', backref='user', lazy=True)
+    is_admin = db.Column(db.Integer, default=0)
+
+    def is_admin_user(self):
+        return self.is_admin == 1
 
 
 class Category(db.Model):

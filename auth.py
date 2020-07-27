@@ -9,6 +9,7 @@ from app import db
 auth = Blueprint('auth', __name__)
 COINS = 10000
 
+
 @auth.route('/login')
 def login():
     return render_template('login.html')
