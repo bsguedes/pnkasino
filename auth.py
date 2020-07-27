@@ -7,7 +7,7 @@ from models import User
 from app import db
 
 auth = Blueprint('auth', __name__)
-COINS = 10000
+COINS = 11000
 
 
 @auth.route('/login')
