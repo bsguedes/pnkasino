@@ -1,0 +1,27 @@
+<!-- templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+    {% for category, message in messages %}
+        {% if category == 'error' %}
+            <div class="notification is-danger">
+               {{ message }}
+            </div>
+        {% else %}
+            <div class="notification is-success">
+               {{ message }}
+            </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+{% endwith %}
+
+<h2 class="title">
+  Editing League {{ league.name }}
+</h2>
+
+{% endblock %}
