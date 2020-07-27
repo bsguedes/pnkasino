@@ -13,6 +13,7 @@
         <tr>
             <th>Position</th>
             <th>Player</th>
+            <th>Earnings</th>
             <th>PnKoins</th>
             <th>On Bet</th>
         </tr>
@@ -22,6 +23,11 @@
         <tr>
            <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
            <td style="color:#363636">{{item['name']}}</td>
+            {% if item['earnings'] >= 0 %}
+           <td style="color:#00ff00;font-weight:bold">{{item['earnings']}}</td>
+            {% else %}
+           <td style="color:#ff0000;font-weight:bold">{{item['earnings']}}</td>
+            {% endif %}
            <td style="color:#212121;font-weight:bold">{{item['pnkoins']}}</td>
            <td style="color:#363636">{{item['betted']}}</td>
         </tr>

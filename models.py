@@ -15,8 +15,9 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
-    name = db.Column(db.String(1000))
-    pnkoins = db.Column(db.Integer)
+    name = db.Column(db.String(1000), nullable=False)
+    pnkoins = db.Column(db.Integer, nullable=False)
+    earnings = db.Column(db.Integer, default=0, nullable=False)
     bets = db.relationship('Bet', backref='user', lazy=True)
 
 

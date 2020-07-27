@@ -37,9 +37,10 @@ def ranking():
         {
             'position': i+1,
             'name': u.name,
+            'earnings': u.earnings,
             'pnkoins': u.pnkoins,
             'betted': sum([b.value for b in u.bets if b.category.state == 'available'])
-        } for u, i in zip(sorted(users, key=lambda u: -u.pnkoins), range(len(users)))]
+        } for u, i in zip(sorted(users, key=lambda u: (-u.earnings, -u.pnkoins)), range(len(users)))]
 
     return render_template('ranking.html', users=user_object)
 
