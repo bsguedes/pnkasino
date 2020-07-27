@@ -7,6 +7,7 @@ from app import db
 class League(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     name = db.Column(db.String(200))
+    state = db.Column(db.String(20))
     categories = db.relationship('Category', lazy=True, foreign_keys="Category.league_id")
 
 
