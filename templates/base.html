@@ -17,11 +17,14 @@
             <nav class="navbar">
                 <div id="navbarMenuHeroA" class="navbar-menu is-active">
                     <div class="navbar-end">
+                        {% if current_user.is_authenticated %}
+                        <h2 class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
+                        {% endif %}
                         <a href="{{ url_for('main.index') }}" class="navbar-item">
                             Home
                         </a>
                         {% if current_user.is_authenticated %}
-                        <a href="{{ url_for('main.profile') }}" class="navbar-item">
+                        <a href="{{ url_for('main.profile') }}" class="navbar-item has-text-weight-bold">
                             Bet now!
                         </a>
                         <a href="{{ url_for('main.history') }}" class="navbar-item">
