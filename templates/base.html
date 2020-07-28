@@ -33,7 +33,10 @@
                         <a href="{{ url_for('main.ranking') }}" class="navbar-item">
                             Ranking
                         </a>
-                            {% if current_user.is_admin_user() %}
+                        <a href="{{ url_for('main.stats') }}" class="navbar-item">
+                            Stats
+                        </a>
+                        {% if current_user.is_admin_user() %}
                             <a href="{{ url_for('admin.index') }}" class="navbar-item">
                                 Admin
                             </a>

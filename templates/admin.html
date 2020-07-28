@@ -44,7 +44,7 @@
     <tr>
         <td style="color:#363636">{{item['name']}}</td>
         <td style="color:#363636">{{item['credit']}}</td>
-        <td style="color:#363636">{{item['state']}}</td>
+        <td style="color:#363636;font-weight:bold">{{item['state']}}</td>
         <td>
             {% if item['state'] != 'finished' %}
             <form id="formstate{{item.id}}" action="/league/up" method="post"><input type="hidden" name="id"

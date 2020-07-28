@@ -29,6 +29,34 @@ def history():
     return render_template('history.html', bets=bets)
 
 
+def chunks(l, n):
+    n = max(1, n)
+    return (l[i:i+n] for i in range(0, len(l), n))
+
+
+@main.route('/stats')
+@login_required
+def stats():
+    league = League.query.filter_by(state='blocked').first()
+    if league is None and current_user.is_admin_user():
+        league = League.query.filter_by(state='available').first()
+    categories = []
+    if league is not None:
+        categories = [
+            {
+                'name': cat.question,
+                'options': [
+                    {
+                        'name': opt.name,
+                        'odds': opt.odds,
+                        'betters': len(opt.bets),
+                        'pnkoins': sum([b.value for b in opt.bets])
+                    } for opt in cat.options]
+            } for cat in league.categories]
+
+    return render_template('stats.html', category_chunks=chunks(categories, 3), empty=len(categories) == 0)
+
+
 @main.route('/ranking')
 @login_required
 def ranking():

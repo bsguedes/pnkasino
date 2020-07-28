@@ -1,0 +1,60 @@
+<!-- templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Bet Stats
+</h1>
+
+{% if empty %}
+
+<h3 class="title">
+  There are no stats to be seen right now.
+</h3>
+
+{% endif %}
+
+{% for categories in category_chunks %}
+
+<div class="tile is-ancestor">
+    {% for cat in categories %}
+    <div class="tile is-parent is-4">
+        <div class="tile is-child notification box is-info">
+          <p class="title is-6">{{cat['name']}}</p>
+          {% for opt in cat['options'] %}
+            <div class="tile is-parent is-vertical">
+                <article class="tile is-child notification box is-success">
+                    <p class="title is-6">{{opt['name']}}</p>
+                    <nav class="level">
+                          <div class="level-item has-text-centered">
+                            <div>
+                              <p class="heading">Odds</p>
+                              <p class="title is-6">{{opt['odds']}}</p>
+                            </div>
+                          </div>
+                          <div class="level-item has-text-centered">
+                            <div>
+                              <p class="heading">Bets</p>
+                              <p class="title is-6">{{opt['betters']}}</p>
+                            </div>
+                          </div>
+                          <div class="level-item has-text-centered">
+                            <div>
+                              <p class="heading">PnKoins</p>
+                              <p class="title is-6">{{opt['pnkoins']}}</p>
+                            </div>
+                          </div>
+                        </nav>
+                </article>
+            </div>
+          {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endfor %}
+
+{% endblock %}
