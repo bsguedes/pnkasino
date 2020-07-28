@@ -3,11 +3,11 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
-from models import User
+from models import User, League
 from app import db
 
 auth = Blueprint('auth', __name__)
-COINS = 11000
+COINS = 1000
 
 
 @auth.route('/login')
@@ -52,8 +52,12 @@ def signup_post():
         flash('Email address already exists')
         return redirect(url_for('auth.signup'))
 
+    league = League.query.filter_by(state='available').first()
+    credit = COINS if league is None else league.credit
+
     # create new user with the form data. Hash the password so plaintext version isn't saved.
-    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'), pnkoins=COINS)
+    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'),
+                    pnkoins=credit, earnings=0)
 
     # add the new user to the database
     db.session.add(new_user)
