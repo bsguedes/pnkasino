@@ -21,11 +21,11 @@
 <div class="tile is-ancestor">
     {% for cat in categories %}
     <div class="tile is-parent is-4">
-        <div class="tile is-child notification box is-info">
-          <p class="title is-6">{{cat['name']}}</p>
+        <div class="tile is-child notification box is-link">
+          <p class="title is-5">{{cat['name']}}</p>
           {% for opt in cat['options'] %}
             <div class="tile is-parent is-vertical">
-                <article class="tile is-child notification box is-success">
+                <article class="tile is-child notification box is-primary">
                     <p class="title is-6">{{opt['name']}}</p>
                     <nav class="level">
                           <div class="level-item has-text-centered">
@@ -50,6 +50,8 @@
                 </article>
             </div>
           {% endfor %}
+          <p class="title is-6">Bets: {{cat['bets']}}</p>
+          <p class="title is-6">PnKoins: {{cat['pnkoins']}}</p>
         </div>
     </div>
     {% endfor %}

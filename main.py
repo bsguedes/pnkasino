@@ -45,6 +45,8 @@ def stats():
         categories = [
             {
                 'name': cat.question,
+                'bets': len(cat.bets),
+                'pnkoins': sum([b.value for b in cat.bets]),
                 'options': [
                     {
                         'name': opt.name,
