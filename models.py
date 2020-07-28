@@ -9,6 +9,7 @@ class League(db.Model):
     name = db.Column(db.String(200))
     state = db.Column(db.String(20), nullable=False)
     categories = db.relationship('Category', lazy=True, foreign_keys="Category.league_id")
+    credit = db.Column(db.Integer, default=0, nullable=False)
 
 
 class User(UserMixin, db.Model):
@@ -38,6 +39,11 @@ class Category(db.Model):
     def has_winner(self):
         return self.winner_option_id is None
 
+    def winner_option(self):
+        if self.winner_option_id is None:
+            return None
+        return Option.query.filter_by(id=self.winner_option_id).first()
+
 
 class Option(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
@@ -57,7 +63,11 @@ class Bet(db.Model):
     option = db.relationship("Option", back_populates="bets")
 
     def result(self):
-        if self.category.league.state == 'available':
+        if self.category.league.state != 'finished':
             return 'Waiting'
+        elif self.category.winner_option_id is None:
+            return 'Cashback'
+        elif self.category.winner_option_id == self.option_id:
+            return 'Won %i PnKoins' % int(self.value * self.option.odds)
         else:
-            return 'TODO'
+            return 'Loss'

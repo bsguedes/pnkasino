@@ -24,4 +24,100 @@
   Editing League {{ league.name }}
 </h2>
 
+{% if league.state == 'new' %}
+
+<br/>
+<h2 align="left">Add a new category with options</h2>
+<br/>
+
+<form method="POST" action="/league/addcategory">
+    <table class="table table-striped table-responsive table-bordered is-fullwidth">
+        <tbody>
+        <tr>
+            <td><input type="hidden" name="id" value="{{league.id}}"/></td>
+            <td>
+                <div class="control">
+                    <input size="250px" class="input is-small" name="question" placeholder="Question" autofocus="" maxlength="80">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input size="60px" class="input is-small" name="max_bet" placeholder="Max Bet" autofocus="" maxlength="7">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input size="120px" class="input is-small" name="option1" placeholder="Option 1" autofocus="" maxlength="20">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input size="40px" class="input is-medium" name="odds1" placeholder="Odds 1" autofocus="" maxlength="6">
+                </div>
+            </td>
+            <td>X</td>
+            <td>
+                <div class="control">
+                    <input size="40px"  class="input is-medium" name="odds2" placeholder="Odds 2" autofocus="" maxlength="6">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input size="120px" class="input is-small" name="option2" placeholder="Option 2" autofocus="" maxlength="20">
+                </div>
+            </td>
+            <td>
+                <button class="button is-block is-info is-small is-fullwidth">Add</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+{% endif %}
+
+<br/>
+<h2 align="left">Existing categories</h2>
+<br/>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+      <tr>
+        <th colspan="2">Event</th>
+        <th>Max Bet</th>
+        <th>Option 1</th>
+        <th>Odds 1</th>
+        <th>X</th>
+        <th>Odds 2</th>
+        <th>Option 2</th>
+        <th style="text-align:center" colspan="2">Winner</th>
+      </tr>
+    </thead>
+    <tbody>
+        {% for item in league.categories %}
+        <tr>
+            <td><form id="formwinner{{item.id}}" action="/admin/winner" method="post">
+                <input type="hidden" name="id" value="{{item.id}}"/>
+                <input type="hidden" name="league_id" value="{{league.id}}"/>
+            </form></td>
+           <td style="color:#363636">{{item.question}}</td>
+            <td style="color:#363636">{{item.max_bet}}</td>
+           <td style="color:#363636">{{item.options[0].name}}</td>
+           <td style="color:#363636">{{item.options[0].odds}}</td>
+           <td style="color:#363636"><SPAN> X </SPAN></td>
+           <td style="color:#363636">{{item.options[1].odds}}</td>
+           <td style="color:#363636">{{item.options[1].name}}</td>
+            {% if league.state == 'blocked' and item.winner_option_id is none %}
+           <td><input class="button is-block is-info is-small" form="formwinner{{item.id}}" type="submit" name="option1" value="{{item.options[0].name}}" /></td>
+           <td><input class="button is-block is-info is-small" form="formwinner{{item.id}}" type="submit" name="option2" value="{{item.options[1].name}}" /></td>
+            {% elif league.state == 'blocked' or league.state == 'finished' %}
+           <td colspan="2">{{item.winner_option().name}}</td>
+            {% else %}
+           <td colspan="2"> - </td>
+            {% endif %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
 {% endblock %}
