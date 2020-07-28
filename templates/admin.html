@@ -3,10 +3,99 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1 class="title">
-  ADMIN
-</h1>
-<h2 class="subtitle">
-  Best Bets for PnK players
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+{% if category == 'error' %}
+<div class="notification is-danger">
+    {{ message }}
+</div>
+{% else %}
+<div class="notification is-success">
+    {{ message }}
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<h2 class="title">
+    Admin Page
 </h2>
+
+<br/>
+<h2 align="left">Edit Leagues</h2>
+<br/>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>League Name</th>
+        <th>PnKcoins Credit</th>
+        <th>Current State</th>
+        <th colspan="2">Upstage</th>
+        <th>Modify</th>
+        <th>Unset Categories</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in leagues %}
+    <tr>
+        <td style="color:#363636">{{item['name']}}</td>
+        <td style="color:#363636">{{item['credit']}}</td>
+        <td style="color:#363636">{{item['state']}}</td>
+        <td>
+            {% if item['state'] != 'finished' %}
+            <form id="formstate{{item.id}}" action="/league/up" method="post"><input type="hidden" name="id"
+                                                                                     value="{{item.id}}"/></form>
+            {% endif %}
+        </td>
+        <td>
+            {% if item['state'] != 'finished' %}
+            <input class="button is-block is-info is-small is-danger" form="formstate{{item.id}}"
+                   type="submit" name="up" value="{{item['next_state']}}"/>
+            {% endif %}
+        </td>
+        <td>
+            <a class="button is-link is-success is-small" href="/league/edit/{{item.id}}">Categories</a>
+        </td>
+
+        <td style="color:#363636;font-weight:bold">
+            {% if item['state'] == 'blocked' %}
+                {{item['unset']}}
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<br/>
+<h2 align="left">Add a New League</h2>
+<br/>
+
+<form method="POST" action="/league/create">
+    <table class="table table-striped table-responsive table-bordered is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Create a new League</td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="league_name" placeholder="League name" autofocus="">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="credit" placeholder="Add credit" autofocus="">
+                </div>
+            </td>
+            <td>
+                <button class="button is-block is-info is-small is-fullwidth">Create</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
 {% endblock %}
