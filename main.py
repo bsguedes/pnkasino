@@ -3,7 +3,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from models import User, Category, Option, Bet, League
+from admin import league_states
 from app import db
+from itertools import groupby
+
 
 main = Blueprint('main', __name__)
 
@@ -17,16 +20,24 @@ def index():
 @login_required
 def history():
     user_bets = Bet.query.filter_by(user_id=current_user.id).all()
-    bets = [
-        {'question': bet.category.question,
-         'option': bet.option.name,
-         'bet': bet.value,
-         'options': [
-             {'name': bet.category.options[0].name, 'odds': bet.category.options[0].odds},
-             {'name': bet.category.options[1].name, 'odds': bet.category.options[1].odds},
-         ],
-         'result': bet.result()} for bet in user_bets]
-    return render_template('history.html', bets=bets)
+    bets = sorted([{
+                'question': bet.category.question,
+                'option': bet.option.name,
+                'bet': bet.value,
+                'options': [
+                    {'name': bet.category.options[0].name, 'odds': bet.category.options[0].odds},
+                    {'name': bet.category.options[1].name, 'odds': bet.category.options[1].odds},
+                ],
+                'league_name': bet.category.league.name,
+                'league_state': bet.category.league.state,
+                'result': bet.result()
+            } for bet in user_bets], key=lambda s: league_states.index(s['league_state']))
+    leagues = [{
+        'name': league_name,
+        'bets': list(user_bets)
+    } for league_name, user_bets in groupby(bets, key=lambda x: x['league_name'])]
+    print(leagues)
+    return render_template('history.html', leagues=leagues)
 
 
 def chunks(l, n):
@@ -70,7 +81,7 @@ def ranking():
             'earnings': u.earnings,
             'pnkoins': u.pnkoins,
             'betted': sum([b.value for b in u.bets if b.category.league.state == 'available'])
-        } for u, i in zip(sorted(users, key=lambda u: (-u.earnings, -u.pnkoins)), range(len(users)))]
+        } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -u.earnings)), range(len(users)))]
 
     return render_template('ranking.html', users=user_object)
 

@@ -8,6 +8,12 @@
   Bet History
 </h1>
 
+{% for league in leagues %}
+
+<br/>
+<h2 align="left">{{ league['name'] }}</h2>
+<br/>
+
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
         <tr>
@@ -22,7 +28,7 @@
         </tr>
     </thead>
     <tbody>
-        {% for item in bets %}
+        {% for item in league['bets'] %}
         <tr>
            <td style="color:#363636">{{item['question']}}</td>
            <td style="color:#212121;font-weight:bold">{{item['option']}}</td>
@@ -37,5 +43,7 @@
         {% endfor %}
     </tbody>
 </table>
+
+{% endfor %}
 
 {% endblock %}
