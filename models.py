@@ -64,10 +64,10 @@ class Bet(db.Model):
 
     def result(self):
         if self.category.league.state != 'finished':
-            return 'Waiting'
+            return 'Aguardando...'
         elif self.category.winner_option_id is None:
             return 'Cashback'
         elif self.category.winner_option_id == self.option_id:
-            return 'Won %i PnKoins' % int(self.value * self.option.odds)
+            return 'Ganhou %i PnKoins' % int(self.value * self.option.odds)
         else:
-            return 'Loss'
+            return 'Perdeu %i PnKoins' % int(self.value)

@@ -21,20 +21,20 @@
                         <h2 class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
                         {% endif %}
                         <a href="{{ url_for('main.index') }}" class="navbar-item">
-                            Home
+                            Início
                         </a>
                         {% if current_user.is_authenticated %}
                         <a href="{{ url_for('main.profile') }}" class="navbar-item has-text-weight-bold">
-                            Bet now!
+                            Apostar!
                         </a>
                         <a href="{{ url_for('main.history') }}" class="navbar-item">
-                            History
+                            Histórico
                         </a>
                         <a href="{{ url_for('main.ranking') }}" class="navbar-item">
-                            Ranking
+                            Classificação
                         </a>
                         <a href="{{ url_for('main.stats') }}" class="navbar-item">
-                            Stats
+                            Estatísticas
                         </a>
                         {% if current_user.is_admin_user() %}
                             <a href="{{ url_for('admin.index') }}" class="navbar-item">
@@ -47,7 +47,7 @@
                             Login
                         </a>
                         <a href="{{ url_for('auth.signup') }}" class="navbar-item">
-                            Sign Up
+                            Cadastrar
                         </a>
                         {% endif %}
                         {% if current_user.is_authenticated %}

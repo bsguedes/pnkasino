@@ -5,13 +5,13 @@
 {% block content %}
 
 <h1 class="title">
-  Bet Stats
+  Estatísticas
 </h1>
 
 {% if empty %}
 
 <h3 class="title">
-  There are no stats to be seen right now.
+  Não há estatísticas disponíveis no momento.
 </h3>
 
 {% endif %}
@@ -36,7 +36,7 @@
                           </div>
                           <div class="level-item has-text-centered">
                             <div>
-                              <p class="heading">Bets</p>
+                              <p class="heading">Apostas</p>
                               <p class="title is-6">{{opt['betters']}}</p>
                             </div>
                           </div>
@@ -50,7 +50,7 @@
                 </article>
             </div>
           {% endfor %}
-          <p class="title is-6">Bets: {{cat['bets']}}</p>
+          <p class="title is-6">Número de apostas: {{cat['bets']}}</p>
           <p class="title is-6">PnKoins: {{cat['pnkoins']}}</p>
         </div>
     </div>
