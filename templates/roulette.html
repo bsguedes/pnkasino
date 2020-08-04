@@ -1,0 +1,179 @@
+<!-- templates/roulette.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+  Roleta
+</h1>
+
+<h2 id="rouletteHeader" style='color: #111;font-size: 14px;'>Aguarde o próximo ciclo de apostas em alguns segundos...</h2>
+<br/>
+
+<progress id="progress-bar" class="progress is-info is-large" value="0" max="100"></progress>
+
+<form action="" method="POST">
+<table class="table table-striped table-responsive table-bordered is-fullwidth">
+    <tbody>
+        <tr>
+            <td>Números recentes: </td>
+            <td colspan="2">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="recents0"></th>
+                            <th/>
+                            <th/>
+                            <th id="recents1"></th>
+                            <th id="recents2"></th>
+                            <th id="recents3"></th>
+                            <th id="recents4"></th>
+                            <th id="recents5"></th>
+                            <th id="recents6"></th>
+                            <th id="recents7"></th>
+                            <th id="recents8"></th>
+                            <th id="recents9"></th>
+                        </tr>
+                    </thead>
+                </table>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <input class="input is-large" id="betText" type="text" name="bet" placeholder="Sua Aposta"/>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <input type="hidden" name="username" value="{{current_user.id}}"/>
+            </td>
+        </tr>
+        <tr>
+            <td><button class="button is-fullwidth is-block is-success is-large" type="submit" name="betGreen" value="btGreen">Apostar</button></td>
+            <td><button class="button is-fullwidth is-block is-link is-large" type="submit" name="betBlue" value="btBlue">Apostar</button></td>
+            <td><button class="button is-fullwidth is-block is-danger is-large" type="submit" name="betRed" value="btRed">Apostar</button></td>
+        </tr>
+        <tr>
+            <td><strong>Aposta 0: 14x</strong></td>
+            <td><strong>Aposta Ímpares (1, 3, 5, 7, 9, 11, 13): 2x</strong></td>
+            <td><strong>Aposta Pares (2, 4, 6, 8, 10, 12): 2x</strong></td>
+        </tr>
+        <tr>
+            <td><div class="green_holder"></div></td>
+            <td><div class="blue_holder"></div></td>
+            <td><div class="red_holder"></div></td>
+        </tr>
+    </tbody>
+</table>
+</form>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.3/socket.io.min.js"></script>
+<script type="text/javascript">
+  $("form").bind("keydown", function(e) {
+     if (e.keyCode === 13) return false;
+  });
+  var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+  socket.on( 'connect', function() {
+    var form = $( 'form' ).on( 'submit', function( e ) {
+      e.preventDefault()
+      let bet = $('input')[0].value
+      let user_id = $('input')[1].value
+      let cat = e.originalEvent.submitter.value
+      socket.emit( 'do_bet', {
+        user_id : user_id,
+        bet_value: bet,
+        category: cat
+      } )
+    } )
+  } )
+
+  socket.on( 'clear', function() {
+    setTimeout(function(){
+        $( 'div.green_holder' ).empty()
+        $( 'div.blue_holder' ).empty()
+        $( 'div.red_holder' ).empty()
+        $( '#rouletteHeader' ).html( 'Apostas abertas...' )
+
+        var progressArr = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+
+        function fillProgress() {
+          progressArr.forEach(function(num, index) {
+            setTimeout(function() {
+              $('#progress-bar').val(num);
+            }, 1000 * index);
+          });
+        }
+
+        fillProgress();
+    }, 5000);
+  } )
+
+  socket.on( 'winning_message', function ( msg ) {
+    let changed = false
+    let winners = msg['winners']
+    let losers = msg['losers']
+    winners.forEach(msg=> {
+      if ( msg.user_id === $('input')[1].value  ){
+        $( '#rouletteHeader' ).html( 'Boouuuuua! Ganhou ' + msg.winnings + ' PnKoins!' )
+        $( '#coinsHeader' ).html( msg.new_balance + ' PnKoins' )
+        changed = true
+      }
+    });
+    if (!changed) {
+      losers.forEach(user_id => {
+        if ( user_id === $('input')[1].value  ){
+          $( '#rouletteHeader' ).html( 'Foi uma bela tentativa.' )
+          changed = true
+        }
+      });
+      if (!changed){
+        $( '#rouletteHeader' ).html( 'Aguarde o próximo ciclo...' )
+      }
+    }
+  } )
+
+  socket.on( 'roulette_number', function ( recents ) {
+    $( '#recents9' ).html( `<a class="button is-fullwidth is-small is-block ${recents[9] == 0 ? 'is-success' : (recents[9] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[9]}</a>` )
+    $( '#recents8' ).html( `<a class="button is-fullwidth is-small is-block ${recents[8] == 0 ? 'is-success' : (recents[8] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[8]}</a>` )
+    $( '#recents7' ).html( `<a class="button is-fullwidth is-small is-block ${recents[7] == 0 ? 'is-success' : (recents[7] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[7]}</a>` )
+    $( '#recents6' ).html( `<a class="button is-fullwidth is-small is-block ${recents[6] == 0 ? 'is-success' : (recents[6] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[6]}</a>` )
+    $( '#recents5' ).html( `<a class="button is-fullwidth is-small is-block ${recents[5] == 0 ? 'is-success' : (recents[5] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[5]}</a>` )
+    $( '#recents4' ).html( `<a class="button is-fullwidth is-small is-block ${recents[4] == 0 ? 'is-success' : (recents[4] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[4]}</a>` )
+    $( '#recents3' ).html( `<a class="button is-fullwidth is-small is-block ${recents[3] == 0 ? 'is-success' : (recents[3] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[3]}</a>` )
+    $( '#recents2' ).html( `<a class="button is-fullwidth is-small is-block ${recents[2] == 0 ? 'is-success' : (recents[2] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[2]}</a>` )
+    $( '#recents1' ).html( `<a class="button is-fullwidth is-small is-block ${recents[1] == 0 ? 'is-success' : (recents[1] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[1]}</a>` )
+    $( '#recents0' ).html( `<a class="button is-fullwidth is-block ${recents[0] == 0 ? 'is-success' : (recents[0] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[0]}</a>` )
+  } )
+
+  socket.on( 'bet_cb', function( msg ) {
+    let error = msg.error
+    if ( error === null ) {
+      $( '#rouletteHeader' ).empty()
+      $( '#coinsHeader' ).html( msg.new_balance + ' PnKoins' )
+      let betContent = '<div><b style="color: #000">'+msg.user_name+'</b> '+msg.value+'</div>'
+      if( msg.category === 'btGreen' ) {
+        $( 'div.green_holder' ).append( betContent )
+        $( '#rouletteHeader' ).html( 'Ai papai, apostou no Verde' )
+      }
+      if( msg.category === 'btBlue' ) {
+        $( 'div.blue_holder' ).append( betContent )
+        $( '#rouletteHeader' ).html( 'Apostou no Azul' )
+      }
+      if( msg.category === 'btRed' ) {
+        $( 'div.red_holder' ).append( betContent )
+        $( '#rouletteHeader' ).html( 'Apostou no Vermelho' )
+      }
+      $('#betText').empty()
+    } else {
+      $( '#rouletteHeader' ).html( 'Erro: ' + msg['error'] )
+    }
+
+  })
+</script>
+
+<br/>
+<h5>É normal ter que aguardar o ciclo atual de apostas terminar para a barra começar a mover.</h5>
+{% endblock %}

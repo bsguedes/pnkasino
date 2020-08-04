@@ -36,7 +36,6 @@ def history():
         'name': league_name,
         'bets': list(user_bets)
     } for league_name, user_bets in groupby(bets, key=lambda x: x['league_name'])]
-    print(leagues)
     return render_template('history.html', leagues=leagues)
 
 
@@ -79,9 +78,12 @@ def ranking():
             'position': i+1,
             'name': u.name,
             'earnings': u.earnings,
+            'roulette': u.roulette_earnings,
+            'total_earnings': u.earnings + u.roulette_earnings,
             'pnkoins': u.pnkoins,
             'betted': sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
-        } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -u.earnings)), range(len(users)))]
+        } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -(u.earnings + u.roulette_earnings))),
+                          range(len(users)))]
 
     return render_template('ranking.html', users=user_object)
 

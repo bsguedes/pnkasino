@@ -19,6 +19,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(1000), nullable=False)
     pnkoins = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
+    roulette_earnings = db.Column(db.Integer, default=0, nullable=False)
     bets = db.relationship('Bet', backref='user', lazy=True)
     is_admin = db.Column(db.Integer, default=0)
 

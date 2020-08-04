@@ -54,6 +54,24 @@ def league_create_post():
         return redirect(url_for('main.profile'))
 
 
+@admin.route('/admin/coins', methods=['POST'])
+@login_required
+def add_coins():
+    credit = request.form.get('credit')
+    if current_user.is_admin_user():
+        if not credit.isdigit():
+            flash('Invalid credit value.', 'error')
+            return redirect(url_for('admin.index'))
+        for user in User.query.all():
+            user.pnkoins += int(credit)
+        db.session.commit()
+        flash('Everyone got %s PnKoins!' % credit, 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin.', 'error')
+        return redirect(url_for('main.profile'))
+
+
 @admin.route('/admin/winner', methods=['POST'])
 @login_required
 def winner():

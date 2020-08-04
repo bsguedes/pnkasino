@@ -9,6 +9,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PnKasino</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css" />
+    <style>
+    .progress::-webkit-progress-value {
+      transition: width 0.5s ease;
+    }
+    </style>
 </head>
 
 <body>
@@ -18,7 +23,7 @@
                 <div id="navbarMenuHeroA" class="navbar-menu is-active">
                     <div class="navbar-end">
                         {% if current_user.is_authenticated %}
-                        <h2 class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
+                        <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
                         {% endif %}
                         <a href="{{ url_for('main.index') }}" class="navbar-item">
                             Início
@@ -35,6 +40,9 @@
                         </a>
                         <a href="{{ url_for('main.stats') }}" class="navbar-item">
                             Estatísticas
+                        </a>
+                        <a href="{{ url_for('roulette.index') }}" class="navbar-item">
+                            Roleta
                         </a>
                         {% if current_user.is_admin_user() %}
                             <a href="{{ url_for('admin.index') }}" class="navbar-item">
