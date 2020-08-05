@@ -22,12 +22,6 @@ def message_received(json, methods=['GET', 'POST']):
     print('message was received!!!' + json)
 
 
-@socket_io.on('my event')
-def handle_my_custom_event(json, methods=['GET', 'POST']):
-    print('received my event: ' + str(json))
-    emit('my response', json, callback=message_received)
-
-
 @socket_io.on('do_bet')
 def handle_do_bet_event(json, methods=['GET', 'POST']):
     user_id = json['user_id']
@@ -36,6 +30,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
 
     payload = {
         'error': None,
+        'user_id': user_id,
         'user_name': '',
         'value': 0,
         'category': '',
@@ -64,7 +59,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
         payload['category'] = category
         payload['new_balance'] = current_user.pnkoins
 
-    emit('bet_cb', payload)
+    socket_io.emit('bet_cb', payload)
 
 
 @roulette.route('/roulette')
