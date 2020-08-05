@@ -67,8 +67,8 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
     emit('bet_cb', payload)
 
 
-@login_required
 @roulette.route('/roulette')
+@login_required
 def index():
     return render_template('roulette.html')
 
