@@ -17,6 +17,7 @@ class User(UserMixin, db.Model):
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000), nullable=False)
+    rec_key = db.Column(db.String(1000), nullable=True)
     pnkoins = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_earnings = db.Column(db.Integer, default=0, nullable=False)

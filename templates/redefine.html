@@ -1,10 +1,10 @@
-<!-- templates/login.html -->
+<!-- templates/signup.html -->
 
 {% extends "base.html" %}
 
 {% block content %}
 <div class="column is-4 is-offset-4">
-    <h3 class="title">Login</h3>
+    <h3 class="title">Redefinir Senha</h3>
     <div class="box">
         {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -21,27 +21,20 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
-        <form method="POST" action="/login">
-            <div class="field">
-                <div class="control">
-                    <input class="input is-large" type="email" name="email" placeholder="Your Email" autofocus="">
-                </div>
-            </div>
+        <form id="redefineForm" method="POST" action="/login/redefine">
+            <h3>Nova senha para: <strong>{{email}}</strong></h3>
+
+            <input form="redefineForm" type="hidden" name="code" value="{{code}}"/>
 
             <div class="field">
                 <div class="control">
-                    <input class="input is-large" type="password" name="password" placeholder="Your Password">
+                    <input form="redefineForm" class="input is-large"
+                           type="password" name="password" placeholder="Password">
                 </div>
             </div>
-            <div class="field">
-                <label class="checkbox">
-                    <input type="checkbox">
-                    Remember me
-                </label>
-            </div>
-            <button class="button is-block is-info is-large is-fullwidth">Login</button>
+
+            <button class="button is-block is-info is-large is-fullwidth">Definir nova senha</button>
         </form>
-        <a href="{{ url_for('auth.forgot') }}" > Forgot your password? </a>
     </div>
 </div>
 {% endblock %}

@@ -31,7 +31,7 @@ def index():
                 'unset': len([c for c in l.categories if c.winner_option_id is None])
             } for l in League.query.all()], key=lambda s: league_states.index(s['state'])))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -42,7 +42,7 @@ def league_create_post():
     credit = request.form.get('credit')
     if current_user.is_admin_user():
         if not credit.isdigit():
-            flash('Invalid credit value.', 'error')
+            flash('Invalid credit value', 'error')
             return redirect(url_for('admin.index'))
         new_league = League(name=league_name, credit=credit, state='new')
         db.session.add(new_league)
@@ -50,7 +50,7 @@ def league_create_post():
         flash('League %s created successfully!' % league_name, 'success')
         return redirect(url_for('admin.index'))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -60,7 +60,7 @@ def add_coins():
     credit = request.form.get('credit')
     if current_user.is_admin_user():
         if not credit.isdigit():
-            flash('Invalid credit value.', 'error')
+            flash('Invalid credit value', 'error')
             return redirect(url_for('admin.index'))
         for user in User.query.all():
             user.pnkoins += int(credit)
@@ -68,7 +68,7 @@ def add_coins():
         flash('Everyone got %s PnKoins!' % credit, 'success')
         return redirect(url_for('admin.index'))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -83,10 +83,10 @@ def winner():
         option = category.options[1] if option_left is None else category.options[0]
         category.winner_option_id = option.id
         db.session.commit()
-        flash('Saved result for category!', 'success')
+        flash('Saved result for category', 'success')
         return redirect(url_for('admin.edit', league_id=league_id))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -97,7 +97,7 @@ def edit(league_id):
         league = League.query.filter_by(id=league_id).first()
         return render_template('edit.html', league=league)
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -124,13 +124,13 @@ def add_category():
             db.session.add(new_option1)
             db.session.add(new_option2)
             db.session.commit()
-            flash('Category added successfully!', 'success')
+            flash('Category added successfully', 'success')
             return redirect(url_for('admin.edit', league_id=league_id))
         except:
-            flash('Please check your data.', 'error')
+            flash('Please check your data', 'error')
             return redirect(url_for('admin.edit', league_id=league_id))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
 
 
@@ -158,11 +158,11 @@ def league_up():
                     else:
                         bet.user.earnings -= bet.value
         else:
-            flash('Cannot change league state.', 'error')
+            flash('Cannot change league state', 'error')
             return redirect(url_for('admin.index'))
         db.session.commit()
-        flash('League state changed successfully.', 'success')
+        flash('League state changed successfully', 'success')
         return redirect(url_for('admin.index'))
     else:
-        flash('User is not an admin.', 'error')
+        flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))

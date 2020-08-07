@@ -41,6 +41,10 @@
                             <th id="recents3"></th>
                             <th id="recents4"></th>
                             <th id="recents5"></th>
+                            <th id="recents6"></th>
+                            <th id="recents7"></th>
+                            <th id="recents8"></th>
+                            <th id="recents9"></th>
                         </tr>
                     </thead>
                 </table>
@@ -64,7 +68,7 @@
         <tr>
             <td><strong>Aposta 0: 14x</strong></td>
             <td><strong>Aposta Ímpares (1, 3, 5, 7, 9, 11, 13): 2x</strong></td>
-            <td><strong>Aposta Pares (2, 4, 6, 8, 10, 12): 2x</strong></td>
+            <td><strong>Aposta Pares (2, 4, 6, 8, 10, 12, 14): 2x</strong></td>
         </tr>
         <tr>
             <td><div class="green_holder"></div></td>
@@ -107,13 +111,13 @@
         $('#btB').prop('disabled', false)
         $( '#rouletteHeader' ).html( 'Apostas abertas...' )
 
-        var progressArr = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100];
+        var progressArr = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100];
 
         function fillProgress() {
           progressArr.forEach(function(num, index) {
             setTimeout(function() {
               $('#progress-bar').val(num);
-            }, 1000 * index);
+            }, 500 * index);
           });
         }
 
@@ -151,12 +155,14 @@
   } )
 
   socket.on( 'roulette_number', function ( recents ) {
-    $( '#recents5' ).html( `<a class="button is-fullwidth is-small is-block ${recents[5] == 0 ? 'is-success' : (recents[5] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[5]}</a>` )
-    $( '#recents4' ).html( `<a class="button is-fullwidth is-small is-block ${recents[4] == 0 ? 'is-success' : (recents[4] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[4]}</a>` )
-    $( '#recents3' ).html( `<a class="button is-fullwidth is-small is-block ${recents[3] == 0 ? 'is-success' : (recents[3] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[3]}</a>` )
-    $( '#recents2' ).html( `<a class="button is-fullwidth is-small is-block ${recents[2] == 0 ? 'is-success' : (recents[2] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[2]}</a>` )
-    $( '#recents1' ).html( `<a class="button is-fullwidth is-small is-block ${recents[1] == 0 ? 'is-success' : (recents[1] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[1]}</a>` )
-    $( '#recents0' ).html( `<a class="button is-fullwidth is-block ${recents[0] == 0 ? 'is-success' : (recents[0] % 2 ? 'is-link' : 'is-danger')} is-large">${recents[0]}</a>` )
+    arr = [9, 8, 7, 6, 5, 4, 3, 2, 1, 0]
+    arr.forEach(function(num, index) {
+      let value = recents[num]
+      if (value >= 0) {
+        let button = `<a class="button is-fullwidth non-interactive is-block ${value == 0 ? 'is-success' : (value % 2 ? 'is-link' : 'is-danger')} is-large">${value}</a>`
+        $( `#recents${num}` ).html( button )
+      }
+    });
   } )
 
   socket.on( 'bet_cb', function( msg ) {

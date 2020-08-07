@@ -2,7 +2,6 @@
 
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
-from flask_socketio import emit
 from apscheduler.schedulers.background import BackgroundScheduler
 from app import socket_io, db
 from models import User
@@ -14,7 +13,7 @@ from threading import Timer
 roulette = Blueprint('roulette', __name__)
 
 current_bets = {}
-recents = [0] * 10
+recents = [-1] * 10
 blocked = [False]
 
 
@@ -42,7 +41,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
     elif not bet_value.isdigit():
         payload['error'] = 'Valor de aposta inválido.'
     elif int(bet_value) > current_user.pnkoins or int(bet_value) <= 0:
-        payload['error'] = 'Bela tentativa.'
+        payload['error'] = 'Aposta maior que o número de PnKoins do jogador.'
     elif category not in ['btGreen', 'btBlue', 'btRed']:
         payload['error'] = 'Opção inválida.'
     elif int(user_id) in current_bets:
@@ -115,4 +114,5 @@ def roulette_hit():
 def start_roulette():
     scheduler = BackgroundScheduler()
     scheduler.add_job(roulette_hit, 'interval', seconds=16)
+    print('Roulette Started')
     scheduler.start()

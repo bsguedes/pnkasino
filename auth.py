@@ -5,6 +5,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
 from models import User, League
 from app import db
+import sendgrid
+import os
+from sendgrid.helpers.mail import Email, Content, Mail, To
+import random
+
 
 auth = Blueprint('auth', __name__)
 COINS = 1000
@@ -23,13 +28,10 @@ def login_post():
 
     user = User.query.filter_by(email=email).first()
 
-    # check if user actually exists
-    # take the user supplied password, hash it, and compare it to the hashed password in database
-    if not user or not check_password_hash(user.password, password): 
-        flash('Please check your login details and try again.')
-        return redirect(url_for('auth.login')) # if user doesn't exist or password is wrong, reload the page
+    if not user or not check_password_hash(user.password, password):
+        flash('Usuário ou senha incorretos')
+        return redirect(url_for('auth.login'))
 
-    # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
     return redirect(url_for('main.profile'))
 
@@ -41,25 +43,22 @@ def signup():
 
 @auth.route('/signup', methods=['POST'])
 def signup_post():
-
     email = request.form.get('email')
     name = request.form.get('name')
     password = request.form.get('password')
 
-    user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
+    user = User.query.filter_by(email=email).first()
 
-    if user: # if a user is found, we want to redirect back to signup page so user can try again  
-        flash('Email address already exists')
+    if user:
+        flash('O endereço de email já está cadastrado')
         return redirect(url_for('auth.signup'))
 
     league = League.query.filter_by(state='available').first()
     credit = COINS if league is None else league.credit
 
-    # create new user with the form data. Hash the password so plaintext version isn't saved.
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'),
                     pnkoins=credit, earnings=0)
 
-    # add the new user to the database
     db.session.add(new_user)
     db.session.commit()
 
@@ -71,3 +70,60 @@ def signup_post():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
+@auth.route('/login/redefine')
+def redefine():
+    code = request.args.get('code')
+    user = User.query.filter_by(rec_key=code).first()
+    if user is not None:
+        return render_template('redefine.html', email=user.email, code=code)
+    else:
+        flash('Código inválido', 'error')
+        return redirect(url_for('auth.login'))
+
+
+@auth.route('/login/redefine', methods=['POST'])
+def redefine_post():
+    code = request.form.get('code')
+    password = request.form.get('password')
+    user = User.query.filter_by(rec_key=code).first()
+    if code is not None and user is not None:
+        user.password = generate_password_hash(password, method='sha256')
+        user.rec_key = None
+        db.session.commit()
+        flash('Senha redefinida', 'success')
+        return redirect(url_for('auth.login'))
+    else:
+        flash('Ocorreu um erro ao redefinir senha', 'error')
+        return redirect(url_for('auth.login'))
+
+
+@auth.route('/login/forgot')
+def forgot():
+    return render_template('forgot.html')
+
+
+@auth.route('/login/forgot', methods=['POST'])
+def forgot_post():
+    email = request.form.get('email')
+    user = User.query.filter_by(email=email).first()
+    if user:
+        h = random.getrandbits(128)
+        user.rec_key = "%032x" % h
+        db.session.commit()
+        sg = sendgrid.SendGridAPIClient(api_key=os.environ['SENDGRID_API_KEY'])
+        from_email = Email("PnKasino <pnkasino@gmail.com>")
+        subject = "Recuperação de Senha PnKasino!"
+        to_email = To(user.email)
+        msg = 'Clique no link a seguir para definir uma nova senha.'
+        url = '%slogin/redefine?code=%s' % (request.host_url, user.rec_key)
+        content = Content("text/html", '%s <br/><br/><a href="%s">%s</a>' % (msg, url, url))
+        mail = Mail(from_email, to_email, subject, content)
+        sg.client.mail.send.post(request_body=mail.get())
+        flash('Instruções de recuperação enviadas', 'success')
+        return redirect(url_for('auth.login'))
+    else:
+        flash('Não foi possível encontrar o jogador', 'error')
+        return redirect(url_for('auth.forgot'))
+

@@ -113,11 +113,11 @@ def place_post():
     bet_left = request.form.get('bet1')
 
     if not bet.isdigit():
-        flash('Your bet contains invalid characters.', 'error')
+        flash('Sua aposta contém caracteres inválidos', 'error')
     elif int(bet) > current_user.pnkoins or int(bet) <= 0:
-        flash('Your bet exceeds the amount of PnKoins you have.', 'error')
+        flash('Você não tem PnKoins suficientes', 'error')
     elif int(bet) > Category.query.filter_by(id=category_id).first().max_bet:
-        flash('Your bet exceeds the maximum value for this Event.', 'error')
+        flash('Sua aposta excede a aposta máxima para este evento', 'error')
     else:
         option_query = Option.query.filter_by(category_id=category_id).all()
         option = option_query[1] if bet_left is None else option_query[0]
@@ -125,6 +125,6 @@ def place_post():
         current_user.pnkoins -= int(bet)
         db.session.add(new_bet)
         db.session.commit()
-        flash('Bet placed successfully', 'success')
+        flash('Aposta feita com sucesso', 'success')
 
     return redirect(url_for('main.profile'))
