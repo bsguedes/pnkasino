@@ -45,8 +45,10 @@ def create_app():
 
 db = SQLAlchemy()
 socket_io = SocketIO()
-app = create_app()
 
 
 if __name__ == '__main__':
-    socket_io.run(app)
+    app = create_app()
+    app.run()
+else:
+    app = create_app()
