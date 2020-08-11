@@ -1,2 +1,2 @@
-web: gunicorn -k eventlet app:app
+web: gunicorn -k eventlet app:gunicorn_app
 release: alembic upgrade head
