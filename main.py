@@ -77,9 +77,9 @@ def ranking():
         {
             'position': i+1,
             'name': u.name,
-            'earnings': u.earnings,
+            'earnings': u.earnings - u.finished_bets_without_cashback(),
             'roulette': u.roulette_earnings,
-            'total_earnings': u.earnings + u.roulette_earnings,
+            'total_earnings': u.earnings + u.roulette_earnings - u.finished_bets_without_cashback(),
             'pnkoins': u.pnkoins,
             'betted': sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
         } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -(u.earnings + u.roulette_earnings))),
@@ -95,7 +95,7 @@ def profile():
     categories = []
     for league in leagues:
         for cat in league.categories:
-            if cat.has_winner():
+            if not cat.has_winner():
                 categories.append(cat)
     categories_betted = [b.category_id for b in Bet.query.filter_by(user=current_user).all()]
     valid_categories = [c for c in categories if c.id not in categories_betted]

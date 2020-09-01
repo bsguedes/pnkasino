@@ -24,6 +24,9 @@ class User(UserMixin, db.Model):
     bets = db.relationship('Bet', backref='user', lazy=True)
     is_admin = db.Column(db.Integer, default=0)
 
+    def finished_bets_without_cashback(self):
+        return sum([b.value for b in self.bets if b.category.league.state == 'finished' and b.category.has_winner()])
+
     def is_admin_user(self):
         return self.is_admin == 1
 
@@ -39,7 +42,7 @@ class Category(db.Model):
     league = db.relationship("League", back_populates="categories")
 
     def has_winner(self):
-        return self.winner_option_id is None
+        return self.winner_option_id is not None
 
     def winner_option(self):
         if self.winner_option_id is None:

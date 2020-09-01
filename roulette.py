@@ -9,11 +9,10 @@ from random import randint
 from threading import Timer
 
 
-
 roulette = Blueprint('roulette', __name__)
 
 current_bets = {}
-recents = [-1] * 10
+recent_numbers = [-1] * 10
 blocked = [False]
 
 
@@ -84,10 +83,10 @@ def roulette_hit():
     blocked[0] = True
     from app import app
     number = randint(0, 14)
-    recents.insert(0, number)
-    recents.pop(10)
+    recent_numbers.insert(0, number)
+    recent_numbers.pop(10)
     with app.app_context():
-        socket_io.emit('roulette_number', recents)
+        socket_io.emit('roulette_number', recent_numbers)
     winning_category = 'btGreen' if number == 0 else 'btBlue' if number % 2 == 1 else 'btRed'
     multiplier = 14 if winning_category == 'btGreen' else 2
     winners = []
