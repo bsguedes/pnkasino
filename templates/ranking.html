@@ -13,6 +13,9 @@
         <tr>
             <th>Posição</th>
             <th>Jogador</th>
+            {% if current_user.is_admin_user() %}
+            <th>Base</th>
+            {% endif %}
             <th>PnKoins</th>
             <th>Rendimentos</th>
             <th>(em apostas)</th>
@@ -26,6 +29,9 @@
         <tr>
            <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
            <td style="color:#363636">{{item['name']}}</td>
+            {% if current_user.is_admin_user() %}
+           <td style="color:#363636">{{item['base']}}</td>
+            {% endif %}
            <td style="color:#212121;font-weight:bold">{{item['pnkoins']}}</td>
             {% if item['total_earnings'] >= 0 %}
            <td style="color:#00ff00;font-weight:bold">{{item['total_earnings']}}</td>

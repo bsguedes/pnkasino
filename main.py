@@ -126,6 +126,10 @@ def ranking():
         {
             'position': i+1,
             'name': u.name,
+            'base': u.pnkoins - (u.earnings
+                                 + u.roulette_earnings
+                                 - u.finished_bets_without_cashback()
+                                 + u.fantasy_earnings),
             'earnings': u.earnings - u.finished_bets_without_cashback(),
             'roulette': u.roulette_earnings,
             'fantasy': u.fantasy_earnings,
