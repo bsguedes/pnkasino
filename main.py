@@ -122,27 +122,25 @@ def card_dict(card_id, bought_at):
 @login_required
 def ranking():
     users = User.query.all()
-    user_object = [
-        {
+    users_payload = []
+    for u, i in zip(sorted(users, key=lambda e: (-e.pnkoins, -(e.earnings + e.roulette_earnings))), range(len(users))):
+        finished = u.finished_bets_without_cashback()
+        total_earnings = u.earnings + u.roulette_earnings - finished + u.fantasy_earnings
+        on_hold = sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
+        user_object = {
             'position': i+1,
             'name': u.name,
-            'base': u.pnkoins - (u.earnings
-                                 + u.roulette_earnings
-                                 - u.finished_bets_without_cashback()
-                                 + u.fantasy_earnings),
-            'earnings': u.earnings - u.finished_bets_without_cashback(),
+            'base': u.pnkoins - total_earnings + on_hold,
+            'earnings': u.earnings - finished,
             'roulette': u.roulette_earnings,
             'fantasy': u.fantasy_earnings,
-            'total_earnings': u.earnings
-                              + u.roulette_earnings
-                              - u.finished_bets_without_cashback()
-                              + u.fantasy_earnings,
+            'total_earnings': total_earnings,
             'pnkoins': u.pnkoins,
-            'betted': sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
-        } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -(u.earnings + u.roulette_earnings))),
-                          range(len(users)))]
+            'betted': on_hold
+        }
+        users_payload.append(user_object)
 
-    return render_template('ranking.html', users=user_object)
+    return render_template('ranking.html', users=users_payload)
 
 
 @main.route('/profile')
