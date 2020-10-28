@@ -33,8 +33,10 @@
 <br/>
 <h2 class="subtitle">{{titles[i].title()}}</h2>
 
+{% for chunk in available_cards[i+1] %}
+
 <div class="tile is-ancestor">
-    {% for card in available_cards[i+1] %}
+    {% for card in chunk %}
     <div class="tile is-parent is-2">
         <div class="tile is-child notification box is-dark">
           <form id="formfantasy{{card.id}}" action="/fantasy/buy" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
@@ -62,6 +64,8 @@
     </div>
     {% endfor %}
 </div>
+
+{% endfor %}
 
 {% endfor %}
 

@@ -32,13 +32,13 @@ def index():
     for i in range(5):
         pos = i + 1
         db_cards = Card.query.filter_by(position=pos)
-        available_cards[pos] = sorted([{
+        available_cards[pos] = chunks(sorted([{
             'id': card.id,
             'name': card.name,
             'position': inv_positions[card.position].title(),
             'current_value': card.value(),
             'state': card_state(card, player_cards[i], current_players)
-        } for card in db_cards], key=lambda e: e['current_value'])
+        } for card in db_cards], key=lambda e: e['current_value']), 6)
     return render_template('fantasy.html',
                            current_cards=cards,
                            available_cards=available_cards,
@@ -118,3 +118,8 @@ def card_dict(card_id, bought_at):
             'buy_value': bought_at
         }
     return None
+
+
+def chunks(l, n):
+    n = max(1, n)
+    return (l[i:i+n] for i in range(0, len(l), n))
