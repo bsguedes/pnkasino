@@ -166,13 +166,15 @@ def add_category():
             question = request.form.get('question')
             max_bet = int(request.form.get('max_bet'))
             option1 = request.form.get('option1')
-            odds1 = float(request.form.get('odds1'))
-            odds2 = float(request.form.get('odds2'))
+            perc_1 = float(request.form.get('odds2'))
             option2 = request.form.get('option2')
 
             new_category = Category(question=question, max_bet=max_bet, league_id=int(league_id))
             db.session.add(new_category)
             db.session.commit()
+
+            odds1 = int((100 / perc_1) * 100) / 100
+            odds2 = int((100 / (100 - perc_1)) * 100 ) / 100
 
             new_option1 = Option(name=option1, odds=odds1, category_id=new_category.id)
             new_option2 = Option(name=option2, odds=odds2, category_id=new_category.id)
