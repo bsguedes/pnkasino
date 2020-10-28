@@ -38,7 +38,7 @@ def index():
             'position': inv_positions[card.position].title(),
             'current_value': card.value(),
             'state': card_state(card, player_cards[i], current_players)
-        } for card in db_cards], key=lambda e: e['current_value']), 6)
+        } for card in db_cards if card.value() > 0], key=lambda e: e['current_value']), 6)
     return render_template('fantasy.html',
                            current_cards=cards,
                            available_cards=available_cards,
