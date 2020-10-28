@@ -20,6 +20,7 @@ positions = {
 
 inv_positions = {v: k for k, v in positions.items()}
 
+
 @main.route('/')
 def index():
     return render_template('index.html')

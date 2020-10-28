@@ -45,6 +45,17 @@ def index():
                            titles=[k for k, v in positions.items()])
 
 
+@fantasy.route('/fantasy/summary')
+def summary():
+    return {'cards': [{
+        'name': card.name,
+        'position': inv_positions[card.position],
+        'current_value': card.value(),
+        'old_value': card.old_base_value if card.old_base_value is not None else card.new_base_value,
+        'variation': 1 - (card.new_base_value if card.old_base_value is None else card.old_base_value) / card.value()
+    } for card in Card.query.all() if card.new_base_value > 0 and card.value() > 0]}
+
+
 @fantasy.route('/fantasy/buy', methods=['POST'])
 @login_required
 def buy():
