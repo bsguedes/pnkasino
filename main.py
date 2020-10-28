@@ -85,7 +85,7 @@ def stats():
         player_cards = [pos_1, pos_2, pos_3, pos_4, pos_5]
         if any([p is not None for p in player_cards]):
             price = sum([v['buy_value'] for v in player_cards if v is not None])
-            current = sum([v['current_value'] for v in player_cards if v is not None])
+            current = sum([v['sell_value'] for v in player_cards if v is not None])
             fantasy_teams.append({
                 'name': user.name,
                 'price': price,
