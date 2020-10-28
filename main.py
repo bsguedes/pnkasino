@@ -79,7 +79,11 @@ def ranking():
             'name': u.name,
             'earnings': u.earnings - u.finished_bets_without_cashback(),
             'roulette': u.roulette_earnings,
-            'total_earnings': u.earnings + u.roulette_earnings - u.finished_bets_without_cashback(),
+            'fantasy': u.fantasy_earnings,
+            'total_earnings': u.earnings
+                              + u.roulette_earnings
+                              - u.finished_bets_without_cashback()
+                              + u.fantasy_earnings,
             'pnkoins': u.pnkoins,
             'betted': sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
         } for u, i in zip(sorted(users, key=lambda u: (-u.pnkoins, -(u.earnings + u.roulette_earnings))),

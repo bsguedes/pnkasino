@@ -7,6 +7,7 @@ from models import User, League
 from app import db
 import sendgrid
 import os
+from sqlalchemy import func
 from sendgrid.helpers.mail import Email, Content, Mail, To
 import random
 
@@ -33,6 +34,8 @@ def login_post():
         return redirect(url_for('auth.login'))
 
     login_user(user, remember=remember)
+    user.last_login = func.now()
+    db.session.commit()
     return redirect(url_for('main.profile'))
 
 
@@ -57,7 +60,7 @@ def signup_post():
     credit = COINS if league is None else league.credit
 
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'),
-                    pnkoins=credit, earnings=0)
+                    pnkoins=credit, earnings=0, last_login=func.now())
 
     db.session.add(new_user)
     db.session.commit()

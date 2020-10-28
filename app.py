@@ -32,6 +32,8 @@ def create_app():
     _app.register_blueprint(main_blueprint)
     from admin import admin as admin_blueprint
     _app.register_blueprint(admin_blueprint)
+    from fantasy import fantasy as fantasy_blueprint
+    _app.register_blueprint(fantasy_blueprint)
     from roulette import roulette as roulette_blueprint
     _app.register_blueprint(roulette_blueprint)
 

@@ -72,6 +72,29 @@
 </table>
 
 <br/>
+<h2 align="left">User Information</h2>
+<br/>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>User Name</th>
+        <th>PnKcoins</th>
+        <th>Last Login</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in users %}
+    <tr>
+        <td style="color:#363636">{{item['name']}}</td>
+        <td style="color:#363636">{{item['coins']}}</td>
+        <td style="color:#363636">{{item['login']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<br/>
 <h2 align="left">Add a New League</h2>
 <br/>
 
@@ -114,6 +137,28 @@
             </td>
             <td>
                 <button class="button is-block is-info is-small is-fullwidth">Add PnKoins to Everyone</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+<br/>
+<h2 align="left">Update Fantasy Values</h2>
+<br/>
+
+<form method="POST" action="/admin/fantasy">
+    <table class="table table-striped table-responsive table-bordered is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Update Fantasy Values</td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="json" placeholder="JSON" autofocus="">
+                </div>
+            </td>
+            <td>
+                <button class="button is-block is-info is-small is-fullwidth">Submit</button>
             </td>
         </tr>
         </tbody>

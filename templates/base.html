@@ -49,6 +49,9 @@
                         <a href="{{ url_for('roulette.index') }}" class="navbar-item">
                             Roleta
                         </a>
+                        <a href="{{ url_for('fantasy.index') }}" class="navbar-item has-text-weight-bold">
+                            Fantasy
+                        </a>
                         {% if current_user.is_admin_user() %}
                             <a href="{{ url_for('admin.index') }}" class="navbar-item">
                                 Admin

@@ -17,6 +17,7 @@
             <th>Rendimentos</th>
             <th>(em apostas)</th>
             <th>(na roleta)</th>
+            <th>(no fantasy)</th>
             <th>Em apostas ativas</th>
         </tr>
     </thead>
@@ -40,6 +41,11 @@
            <td style="color:#00ff00;font-weight:bold">{{item['roulette']}}</td>
             {% else %}
            <td style="color:#ff0000;font-weight:bold">{{item['roulette']}}</td>
+            {% endif %}
+            {% if item['fantasy'] >= 0 %}
+           <td style="color:#00ff00;font-weight:bold">{{item['fantasy']}}</td>
+            {% else %}
+           <td style="color:#ff0000;font-weight:bold">{{item['fantasy']}}</td>
             {% endif %}
            <td style="color:#363636">{{item['betted']}}</td>
         </tr>

@@ -1,0 +1,68 @@
+<!-- templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+<h1 class="title">
+  Fantasy PnK
+</h1>
+
+<br/>
+
+<h1 class="title">Time Atual</h1>
+
+<div class="tile is-ancestor">
+    {% for card in current_cards %}
+    <div class="tile is-parent is-2">
+        <div class="tile is-child notification box is-info">
+          <form id="formsell{{card.id}}" action="/fantasy/sell" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
+          <p class="title is-6">{{card['position']}}</p>
+          <p class="title is-5">{{card['name']}}</p>
+          <p class="title is-7">Comprado por: {{card['buy_value']}} ₭</p>
+          <p class="title is-7">Valor atual: {{card['current_value']}} ₭</p>
+          <button class="button is-danger is-small" form="formsell{{card.id}}" type="submit" name="sell">
+            Vender por {{card['sell_value']}} ₭
+          </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% for i in range(5) %}
+
+<br/>
+<h2 class="subtitle">{{titles[i].title()}}</h2>
+
+<div class="tile is-ancestor">
+    {% for card in available_cards[i+1] %}
+    <div class="tile is-parent is-2">
+        <div class="tile is-child notification box is-dark">
+          <form id="formfantasy{{card.id}}" action="/fantasy/buy" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
+          <p class="title is-6">{{card['position']}}</p>
+          <p class="title is-5">{{card['name']}}</p>
+          <br/>
+          <p class="title is-5">{{card['current_value']}} ₭</p>
+          {% if card['state'] == 'buy' %}
+            <button class="button is-success is-small" form="formfantasy{{card.id}}" type="submit" name="buy">
+              Comprar por {{card['current_value']}} ₭
+            </button>
+          {% elif card['state'] == 'owned' %}
+            <p class="title is-7">Você já possui essa carta</p>
+          {% elif card['state'] == 'owned_player' %}
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <p class="title is-7">Você já tem uma carta deste jogador</p>
+          {% elif card['state'] == 'must_sell' %}
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <p class="title is-7">Você já tem uma carta desta posição</p>
+          {% elif card['state'] == 'no_funds' %}
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <p class="title is-7">Sem fundos</p>
+          {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endfor %}
+
+{% endblock %}

@@ -1,13 +1,24 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import User, Category, Option, Bet, League
+from models import User, Category, Option, Card, League
 from app import db
+import json
 
 
 admin = Blueprint('admin', __name__)
 
 
 league_states = ['new', 'available', 'blocked', 'finished']
+
+positions = {
+    'hard carry': 1,
+    'mid': 2,
+    'offlane': 3,
+    'support': 4,
+    'hard support': 5
+}
+
+inv_positions = {v: k for k, v in positions.items()}
 
 next_state = {
     'new': 'available',
@@ -29,7 +40,14 @@ def index():
                 'credit': l.credit,
                 'next_state': next_state[l.state],
                 'unset': len([c for c in l.categories if c.winner_option_id is None])
-            } for l in League.query.all()], key=lambda s: league_states.index(s['state'])))
+            } for l in League.query.all()], key=lambda s: league_states.index(s['state'])),
+                               users=[
+                                   {
+                                       'name': u.name,
+                                       'coins': u.pnkoins,
+                                       'login': str(u.last_login) if u.last_login is not None else "never"
+                                   } for u in User.query.all()
+                               ])
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
@@ -66,6 +84,38 @@ def add_coins():
             user.pnkoins += int(credit)
         db.session.commit()
         flash('Everyone got %s PnKoins!' % credit, 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.profile'))
+
+
+@admin.route('/admin/fantasy', methods=['POST'])
+@login_required
+def update_fantasy():
+    content = request.form.get('json')
+    if current_user.is_admin_user():
+        parsed_content = json.loads(content)
+
+        for card_in_db in Card.query.all():
+            if card_in_db.name in parsed_content and inv_positions[card_in_db.position] in parsed_content[card_in_db.name]:
+                old_value = card_in_db.new_base_value
+                new_value = parsed_content[card_in_db.name][inv_positions[card_in_db.position]]
+                new_value = (2 * old_value + new_value) // 30 * 10
+                card_in_db.old_base_value = old_value
+                card_in_db.new_base_value = new_value
+            else:
+                card_in_db.current_delta -= 5
+            db.session.commit()
+
+        for player_name, p in parsed_content.items():
+            for position, value in p.items():
+                card = Card.query.filter_by(name=player_name, position=positions[position]).first()
+                if card is None:
+                    new_card = Card(name=player_name, position=positions[position],
+                                    new_base_value=value, current_delta=0)
+                    db.session.add(new_card)
+                    db.session.commit()
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
