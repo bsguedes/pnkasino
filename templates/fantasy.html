@@ -18,6 +18,9 @@
           <form id="formsell{{card.id}}" action="/fantasy/sell" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
           <p class="title is-6">{{card['position']}}</p>
           <p class="title is-5">{{card['name']}}</p>
+          <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
+             alt="{{card['name']}}" width="80" height="80">
+            <br/>
           <p class="title is-7">Comprado por: {{card['buy_value']}} ₭</p>
           <p class="title is-7">Valor atual: {{card['current_value']}} ₭</p>
           <button class="button is-danger is-small" form="formsell{{card.id}}" type="submit" name="sell">
@@ -42,6 +45,8 @@
           <form id="formfantasy{{card.id}}" action="/fantasy/buy" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
           <p class="title is-6">{{card['position']}}</p>
           <p class="title is-5">{{card['name']}}</p>
+            <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
+             alt="{{card['name']}}" width="80" height="80">
           <br/>
           <p class="title is-5">{{card['current_value']}} ₭</p>
           {% if card['state'] == 'buy' %}
