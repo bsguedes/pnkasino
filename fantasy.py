@@ -56,6 +56,25 @@ def summary():
     } for card in Card.query.all() if card.new_base_value > 0 and card.value() > 0]}
 
 
+@fantasy.route('/fantasy/scores')
+def scores():
+    score_list = []
+    for user in User.query.all():
+        if user.has_team():
+            team = user.team()
+            cost = sum(t['buy_value'] for p, t in team.items())
+            score = sum(t['points'] for p, t in team.items())
+            u = {
+                'name': user.name,
+                'team': team,
+                'cost': cost,
+                'total_score': score,
+                'earnings': int(score ** 2),
+            }
+            score_list.append(u)
+    return {'scores': sorted(score_list, key=lambda e: (-e['total_score'], e['cost']))}
+
+
 @fantasy.route('/fantasy/buy', methods=['POST'])
 @login_required
 def buy():

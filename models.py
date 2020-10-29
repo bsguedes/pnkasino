@@ -61,6 +61,26 @@ class User(UserMixin, db.Model):
     def is_admin_user(self):
         return self.is_admin == 1
 
+    def has_team(self):
+        v = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]
+        return any(x is not None for x in v)
+
+    def team(self):
+        team = {}
+        positions = ['hard_carry', 'mid', 'offlane', 'support', 'hard_support']
+        card_ids = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]
+        buy_values = [self.buy_1, self.buy_2, self.buy_3, self.buy_4, self.buy_5]
+
+        for p, c, v in zip(positions, card_ids, buy_values):
+            if c is not None:
+                card = Card.query.filter_by(id=c).first()
+                team[p] = {
+                    'card': card.name,
+                    'buy_value': v,
+                    'points': card.value() / 500
+                }
+        return team
+
     def has_card(self, position):
         return (position == 1 and self.card_1_id is not None) or \
                (position == 2 and self.card_2_id is not None) or \
