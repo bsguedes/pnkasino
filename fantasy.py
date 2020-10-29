@@ -69,7 +69,7 @@ def scores():
                 'team': team,
                 'cost': cost,
                 'total_score': score,
-                'earnings': int(score ** 2),
+                'earnings': int(score ** 3) // 100 * 10,
             }
             score_list.append(u)
     return {'scores': sorted(score_list, key=lambda e: (-e['total_score'], e['cost']))}
