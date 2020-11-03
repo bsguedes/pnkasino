@@ -145,10 +145,10 @@ def ranking():
         }
         users_payload.append(user_object)
 
-    performance = sorted([u for u in users_payload], key=lambda e: -e['total_earnings'])
+    performance = sorted(users_payload, key=lambda e: -e['total_earnings'])
     i = 1
     for item in performance:
-        item['position'] = i
+        item['position_performance'] = i
         i += 1
 
     return render_template('ranking.html', users=users_payload, performance=performance)
