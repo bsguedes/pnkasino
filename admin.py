@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from models import User, Category, Option, Card, League
 from app import db
+from datetime import timedelta
 import json
 
 
@@ -41,13 +42,14 @@ def index():
                 'next_state': next_state[l.state],
                 'unset': len([c for c in l.categories if c.winner_option_id is None])
             } for l in League.query.all()], key=lambda s: league_states.index(s['state'])),
-                               users=[
+                               users=sorted([
                                    {
                                        'name': u.name,
                                        'coins': u.pnkoins,
-                                       'login': str(u.last_login) if u.last_login is not None else "never"
+                                       'login': str(u.last_login - timedelta(hours=3))
+                                                if u.last_login is not None else "-"
                                    } for u in User.query.all()
-                               ])
+                               ], key=lambda e: e['login'], reverse=True))
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.profile'))
