@@ -41,9 +41,11 @@
             <br/>
           <p class="title is-7">Comprado por: {{card['buy_value']}} ₭</p>
           <p class="title is-7">Valor atual: {{card['current_value']}} ₭</p>
+            {% if transfer_window_open %}
           <button class="button is-danger is-small" form="formsell{{card.id}}" type="submit" name="sell">
             Vender por {{card['sell_value']}} ₭
           </button>
+            {% endif %}
         </div>
     </div>
     {% endfor %}
@@ -82,6 +84,9 @@
           {% elif card['state'] == 'no_funds' %}
             <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
             <p class="title is-7">Sem fundos</p>
+          {% elif card['state'] == 'blocked' %}
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <p class="title is-7">Fora da janela de transferências</p>
           {% endif %}
         </div>
     </div>

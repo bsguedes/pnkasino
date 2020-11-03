@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import User, Card
+from models import User, Card, League
 from app import db
 
 
@@ -28,6 +28,7 @@ def index():
     player_cards = [pos_1, pos_2, pos_3, pos_4, pos_5]
     cards = [c for c in player_cards if c is not None]
     current_players = [c['name'] for c in cards]
+    transfer_window_open = League.query.filter_by(state='available').first() is not None
     available_cards = {}
     for i in range(5):
         pos = i + 1
@@ -37,10 +38,11 @@ def index():
             'name': card.name,
             'position': inv_positions[card.position].title(),
             'current_value': card.value(),
-            'state': card_state(card, player_cards[i], current_players)
-        } for card in db_cards if card.value() > 0], key=lambda e: e['current_value']), 6)
+            'state': card_state(card, player_cards[i], current_players, transfer_window_open)
+        } for card in db_cards if card.value() > 0], key=lambda e: -e['current_value']), 6)
     return render_template('fantasy.html',
                            current_cards=cards,
+                           transfer_window_open=transfer_window_open,
                            available_cards=available_cards,
                            titles=[k for k, v in positions.items()])
 
@@ -52,7 +54,7 @@ def summary():
         'position': inv_positions[card.position],
         'current_value': card.value(),
         'old_value': card.old_base_value if card.old_base_value is not None else card.new_base_value,
-        'variation': 1 - (card.new_base_value if card.old_base_value is None else card.old_base_value) / card.value()
+        'variation': card.value() / (card.new_base_value if card.old_base_value is None else card.old_base_value) - 1
     } for card in Card.query.all() if card.new_base_value > 0 and card.value() > 0]}
 
 
@@ -66,10 +68,12 @@ def scores():
             score = sum(t['points'] for p, t in team.items())
             u = {
                 'name': user.name,
+                'real_name': user.stats_name,
                 'team': team,
                 'cost': cost,
                 'total_score': score,
                 'earnings': int(score ** 3) // 100 * 10,
+                'worth': user.worth()
             }
             score_list.append(u)
     return {'scores': sorted(score_list, key=lambda e: (-e['total_score'], e['cost']))}
@@ -125,8 +129,10 @@ def sell():
     return redirect(url_for('fantasy.index'))
 
 
-def card_state(card_db, card_obj, current_players):
-    if card_obj is None:
+def card_state(card_db, card_obj, current_players, transfer_window_open):
+    if not transfer_window_open:
+        return 'blocked'
+    elif card_obj is None:
         if card_db.name in current_players:
             return 'owned_player'
         return 'buy' if current_user.pnkoins >= card_db.value() else 'no_funds'

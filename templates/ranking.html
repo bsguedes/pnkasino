@@ -5,7 +5,7 @@
 {% block content %}
 
 <h1 class="title">
-  Classificação
+  Patrimônio
 </h1>
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
@@ -13,15 +13,10 @@
         <tr>
             <th>Posição</th>
             <th>Jogador</th>
-            {% if current_user.is_admin_user() %}
-            <th>Base</th>
-            {% endif %}
-            <th>PnKoins</th>
-            <th>Rendimentos</th>
-            <th>(em apostas)</th>
-            <th>(na roleta)</th>
-            <th>(no fantasy)</th>
-            <th>Em apostas ativas</th>
+            <th>Patrimônio</th>
+            <th>(em cash)</th>
+            <th>(em cartas do Fantasy)</th>
+            <th>(em apostas ativas)</th>
         </tr>
     </thead>
     <tbody>
@@ -29,31 +24,57 @@
         <tr>
            <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
            <td style="color:#363636">{{item['name']}}</td>
-            {% if current_user.is_admin_user() %}
-           <td style="color:#363636">{{item['base']}}</td>
-            {% endif %}
-           <td style="color:#212121;font-weight:bold">{{item['pnkoins']}}</td>
+           <td style="color:#212121;font-weight:bold">{{item['worth']}} ₭</td>
+           <td style="color:#363636">{{item['pnkoins']}} ₭</td>
+           <td style="color:#363636">{{item['cards']}} ₭</td>
+           <td style="color:#363636">{{item['betted']}} ₭</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<h1 class="title">
+  Performance
+</h1>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+        <tr>
+            <th>Posição</th>
+            <th>Jogador</th>
+            <th>Começou com</th>
+            <th>Rendimentos</th>
+            <th>(em apostas)</th>
+            <th>(na roleta)</th>
+            <th>(no fantasy)</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in performance %}
+        <tr>
+           <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
+           <td style="color:#363636">{{item['name']}}</td>
+           <td style="color:#363636">{{item['base']}} ₭</td>
             {% if item['total_earnings'] >= 0 %}
-           <td style="color:#00ff00;font-weight:bold">{{item['total_earnings']}}</td>
+           <td style="color:#00ff00;font-weight:bold">{{item['total_earnings']}} ₭</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['total_earnings']}}</td>
+           <td style="color:#ff0000;font-weight:bold">{{item['total_earnings']}} ₭</td>
             {% endif %}
             {% if item['earnings'] >= 0 %}
-           <td style="color:#00ff00;font-weight:bold">{{item['earnings']}}</td>
+           <td style="color:#00ff00;font-weight:bold">{{item['earnings']}} ₭</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['earnings']}}</td>
+           <td style="color:#ff0000;font-weight:bold">{{item['earnings']}} ₭</td>
             {% endif %}
             {% if item['roulette'] >= 0 %}
-           <td style="color:#00ff00;font-weight:bold">{{item['roulette']}}</td>
+           <td style="color:#00ff00;font-weight:bold">{{item['roulette']}} ₭</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['roulette']}}</td>
+           <td style="color:#ff0000;font-weight:bold">{{item['roulette']}} ₭</td>
             {% endif %}
             {% if item['fantasy'] >= 0 %}
-           <td style="color:#00ff00;font-weight:bold">{{item['fantasy']}}</td>
+           <td style="color:#00ff00;font-weight:bold">{{item['fantasy']}} ₭</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['fantasy']}}</td>
+           <td style="color:#ff0000;font-weight:bold">{{item['fantasy']}} ₭</td>
             {% endif %}
-           <td style="color:#363636">{{item['betted']}}</td>
         </tr>
         {% endfor %}
     </tbody>

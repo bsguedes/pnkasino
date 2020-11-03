@@ -90,6 +90,27 @@ def add_coins():
         return redirect(url_for('main.profile'))
 
 
+@admin.route('/admin/fantasy/rewards', methods=['POST'])
+@login_required
+def update_rewards():
+    content = request.form.get('rewards')
+    if current_user.is_admin_user():
+        player_rewards = json.loads(content)['rewards']
+
+        for player in player_rewards:
+            user = User.query.filter_by(name=player['name']).first()
+            if user is not None:
+                prize = player['earnings'] + player['bonus']
+                user.pnkoins += prize
+                user.fantasy_earnings += prize
+                db.session.commit()
+        flash('Rewards added', 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.profile'))
+
+
 @admin.route('/admin/fantasy', methods=['POST'])
 @login_required
 def update_fantasy():
@@ -99,7 +120,8 @@ def update_fantasy():
 
         for card_in_db in Card.query.all():
             if card_in_db.name in parsed_content and \
-                    inv_positions[card_in_db.position] in parsed_content[card_in_db.name]:
+                    inv_positions[card_in_db.position] in parsed_content[card_in_db.name] and \
+                    parsed_content[card_in_db.name][inv_positions[card_in_db.position]] > 0:
                 if card_in_db.current_delta <= 0:
                     card_in_db.current_delta -= 2
                 old_value = card_in_db.value()

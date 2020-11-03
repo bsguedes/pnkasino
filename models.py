@@ -54,6 +54,7 @@ class User(UserMixin, db.Model):
     buy_3 = db.Column(db.Integer, nullable=True)
     buy_4 = db.Column(db.Integer, nullable=True)
     buy_5 = db.Column(db.Integer, nullable=True)
+    stats_name = db.Column(db.String(100), nullable=True)
 
     def finished_bets_without_cashback(self):
         return sum([b.value for b in self.bets if b.category.league.state == 'finished' and b.correct_winner()])
@@ -64,6 +65,11 @@ class User(UserMixin, db.Model):
     def has_team(self):
         v = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]
         return any(x is not None for x in v)
+
+    def worth(self):
+        on_hold = sum([b.value for b in self.bets if b.category.league.state in ['available', 'blocked']])
+        cards = sum(v['sell_value'] for _, v in self.team().items())
+        return self.pnkoins + on_hold + cards
 
     def team(self):
         team = {}
@@ -77,6 +83,7 @@ class User(UserMixin, db.Model):
                 team[p] = {
                     'card': card.name,
                     'buy_value': v,
+                    'sell_value': card.sell_value(),
                     'points': card.value() / 500
                 }
         return team
@@ -176,6 +183,6 @@ class Bet(db.Model):
         elif self.category.winner_option_id is None:
             return 'Cashback'
         elif self.category.winner_option_id == self.option_id:
-            return 'Ganhou %i PnKoins' % int(self.value * self.option.odds)
+            return 'Ganhou %i ₭' % int(self.value * self.option.odds)
         else:
-            return 'Perdeu %i PnKoins' % int(self.value)
+            return 'Perdeu %i ₭' % int(self.value)

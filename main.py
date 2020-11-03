@@ -125,10 +125,11 @@ def card_dict(card_id, bought_at):
 def ranking():
     users = User.query.all()
     users_payload = []
-    for u, i in zip(sorted(users, key=lambda e: (-e.pnkoins, -(e.earnings + e.roulette_earnings))), range(len(users))):
+    for u, i in zip(sorted(users, key=lambda e: -e.worth()), range(len(users))):
         finished = u.finished_bets_without_cashback()
         total_earnings = u.earnings + u.roulette_earnings - finished + u.fantasy_earnings
         on_hold = sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
+        cards = sum(v['sell_value'] for _, v in u.team().items())
         user_object = {
             'position': i+1,
             'name': u.name,
@@ -138,11 +139,19 @@ def ranking():
             'fantasy': u.fantasy_earnings,
             'total_earnings': total_earnings,
             'pnkoins': u.pnkoins,
-            'betted': on_hold
+            'betted': on_hold,
+            'cards': cards,
+            'worth': u.worth()
         }
         users_payload.append(user_object)
 
-    return render_template('ranking.html', users=users_payload)
+    performance = sorted(users_payload, key=lambda e: -e['total_earnings'])
+    i = 1
+    for item in performance:
+        item['position'] = i
+        i += 1
+
+    return render_template('ranking.html', users=users_payload, performance=performance)
 
 
 @main.route('/profile')
