@@ -98,15 +98,15 @@ def update_fantasy():
         parsed_content = json.loads(content)
 
         for card_in_db in Card.query.all():
-            old_value = card_in_db.old_base_value
             if card_in_db.name in parsed_content and \
                     inv_positions[card_in_db.position] in parsed_content[card_in_db.name]:
                 if card_in_db.current_delta <= 0:
                     card_in_db.current_delta -= 2
-
+                old_value = card_in_db.value()
                 new_value = parsed_content[card_in_db.name][inv_positions[card_in_db.position]]
                 new_value = (2 * card_in_db.value() + new_value) // 30 * 10
             else:
+                old_value = card_in_db.value()
                 card_in_db.current_delta -= 5
                 new_value = card_in_db.value()
             card_in_db.current_delta = 0
