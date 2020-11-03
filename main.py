@@ -39,9 +39,10 @@ def history():
                     {'name': bet.category.options[1].name, 'odds': bet.category.options[1].odds},
                 ],
                 'league_name': bet.category.league.name,
+                'league_id': bet.category.league_id,
                 'league_state': bet.category.league.state,
                 'result': bet.result()
-            } for bet in user_bets], key=lambda s: league_states.index(s['league_state']))
+            } for bet in user_bets], key=lambda s: (-s['league_id'], league_states.index(s['league_state'])))
     leagues = [{
         'name': league_name,
         'bets': list(user_bets)
