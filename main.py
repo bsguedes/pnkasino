@@ -145,7 +145,7 @@ def ranking():
         }
         users_payload.append(user_object)
 
-    performance = sorted(users_payload, key=lambda e: -e['total_earnings'])
+    performance = sorted([u for u in users_payload], key=lambda e: -e['total_earnings'])
     i = 1
     for item in performance:
         item['position'] = i
