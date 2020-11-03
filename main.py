@@ -127,13 +127,13 @@ def ranking():
     users_payload = []
     for u, i in zip(sorted(users, key=lambda e: -e.worth()), range(len(users))):
         finished = u.finished_bets_without_cashback()
-        total_earnings = u.earnings + u.roulette_earnings - finished + u.fantasy_earnings
         on_hold = sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
         cards = sum(v['sell_value'] for _, v in u.team().items())
+        total_earnings = u.earnings + u.roulette_earnings - finished + u.fantasy_earnings + cards
         user_object = {
             'position': i+1,
             'name': u.name,
-            'base': u.pnkoins - total_earnings + on_hold,
+            'base': u.pnkoins - total_earnings + on_hold + cards,
             'earnings': u.earnings - finished,
             'roulette': u.roulette_earnings,
             'fantasy': u.fantasy_earnings,
@@ -149,6 +149,7 @@ def ranking():
     i = 1
     for item in performance:
         item['position_performance'] = i
+        item['fantasy_earnings'] = item['fantasy'] + item['cards']
         i += 1
 
     return render_template('ranking.html', users=users_payload, performance=performance)
