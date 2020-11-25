@@ -113,6 +113,26 @@ def update_rewards():
         return redirect(url_for('main.profile'))
 
 
+@admin.route('/admin/fantasy/player', methods=['POST'])
+@login_required
+def add_player_to_fantasy():
+    content = request.form.get('player')
+    if current_user.is_admin_user():
+        new_player = json.loads(content)['player']
+        for position, value in json.loads(content)['roles'].items():
+            card = Card.query.filter_by(name=new_player, position=positions[position]).first()
+            if card is None:
+                new_card = Card(name=new_player, position=positions[position],
+                                new_base_value=value, current_delta=0)
+                db.session.add(new_card)
+                db.session.commit()
+        flash('New Player Added', 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.profile'))
+
+
 @admin.route('/admin/fantasy', methods=['POST'])
 @login_required
 def update_fantasy():
