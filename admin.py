@@ -126,6 +126,9 @@ def add_player_to_fantasy():
                                 new_base_value=value, current_delta=0)
                 db.session.add(new_card)
                 db.session.commit()
+            else:
+                flash('Player already exists', 'error')
+                return redirect(url_for('admin.index'))
         flash('New Player Added', 'success')
         return redirect(url_for('admin.index'))
     else:
