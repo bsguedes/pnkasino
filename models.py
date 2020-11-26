@@ -11,6 +11,23 @@ class League(db.Model):
     categories = db.relationship('Category', lazy=True, foreign_keys="Category.league_id")
     credit = db.Column(db.Integer, default=0, nullable=False)
 
+    def ranking(self):
+        if self.state == 'finished':
+            user_points = {}
+            for category in self.categories:
+                opt = category.winner_option()
+                for bet in category.bets:
+                    user_name = bet.user.name
+                    if user_name not in user_points:
+                        user_points[user_name] = 0
+                    result = 0 if opt is None else -bet.value if bet.option_id != opt.id else int(bet.value * opt.odds)
+                    user_points[user_name] += result
+            return [{'position': i + 1, 'name': name, 'coins': user_points[name]}
+                    for i, name in zip(range(len(user_points)),
+                                       sorted([n for n, _ in user_points.items()], key=lambda e: -user_points[e]))]
+        else:
+            return None
+
 
 class Card(db.Model):
     id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy

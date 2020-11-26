@@ -43,9 +43,11 @@ def history():
                 'league_state': bet.category.league.state,
                 'result': bet.result()
             } for bet in user_bets], key=lambda s: (-s['league_id'], league_states.index(s['league_state'])))
+
     leagues = [{
         'name': league_name,
-        'bets': list(user_bets)
+        'bets': list(user_bets),
+        'ranking': League.query.filter_by(name=league_name).first().ranking()
     } for league_name, user_bets in groupby(bets, key=lambda x: x['league_name'])]
     return render_template('history.html', leagues=leagues)
 
