@@ -13,7 +13,7 @@ import random
 
 
 auth = Blueprint('auth', __name__)
-COINS = 10000
+COINS = 34000
 
 
 @auth.route('/login')
