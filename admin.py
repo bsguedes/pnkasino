@@ -221,7 +221,7 @@ def add_category():
             db.session.commit()
 
             odds1 = int((100 / perc_1) * 100) / 100
-            odds2 = int((100 / (100 - perc_1)) * 100 ) / 100
+            odds2 = int((100 / (100 - perc_1)) * 100) / 100
 
             new_option1 = Option(name=option1, odds=odds1, category_id=new_category.id)
             new_option2 = Option(name=option2, odds=odds2, category_id=new_category.id)

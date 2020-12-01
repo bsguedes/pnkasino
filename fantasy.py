@@ -54,7 +54,8 @@ def summary():
         'position': inv_positions[card.position],
         'current_value': card.value(),
         'old_value': card.old_base_value if card.old_base_value is not None else card.new_base_value,
-        'variation': card.value() / (card.new_base_value if card.old_base_value is None else card.old_base_value) - 1
+        'variation': card.value() / (card.new_base_value if (card.old_base_value is None or card.old_base_value == 0)
+                                     else card.old_base_value) - 1
     } for card in Card.query.all() if card.new_base_value > 0 and card.value() > 0]}
 
 
