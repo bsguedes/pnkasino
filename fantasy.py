@@ -88,6 +88,8 @@ def scores():
                 'real_name': user.stats_name,
                 'team': team,
                 'cost': cost,
+                'silver': user.silver_card,
+                'gold': user.gold_card,
                 'total_score': score,
                 'earnings': int(score ** 3) // 100 * 10,
                 'worth': user.worth()
