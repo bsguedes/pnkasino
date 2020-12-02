@@ -40,10 +40,26 @@ def index():
             'current_value': card.value(),
             'state': card_state(card, player_cards[i], current_players, transfer_window_open)
         } for card in db_cards if card.value() > 0], key=lambda e: -e['current_value']), 6)
+    silver_upgrades = [
+        {
+            'id': card['id'],
+            'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and current_user.gold_card != card['pos'],
+            'cost': card['silver_cost'],
+            'perks': [card['silver_perk']]
+        } for card in cards]
+    gold_upgrades = [
+        {
+            'id': card['id'],
+            'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and current_user.silver_card != card['pos'],
+            'cost': card['gold_cost'],
+            'perks': [card['silver_perk'], card['gold_perk']]
+        } for card in cards]
     return render_template('fantasy.html',
                            current_cards=cards,
                            transfer_window_open=transfer_window_open,
                            available_cards=available_cards,
+                           silver_upgrades=silver_upgrades,
+                           gold_upgrades=gold_upgrades,
                            titles=[k for k, v in positions.items()])
 
 
@@ -106,6 +122,56 @@ def buy():
     return redirect(url_for('fantasy.index'))
 
 
+@fantasy.route('/fantasy/silver', methods=['POST'])
+@login_required
+def silver():
+    card_id = request.form.get('id')
+
+    card = Card.query.filter_by(id=card_id).first()
+
+    if card is None:
+        flash('Não foi possível atualizar a carta', 'error')
+    elif current_user.pnkoins < card.silver_cost():
+        flash('Você não tem PnKoins suficientes', 'error')
+    elif current_user.silver_card == card.position:
+        flash('Você já tem uma carta Prata para esta posição', 'error')
+    else:
+        current_user.set_additional_buy_cost(card, card.silver_cost())
+        current_user.silver_card = card.position
+        current_user.pnkoins -= card.silver_cost()
+        current_user.fantasy_earnings -= card.silver_cost()
+        card.current_delta += 1
+        db.session.commit()
+        flash('Você promoveu o %s %s para Prata!' % (card.name, inv_positions[card.position]), 'success')
+
+    return redirect(url_for('fantasy.index'))
+
+
+@fantasy.route('/fantasy/gold', methods=['POST'])
+@login_required
+def gold():
+    card_id = request.form.get('id')
+
+    card = Card.query.filter_by(id=card_id).first()
+
+    if card is None:
+        flash('Não foi possível atualizar a carta', 'error')
+    elif current_user.pnkoins < card.gold_cost():
+        flash('Você não tem PnKoins suficientes', 'error')
+    elif current_user.gold_card == card.position:
+        flash('Você já tem uma carta Ouro para esta posição', 'error')
+    else:
+        current_user.set_additional_buy_cost(card, card.gold_cost())
+        current_user.gold_card = card.position
+        current_user.pnkoins -= card.gold_cost()
+        current_user.fantasy_earnings -= card.gold_cost()
+        card.current_delta += 1
+        db.session.commit()
+        flash('Você promoveu o %s %s para Ouro!' % (card.name, inv_positions[card.position]), 'success')
+
+    return redirect(url_for('fantasy.index'))
+
+
 @fantasy.route('/fantasy/sell', methods=['POST'])
 @login_required
 def sell():
@@ -120,10 +186,10 @@ def sell():
     elif not current_user.has_player(card.name):
         flash('Você não tem a carta marcada para venda', 'error')
     else:
-        current_user.clear_card(card)
-        current_user.pnkoins += card.sell_value()
-        current_user.fantasy_earnings += card.sell_value()
-        card.current_delta -= 1
+        current_user.pnkoins += card.sell_value(current_user)
+        current_user.fantasy_earnings += card.sell_value(current_user)
+        was_promoted = current_user.clear_card(card)
+        card.current_delta -= 2 if was_promoted else 1
         db.session.commit()
         flash('Você vendeu o %s %s' % (inv_positions[card.position], card.name), 'success')
 
@@ -149,10 +215,18 @@ def card_dict(card_id, bought_at):
         return {
             'id': card_id,
             'position': inv_positions[card.position].title(),
+            'pos': card.position,
             'name': card.name,
-            'current_value': card.value(),
-            'sell_value': card.sell_value(),
-            'buy_value': bought_at
+            'current_value': card.current_value(current_user),
+            'sell_value': card.sell_value(current_user),
+            'buy_value': bought_at,
+            'silver_cost': card.silver_cost(),
+            'silver_perk': card.silver_perk(),
+            'gold_cost': card.gold_cost(),
+            'gold_perk': card.gold_perk(),
+            'is_silver': card.position == current_user.silver_card,
+            'is_gold': card.position == current_user.gold_card,
+            'color': card.color(current_user.silver_card, current_user.gold_card)
         }
     return None
 

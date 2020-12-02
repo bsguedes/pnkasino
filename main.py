@@ -99,6 +99,8 @@ def stats():
                 'offlane': pos_3['name'] if pos_3 is not None else '',
                 'support': pos_4['name'] if pos_4 is not None else '',
                 'hard_support': pos_5['name'] if pos_5 is not None else '',
+                'silver': user.silver_card,
+                'gold': user.gold_card,
                 'profit': current - price
             })
 
@@ -115,8 +117,8 @@ def card_dict(card_id, bought_at):
             'id': card_id,
             'position': inv_positions[card.position].title(),
             'name': card.name,
-            'current_value': card.value(),
-            'sell_value': card.sell_value(),
+            'current_value': card.current_value(current_user),
+            'sell_value': card.sell_value(current_user),
             'buy_value': bought_at
         }
     return None

@@ -3,6 +3,22 @@
 from flask_login import UserMixin
 from app import db
 
+SILVER_PERKS = {
+    1: '1 ponto a cada ~3300 last hits',
+    2: '1 ponto a cada 200 kills',
+    3: '1 ponto a cada 500k de dano sofrido',
+    4: '1 ponto a cada 1000 segundos de stun',
+    5: '1 ponto a cada 100 wards removidas'
+}
+
+GOLD_PERKS = {
+    1: '1 ponto a cada ~1,4 ultra kills e rampages',
+    2: '1 ponto a cada 2 sequencias de 10+ kills',
+    3: '1 ponto a cada 200 assists',
+    4: '1 ponto a cada ~3,3 couriers mortos',
+    5: '1 ponto a cada ~33 creeps stackadas'
+}
+
 
 class League(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
@@ -37,11 +53,43 @@ class Card(db.Model):
     new_base_value = db.Column(db.Integer)
     current_delta = db.Column(db.Integer)
 
-    def sell_value(self):
-        return Card.card_value(self.new_base_value, self.current_delta - 2)
+    def sell_value(self, user):
+        extra = 0
+        if user.silver_card == self.position:
+            extra += self.silver_cost()
+        if user.gold_card == self.position:
+            extra += self.gold_cost()
+        return Card.card_value(self.new_base_value + extra, self.current_delta - 2)
 
     def value(self):
         return Card.card_value(self.new_base_value, self.current_delta)
+
+    def current_value(self, user):
+        extra = 0
+        if user.silver_card == self.position:
+            extra += self.silver_cost()
+        if user.gold_card == self.position:
+            extra += self.gold_cost()
+        return Card.card_value(self.new_base_value + extra, self.current_delta)
+
+    def silver_cost(self):
+        return int(((self.value()/10) ** 2)/1000) * 10
+
+    def gold_cost(self):
+        return int(((self.value()/10) ** 2)/500) * 10
+
+    def silver_perk(self):
+        return SILVER_PERKS[self.position]
+
+    def gold_perk(self):
+        return GOLD_PERKS[self.position]
+
+    def color(self, silver, gold):
+        if self.position == silver:
+            return 'has-background-grey-light'
+        if self.position == gold:
+            return 'has-background-warning'
+        return 'is-info'
 
     @staticmethod
     def card_value(base, delta):
@@ -66,6 +114,8 @@ class User(UserMixin, db.Model):
     card_3_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
     card_4_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
     card_5_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
+    silver_card = db.Column(db.Integer, nullable=True)
+    gold_card = db.Column(db.Integer, nullable=True)
     buy_1 = db.Column(db.Integer, nullable=True)
     buy_2 = db.Column(db.Integer, nullable=True)
     buy_3 = db.Column(db.Integer, nullable=True)
@@ -100,8 +150,8 @@ class User(UserMixin, db.Model):
                 team[p] = {
                     'card': card.name,
                     'buy_value': v,
-                    'sell_value': card.sell_value(),
-                    'points': card.value() / 500
+                    'sell_value': card.sell_value(self),
+                    'points': card.current_value(self) / 500
                 }
         return team
 
@@ -129,6 +179,18 @@ class User(UserMixin, db.Model):
             self.card_5_id = card.id
             self.buy_5 = card.value()
 
+    def set_additional_buy_cost(self, card, value):
+        if card.position == 1:
+            self.buy_1 += value
+        elif card.position == 2:
+            self.buy_2 += value
+        elif card.position == 3:
+            self.buy_3 += value
+        elif card.position == 4:
+            self.buy_4 += value
+        elif card.position == 5:
+            self.buy_5 += value
+
     def clear_card(self, card):
         if card.position == 1:
             self.card_1_id = None
@@ -145,6 +207,14 @@ class User(UserMixin, db.Model):
         elif card.position == 5:
             self.card_5_id = None
             self.buy_5 = None
+        was_promoted = False
+        if card.position == self.silver_card:
+            self.silver_card = None
+            was_promoted = True
+        if card.position == self.gold_card:
+            self.gold_card = None
+            was_promoted = True
+        return was_promoted
 
     def has_player(self, player):
         for i in [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]:
