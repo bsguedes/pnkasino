@@ -43,14 +43,20 @@ def index():
     silver_upgrades = [
         {
             'id': card['id'],
-            'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and current_user.gold_card != card['pos'],
+            'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and
+            current_user.gold_card != card['pos'] and
+            current_user.pnkoins >= card['silver_cost'] and
+            transfer_window_open,
             'cost': card['silver_cost'],
             'perks': [card['silver_perk']]
         } for card in cards]
     gold_upgrades = [
         {
             'id': card['id'],
-            'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and current_user.silver_card != card['pos'],
+            'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and
+            current_user.silver_card != card['pos'] and
+            current_user.pnkoins >= card['silver_cost'] and
+            transfer_window_open,
             'cost': card['gold_cost'],
             'perks': [card['silver_perk'], card['gold_perk']]
         } for card in cards]
