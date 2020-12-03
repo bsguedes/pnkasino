@@ -217,7 +217,7 @@ def card_state(card_db, card_obj, current_players, transfer_window_open):
         return 'must_sell' if current_user.pnkoins >= card_db.value() else 'no_funds'
 
 
-def card_dict(card_id, bought_at):
+def card_dict(card_id, bought_at, user):
     if card_id is not None:
         card = Card.query.filter_by(id=card_id).first()
         return {
@@ -225,16 +225,16 @@ def card_dict(card_id, bought_at):
             'position': inv_positions[card.position].title(),
             'pos': card.position,
             'name': card.name,
-            'current_value': card.current_value(current_user),
-            'sell_value': card.sell_value(current_user),
+            'current_value': card.current_value(user),
+            'sell_value': card.sell_value(user),
             'buy_value': bought_at,
             'silver_cost': card.silver_cost(),
             'silver_perk': card.silver_perk(),
             'gold_cost': card.gold_cost(),
             'gold_perk': card.gold_perk(),
-            'is_silver': card.position == current_user.silver_card,
-            'is_gold': card.position == current_user.gold_card,
-            'color': card.color(current_user.silver_card, current_user.gold_card)
+            'is_silver': card.position == user.silver_card,
+            'is_gold': card.position == user.gold_card,
+            'color': card.color(user.silver_card, user.gold_card)
         }
     return None
 
