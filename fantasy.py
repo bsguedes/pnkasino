@@ -20,11 +20,11 @@ inv_positions = {v: k for k, v in positions.items()}
 @fantasy.route('/fantasy')
 @login_required
 def index():
-    pos_1 = card_dict(current_user.card_1_id, current_user.buy_1)
-    pos_2 = card_dict(current_user.card_2_id, current_user.buy_2)
-    pos_3 = card_dict(current_user.card_3_id, current_user.buy_3)
-    pos_4 = card_dict(current_user.card_4_id, current_user.buy_4)
-    pos_5 = card_dict(current_user.card_5_id, current_user.buy_5)
+    pos_1 = card_dict(current_user.card_1_id, current_user.buy_1, current_user)
+    pos_2 = card_dict(current_user.card_2_id, current_user.buy_2, current_user)
+    pos_3 = card_dict(current_user.card_3_id, current_user.buy_3, current_user)
+    pos_4 = card_dict(current_user.card_4_id, current_user.buy_4, current_user)
+    pos_5 = card_dict(current_user.card_5_id, current_user.buy_5, current_user)
     player_cards = [pos_1, pos_2, pos_3, pos_4, pos_5]
     cards = [c for c in player_cards if c is not None]
     current_players = [c['name'] for c in cards]

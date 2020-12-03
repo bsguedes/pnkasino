@@ -81,11 +81,11 @@ def stats():
 
     fantasy_teams = []
     for user in User.query.all():
-        pos_1 = card_dict(user.card_1_id, user.buy_1)
-        pos_2 = card_dict(user.card_2_id, user.buy_2)
-        pos_3 = card_dict(user.card_3_id, user.buy_3)
-        pos_4 = card_dict(user.card_4_id, user.buy_4)
-        pos_5 = card_dict(user.card_5_id, user.buy_5)
+        pos_1 = card_dict(user.card_1_id, user.buy_1, user)
+        pos_2 = card_dict(user.card_2_id, user.buy_2, user)
+        pos_3 = card_dict(user.card_3_id, user.buy_3, user)
+        pos_4 = card_dict(user.card_4_id, user.buy_4, user)
+        pos_5 = card_dict(user.card_5_id, user.buy_5, user)
         player_cards = [pos_1, pos_2, pos_3, pos_4, pos_5]
         if any([p is not None for p in player_cards]):
             price = sum([v['buy_value'] for v in player_cards if v is not None])
@@ -110,15 +110,15 @@ def stats():
                            fantasy_teams=sorted(fantasy_teams, key=lambda e: (-e['profit'], e['current'])))
 
 
-def card_dict(card_id, bought_at):
+def card_dict(card_id, bought_at, user):
     if card_id is not None:
         card = Card.query.filter_by(id=card_id).first()
         return {
             'id': card_id,
             'position': inv_positions[card.position].title(),
             'name': card.name,
-            'current_value': card.current_value(current_user),
-            'sell_value': card.sell_value(current_user),
+            'current_value': card.current_value(user),
+            'sell_value': card.sell_value(user),
             'buy_value': bought_at
         }
     return None
