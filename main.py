@@ -6,6 +6,7 @@ from models import User, Category, Option, Bet, League, Card
 from admin import league_states
 from app import db
 from itertools import groupby
+from sqlalchemy import func
 
 
 main = Blueprint('main', __name__)
@@ -199,6 +200,7 @@ def place_post():
             new_bet = Bet(user_id=current_user.id, option_id=option.id, category_id=category_id, value=int(bet))
             current_user.pnkoins -= int(bet)
             db.session.add(new_bet)
+            current_user.last_login = func.now()
             db.session.commit()
             flash('Aposta feita com sucesso', 'success')
 

@@ -7,6 +7,7 @@ from app import socket_io, db
 from models import User
 from random import randint
 from threading import Timer
+from sqlalchemy import func
 
 
 roulette = Blueprint('roulette', __name__)
@@ -51,6 +52,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
         current_bets[int(user_id)] = {'value': int(bet_value), 'category': category}
         current_user.pnkoins -= int(bet_value)
         current_user.roulette_earnings -= int(bet_value)
+        current_user.last_login = func.now()
         db.session.commit()
         payload['user_name'] = current_user.name
         payload['value'] = int(bet_value)

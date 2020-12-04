@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
 from models import User, Card, League
 from app import db
+from sqlalchemy import func
 
 
 fantasy = Blueprint('fantasy', __name__)
@@ -124,6 +125,7 @@ def buy():
         current_user.pnkoins -= card.value()
         current_user.fantasy_earnings -= card.value()
         card.current_delta += 1
+        current_user.last_login = func.now()
         db.session.commit()
         flash('Seu time agora tem %s como %s' % (card.name, inv_positions[card.position]), 'success')
 
@@ -149,6 +151,7 @@ def silver():
         current_user.pnkoins -= card.silver_cost()
         current_user.fantasy_earnings -= card.silver_cost()
         card.current_delta += 1
+        current_user.last_login = func.now()
         db.session.commit()
         flash('Você promoveu o %s %s para Prata!' % (card.name, inv_positions[card.position]), 'success')
 
@@ -174,6 +177,7 @@ def gold():
         current_user.pnkoins -= card.gold_cost()
         current_user.fantasy_earnings -= card.gold_cost()
         card.current_delta += 1
+        current_user.last_login = func.now()
         db.session.commit()
         flash('Você promoveu o %s %s para Ouro!' % (card.name, inv_positions[card.position]), 'success')
 
@@ -198,6 +202,7 @@ def sell():
         current_user.fantasy_earnings += card.sell_value(current_user)
         was_promoted = current_user.clear_card(card)
         card.current_delta -= 2 if was_promoted else 1
+        current_user.last_login = func.now()
         db.session.commit()
         flash('Você vendeu o %s %s' % (inv_positions[card.position], card.name), 'success')
 
