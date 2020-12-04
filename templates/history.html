@@ -52,6 +52,8 @@
             <th>Posição</th>
             <th>Jogador</th>
             <th>Ganhos</th>
+            <th>Acertos</th>
+            <th>Erros</th>
         </tr>
     </thead>
     <tbody>
@@ -64,6 +66,8 @@
             {% else %}
            <td style="color:#ff0000;font-weight:bold">{{item['coins']}} ₭</td>
             {% endif %}
+            <td style="color:#363636">{{item['hits']}}</td>
+            <td style="color:#363636">{{item['misses']}}</td>
         </tr>
         {% endfor %}
     </tbody>
