@@ -73,7 +73,7 @@ class Card(db.Model):
             extra += self.silver_cost()
         if user.gold_card == self.position:
             extra += self.gold_cost()
-        return Card.card_value(self.new_base_value + extra, self.current_delta - 2)
+        return Card.card_value(self.new_base_value + extra, self.current_delta - (2 if extra == 0 else 4))
 
     def value(self):
         return Card.card_value(self.new_base_value, self.current_delta)
