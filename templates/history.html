@@ -24,7 +24,7 @@
             <th>X</th>
             <th>Odds</th>
             <th>Opção 2</th>
-            <th>Resultado</th>
+            <th colspan="2">Ações</th>
         </tr>
     </thead>
     <tbody>
@@ -38,7 +38,13 @@
            <td style="color:#363636"><SPAN> X </SPAN></td>
            <td style="color:#363636">{{item['options'][1]['odds']}}</td>
            <td style="color:#363636">{{item['options'][1]['name']}}</td>
+           <td><form id="formrevert{{item.id}}" action="/revert" method="post"><input type="hidden" name="id" value="{{item.id}}"/></form></td>
+            {% if item['sell_value'] %}
+           <td><input class="button is-block is-info is-small" form="formrevert{{item.id}}" type="submit" name="bet"
+                      value="Recuperar {{item.sell_value}} ₭" /></td>
+            {% else %}
            <td style="color:#363636">{{item['result']}}</td>
+            {% endif %}
         </tr>
         {% endfor %}
     </tbody>

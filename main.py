@@ -32,6 +32,7 @@ def index():
 def history():
     user_bets = Bet.query.filter_by(user_id=current_user.id).all()
     bets = sorted([{
+                'id': bet.id,
                 'question': bet.category.question,
                 'option': bet.option.name,
                 'bet': bet.value,
@@ -42,6 +43,7 @@ def history():
                 'league_name': bet.category.league.name,
                 'league_id': bet.category.league_id,
                 'league_state': bet.category.league.state,
+                'sell_value': int(bet.value * 0.7) if bet.category.league.state == 'available' else None,
                 'result': bet.result()
             } for bet in user_bets], key=lambda s: (-s['league_id'], league_states.index(s['league_state'])))
 
@@ -204,4 +206,25 @@ def place_post():
             db.session.commit()
             flash('Aposta feita com sucesso', 'success')
 
+    return redirect(url_for('main.profile'))
+
+
+@main.route('/revert', methods=['POST'])
+@login_required
+def revert_bet():
+    bet_id = int(request.form.get('id'))
+    bet = Bet.query.filter_by(id=bet_id).first()
+
+    if bet is None:
+        flash('Erro ao reverter aposta', 'error')
+    elif bet.user_id != current_user.id:
+        flash('Operação inválida', 'error')
+    else:
+        delta = int(bet.value * 0.7)
+        current_user.pnkoins += delta
+        current_user.earnings -= (bet.value - delta)
+        current_user.last_login = func.now()
+        db.session.delete(bet)
+        db.session.commit()
+        flash('Aposta revertida com sucesso', 'success')
     return redirect(url_for('main.profile'))
