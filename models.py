@@ -40,7 +40,8 @@ class League(db.Model):
                             'hits': 0,
                             'misses': 0
                         }
-                    result = 0 if opt is None else -bet.value if bet.option_id != opt.id else int(bet.value * opt.odds)
+                    result = 0 if opt is None else -bet.value if bet.option_id != opt.id\
+                        else int(bet.value * opt.odds) - bet.value
                     users[user_name]['coins'] += result
                     if result > 0:
                         users[user_name]['hits'] += 1
