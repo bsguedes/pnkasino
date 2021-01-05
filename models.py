@@ -4,19 +4,19 @@ from flask_login import UserMixin
 from app import db
 
 SILVER_PERKS = {
-    1: '1 ponto a cada ~3300 last hits',
-    2: '1 ponto a cada 200 kills',
-    3: '1 ponto a cada 500k de dano sofrido',
+    1: '1 ponto a cada 3000 last hits',
+    2: '1 ponto a cada 160 kills',
+    3: '1 ponto a cada 400k de dano sofrido',
     4: '1 ponto a cada 1000 segundos de stun',
-    5: '1 ponto a cada 100 wards removidas'
+    5: '1 ponto a cada 125 wards removidas'
 }
 
 GOLD_PERKS = {
-    1: '1 ponto a cada ~1,4 ultra kills e rampages',
-    2: '1 ponto a cada 2 sequencias de 10+ kills',
-    3: '1 ponto a cada 200 assists',
-    4: '1 ponto a cada ~3,3 couriers mortos',
-    5: '1 ponto a cada ~33 creeps stackadas'
+    1: '1 ponto a cada ~1,6 ultra kills e rampages',
+    2: '1 ponto a cada ~1,6 sequências de 10+ kills',
+    3: '1 ponto a cada 160 assists',
+    4: '1 ponto a cada 4 couriers mortos',
+    5: '1 ponto a cada 30 creeps stackadas'
 }
 
 
