@@ -1,0 +1,123 @@
+<!-- templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+{% if category == 'error' %}
+<div class="notification is-danger">
+    {{ message }}
+</div>
+{% else %}
+<div class="notification is-success">
+    {{ message }}
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
+<h2 class="title">
+    Livro de Mensagens do PnK
+</h2>
+
+<br/>
+<h2 align="left"><b>Deixe sua Mensagem</b></h2>
+<br/>
+
+<form method="POST" action="/book/create">
+    <div class="columns is-gapless is-multiline is-mobile">
+      <div class="column">
+        <input class="input is-small" name="book_message" placeholder="Mensagem" autofocus="">
+      </div>
+      <div class="column is-one-fifth">
+        <button class="button is-block is-info is-small is-fullwidth">Enviar</button>
+      </div>
+    </div>
+</form>
+
+<br/>
+<h2 align="left"><b>Mural de Mensagens</b></h2>
+<br/>
+
+{% for message in messages %}
+
+
+<form method="POST" action="/book/vote">
+    <div class="columns is-gapless is-multiline is-mobile">
+      <div class="column">
+        <h3 align="left">{{ message['message'] }}</h3>
+      </div>
+      <div class="column is-1">
+        <font size="2"><h6 align="left">+{{ message['likes'] }} -{{ message['dislikes'] }}</h6></font>
+      </div>
+      <div class="column is-1">
+        {% if message['not_voted'] %}
+        <input class="button is-block is-success is-small" type="submit" align="right"
+                   name="upvote_message" value="+1"/>
+        {% endif %}
+      </div>
+      <div class="column is-1">
+          {% if message['not_voted'] %}
+        <input type="hidden" name="id" value="{{message['message_id']}}"/>
+        <input class="button is-block is-danger is-small" type="submit" align="left"
+                   name="downvote_message" value="-1"/>
+          {% endif %}
+      </div>
+    </div>
+</form>
+
+{% for response in message['responses'] %}
+<form method="POST" action="/book/vote">
+    <div class="columns is-gapless is-multiline is-mobile">
+      <div class="column is-1">
+
+      </div>
+      <div class="column">
+          <h3 align="left"><i>{{ response['message'] }}</i></h3>
+      </div>
+      <div class="column is-1">
+        <font size="2"><h6 align="left">+{{ response['likes'] }} -{{ response['dislikes'] }}</h6></font>
+      </div>
+      <div class="column is-1">
+        {% if response['not_voted'] %}
+        <input class="button is-block is-success is-small" type="submit" align="right"
+                   name="upvote_message" value="+1"/>
+          {% endif %}
+      </div>
+      <div class="column is-1">
+          {% if response['not_voted'] %}
+        <input type="hidden" name="id" value="{{response['message_id']}}"/>
+        <input class="button is-block is-danger is-small" type="submit" align="left"
+                   name="downvote_message" value="-1"/>
+        {% endif %}
+      </div>
+    </div>
+</form>
+{% endfor %}
+<br/>
+
+<form method="POST" action="/book/reply">
+    <div class="columns is-gapless is-multiline is-mobile">
+        <div class="column is-1">
+            <font size="1.5">Responder</font>
+        </div>
+        <div class="column">
+            <input class="input is-small" name="book_reply" placeholder="Resposta">
+            <input type="hidden" name="id" value="{{message['message_id']}}"/>
+        </div>
+        <div class="column is-one-fifth">
+            <button class="button is-block is-info is-small is-fullwidth">Responder</button>
+        </div>
+    </div>
+</form>
+
+<br/>
+<br/>
+
+{% endfor %}
+
+{% endblock %}
