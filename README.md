@@ -1,2 +1,2 @@
 # pnkasino
-A betting place for friends
+A betting place for friends.
