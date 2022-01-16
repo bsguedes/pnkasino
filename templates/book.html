@@ -50,7 +50,7 @@
         <font size="2"><h6 align="left">{{ message['created_at'].strftime('%Y-%m-%d') }}</h6></font>
       </div>
       <div class="column is-1">
-          <font size="2"><h6 align="left"><b>{{ message['likes'] - message['dislikes'] }}</b></h6></font>
+          <font size="2"><h6 align="center"><b>{{message['likes']}}-{{message['dislikes']}}</b></h6></font>
       </div>
       <div class="column is-1">
         {% if message['not_voted'] %}
@@ -81,7 +81,7 @@
         <font size="2"><h6 align="left">{{ response['created_at'].strftime('%Y-%m-%d') }}</h6></font>
       </div>
       <div class="column is-1">
-          <font size="2"><h6 align="left"><b>{{ response['likes'] - response['dislikes'] }}</b></h6></font>
+          <font size="2"><h6 align="center"><b>{{response['likes']}}-{{response['dislikes']}}</b></h6></font>
       </div>
       <div class="column is-1">
         {% if response['not_voted'] %}
