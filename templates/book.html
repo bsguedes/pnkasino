@@ -20,10 +20,6 @@
 {% endif %}
 {% endwith %}
 
-<h2 class="title">
-    Livro de Mensagens do PnK
-</h2>
-
 <br/>
 <h2 align="left"><b>Deixe sua Mensagem</b></h2>
 <br/>
@@ -45,14 +41,16 @@
 
 {% for message in messages %}
 
-
 <form method="POST" action="/book/vote">
     <div class="columns is-gapless is-multiline is-mobile">
       <div class="column">
-        <h3 align="left">{{ message['message'] }}</h3>
+        <h3 align="left" style="color:#363636">{{ message['message'] }}</h3>
       </div>
       <div class="column is-1">
-        <font size="2"><h6 align="left">+{{ message['likes'] }} -{{ message['dislikes'] }}</h6></font>
+        <font size="2"><h6 align="left">{{ message['created_at'].strftime('%Y-%m-%d') }}</h6></font>
+      </div>
+      <div class="column is-1">
+          <font size="2"><h6 align="left"><b>{{ message['likes'] - message['dislikes'] }}</b></h6></font>
       </div>
       <div class="column is-1">
         {% if message['not_voted'] %}
@@ -77,10 +75,13 @@
 
       </div>
       <div class="column">
-          <h3 align="left"><i>{{ response['message'] }}</i></h3>
+          <h3 align="left" style="color:#eeeeee"><i>{{ response['message'] }}</i></h3>
       </div>
       <div class="column is-1">
-        <font size="2"><h6 align="left">+{{ response['likes'] }} -{{ response['dislikes'] }}</h6></font>
+        <font size="2"><h6 align="left">{{ response['created_at'].strftime('%Y-%m-%d') }}</h6></font>
+      </div>
+      <div class="column is-1">
+          <font size="2"><h6 align="left"><b>{{ response['likes'] - response['dislikes'] }}</b></h6></font>
       </div>
       <div class="column is-1">
         {% if response['not_voted'] %}
@@ -103,7 +104,6 @@
 <form method="POST" action="/book/reply">
     <div class="columns is-gapless is-multiline is-mobile">
         <div class="column is-1">
-            <font size="1.5">Responder</font>
         </div>
         <div class="column">
             <input class="input is-small" name="book_reply" placeholder="Resposta">
