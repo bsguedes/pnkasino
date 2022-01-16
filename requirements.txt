@@ -20,7 +20,7 @@ python-editor==1.0.4
 python-engineio==3.13.1
 python-http-client==3.2.7
 python-socketio==4.6.0
-pytz==2020.1c
+pytz==2020.1
 sendgrid==6.4.5
 six==1.15.0
 SQLAlchemy==1.3.18
