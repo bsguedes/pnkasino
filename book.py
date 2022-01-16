@@ -11,14 +11,13 @@ book = Blueprint('book', __name__)
 
 
 @book.route('/book')
-@login_required
 def index():
     message_list = reversed(sorted([
         {
             'message': m.message,
             'likes': m.likes,
             'dislikes': m.dislikes,
-            'not_voted': Vote.query.filter_by(message_id=m.id, user_id=current_user.id).first() is None,
+            'can_vote': not current_user.is_anonymous and Vote.query.filter_by(message_id=m.id, user_id=current_user.id).first() is None,
             'message_id': m.id,
             'created_at': m.created_at,
             'responses': sorted([
@@ -27,7 +26,7 @@ def index():
                     'likes': r.likes,
                     'dislikes': r.dislikes,
                     'message_id': r.id,
-                    'not_voted': Vote.query.filter_by(message_id=r.id, user_id=current_user.id).first() is None,
+                    'can_vote': not current_user.is_anonymous and Vote.query.filter_by(message_id=r.id, user_id=current_user.id).first() is None,
                     'created_at': r.created_at,
                     'id': r.id
                 } for r in m.responses], key=lambda r: r['created_at'])
@@ -37,7 +36,6 @@ def index():
 
 
 @book.route('/book/create', methods=['POST'])
-@login_required
 def create():
     message = request.form.get('book_message')
     if len(message) <= MAX_MESSAGE_LENGTH:
@@ -52,7 +50,6 @@ def create():
 
 
 @book.route('/book/reply', methods=['POST'])
-@login_required
 def reply():
     message = request.form.get('book_reply')
     parent_message_id = request.form.get('id')

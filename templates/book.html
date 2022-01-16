@@ -53,13 +53,13 @@
           <font size="2"><h6 align="center"><b>{{message['likes']}}-{{message['dislikes']}}</b></h6></font>
       </div>
       <div class="column is-1">
-        {% if message['not_voted'] %}
+        {% if message['can_vote'] %}
         <input class="button is-block is-success is-small" type="submit" align="right"
                    name="upvote_message" value="+1"/>
         {% endif %}
       </div>
       <div class="column is-1">
-          {% if message['not_voted'] %}
+          {% if message['can_vote'] %}
         <input type="hidden" name="id" value="{{message['message_id']}}"/>
         <input class="button is-block is-danger is-small" type="submit" align="left"
                    name="downvote_message" value="-1"/>
@@ -84,13 +84,13 @@
           <font size="2"><h6 align="center"><b>{{response['likes']}}-{{response['dislikes']}}</b></h6></font>
       </div>
       <div class="column is-1">
-        {% if response['not_voted'] %}
+        {% if response['can_vote'] %}
         <input class="button is-block is-success is-small" type="submit" align="right"
                    name="upvote_message" value="+1"/>
           {% endif %}
       </div>
       <div class="column is-1">
-          {% if response['not_voted'] %}
+          {% if response['can_vote'] %}
         <input type="hidden" name="id" value="{{response['message_id']}}"/>
         <input class="button is-block is-danger is-small" type="submit" align="left"
                    name="downvote_message" value="-1"/>
