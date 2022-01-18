@@ -3,6 +3,7 @@ from flask_login import login_required, current_user
 from models import Message, Vote
 from app import db
 from sqlalchemy import func
+from datetime import timedelta
 
 
 MAX_MESSAGE_LENGTH = 255
@@ -19,7 +20,7 @@ def index():
             'dislikes': m.dislikes,
             'can_vote': not current_user.is_anonymous and Vote.query.filter_by(message_id=m.id, user_id=current_user.id).first() is None,
             'message_id': m.id,
-            'created_at': m.created_at,
+            'created_at': m.created_at - timedelta(hours=3),
             'responses': sorted([
                 {
                     'message': r.message,
@@ -27,7 +28,7 @@ def index():
                     'dislikes': r.dislikes,
                     'message_id': r.id,
                     'can_vote': not current_user.is_anonymous and Vote.query.filter_by(message_id=r.id, user_id=current_user.id).first() is None,
-                    'created_at': r.created_at,
+                    'created_at': r.created_at - timedelta(hours=3),
                     'id': r.id
                 } for r in m.responses], key=lambda r: r['created_at'])
         } for m in Message.query.all() if m.parent_message_id is None],

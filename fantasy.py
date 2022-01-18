@@ -46,7 +46,7 @@ def index():
             'id': card['id'],
             'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and
             current_user.gold_card != card['pos'] and
-            current_user.pnkoins >= card['silver_cost'] and
+            current_user.fcoins >= card['silver_cost'] and
             transfer_window_open,
             'cost': card['silver_cost'],
             'perks': [card['silver_perk']]
@@ -56,7 +56,7 @@ def index():
             'id': card['id'],
             'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and
             current_user.silver_card != card['pos'] and
-            current_user.pnkoins >= card['silver_cost'] and
+            current_user.fcoins >= card['silver_cost'] and
             transfer_window_open,
             'cost': card['gold_cost'],
             'perks': [card['silver_perk'], card['gold_perk']]
@@ -114,15 +114,15 @@ def buy():
 
     if card is None:
         flash('Não foi possível comprar a carta', 'error')
-    elif current_user.pnkoins < card.value():
-        flash('Você não tem PnKoins suficientes', 'error')
+    elif current_user.fcoins < card.value():
+        flash('Você não tem Éficoins suficientes', 'error')
     elif current_user.has_card(card.position):
         flash('Você já tem uma carta para esta posição', 'error')
     elif current_user.has_player(card.name):
         flash('Você já tem esse jogador no seu time', 'error')
     else:
         current_user.set_card(card)
-        current_user.pnkoins -= card.value()
+        current_user.fcoins -= card.value()
         current_user.fantasy_earnings -= card.value()
         card.current_delta += 1
         current_user.last_login = func.now()
@@ -141,14 +141,14 @@ def silver():
 
     if card is None:
         flash('Não foi possível atualizar a carta', 'error')
-    elif current_user.pnkoins < card.silver_cost():
-        flash('Você não tem PnKoins suficientes', 'error')
+    elif current_user.fcoins < card.silver_cost():
+        flash('Você não tem Éficoins suficientes', 'error')
     elif current_user.silver_card == card.position:
         flash('Você já tem uma carta Prata para esta posição', 'error')
     else:
         current_user.set_additional_buy_cost(card, card.silver_cost())
         current_user.silver_card = card.position
-        current_user.pnkoins -= card.silver_cost()
+        current_user.fcoins -= card.silver_cost()
         current_user.fantasy_earnings -= card.silver_cost()
         card.current_delta += 1
         current_user.last_login = func.now()
@@ -167,14 +167,14 @@ def gold():
 
     if card is None:
         flash('Não foi possível atualizar a carta', 'error')
-    elif current_user.pnkoins < card.gold_cost():
-        flash('Você não tem PnKoins suficientes', 'error')
+    elif current_user.fcoins < card.gold_cost():
+        flash('Você não tem Éficoins suficientes', 'error')
     elif current_user.gold_card == card.position:
         flash('Você já tem uma carta Ouro para esta posição', 'error')
     else:
         current_user.set_additional_buy_cost(card, card.gold_cost())
         current_user.gold_card = card.position
-        current_user.pnkoins -= card.gold_cost()
+        current_user.fcoins -= card.gold_cost()
         current_user.fantasy_earnings -= card.gold_cost()
         card.current_delta += 1
         current_user.last_login = func.now()
@@ -198,7 +198,7 @@ def sell():
     elif not current_user.has_player(card.name):
         flash('Você não tem a carta marcada para venda', 'error')
     else:
-        current_user.pnkoins += card.sell_value(current_user)
+        current_user.fcoins += card.sell_value(current_user)
         current_user.fantasy_earnings += card.sell_value(current_user)
         was_promoted = current_user.clear_card(card)
         card.current_delta -= 2 if was_promoted else 1
@@ -215,11 +215,11 @@ def card_state(card_db, card_obj, current_players, transfer_window_open):
     elif card_obj is None:
         if card_db.name in current_players:
             return 'owned_player'
-        return 'buy' if current_user.pnkoins >= card_db.value() else 'no_funds'
+        return 'buy' if current_user.fcoins >= card_db.value() else 'no_funds'
     else:
         if card_obj['name'] == card_db.name:
             return 'owned'
-        return 'must_sell' if current_user.pnkoins >= card_db.value() else 'no_funds'
+        return 'must_sell' if current_user.fcoins >= card_db.value() else 'no_funds'
 
 
 def card_dict(card_id, bought_at, user):

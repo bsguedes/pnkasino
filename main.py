@@ -136,11 +136,11 @@ def ranking():
         finished = u.finished_bets_without_cashback()
         on_hold = sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
         cards = sum(v['sell_value'] for _, v in u.team().items())
-        total_earnings = u.earnings + u.roulette_earnings - finished + u.fantasy_earnings + cards
+        total_earnings = u.earnings + u.roulette_earnings - finished
         user_object = {
             'position': i+1,
             'name': u.name,
-            'base': u.pnkoins - total_earnings + on_hold + cards,
+            'base': u.pnkoins - total_earnings + on_hold,
             'earnings': u.earnings - finished,
             'roulette': u.roulette_earnings,
             'fantasy': u.fantasy_earnings,

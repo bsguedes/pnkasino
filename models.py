@@ -134,6 +134,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(1000), nullable=False)
     rec_key = db.Column(db.String(1000), nullable=True)
     pnkoins = db.Column(db.Integer, nullable=False)
+    fcoins = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_earnings = db.Column(db.Integer, default=0, nullable=False)
     fantasy_earnings = db.Column(db.Integer, default=0, nullable=False)
@@ -166,8 +167,7 @@ class User(UserMixin, db.Model):
 
     def worth(self):
         on_hold = sum([b.value for b in self.bets if b.category.league.state in ['available', 'blocked']])
-        cards = sum(v['sell_value'] for _, v in self.team().items())
-        return self.pnkoins + on_hold + cards
+        return self.pnkoins + on_hold
 
     def team(self):
         team = {}
@@ -254,6 +254,30 @@ class User(UserMixin, db.Model):
                 if c.name == player:
                     return True
         return False
+
+    def refund_cards(self, new_starting_value):
+        buy1 = self.buy_1 if self.buy_1 is not None else 0
+        buy2 = self.buy_2 if self.buy_2 is not None else 0
+        buy3 = self.buy_3 if self.buy_3 is not None else 0
+        buy4 = self.buy_4 if self.buy_4 is not None else 0
+        buy5 = self.buy_5 if self.buy_5 is not None else 0
+        refund_value = buy1 + buy2 + buy3 + buy4 + buy5
+        self.buy_1 = None
+        self.buy_2 = None
+        self.buy_3 = None
+        self.buy_4 = None
+        self.buy_5 = None
+        self.gold_card = None
+        self.silver_card = None
+        self.card_1_id = None
+        self.card_2_id = None
+        self.card_3_id = None
+        self.card_4_id = None
+        self.card_5_id = None
+        self.fantasy_earnings = 0
+        self.pnkoins += refund_value
+        self.fcoins = new_starting_value
+        db.session.commit()
 
 
 class Category(db.Model):

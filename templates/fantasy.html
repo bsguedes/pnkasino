@@ -43,11 +43,11 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
           <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
              alt="{{card['name']}}" width="80" height="80">
             <br/>
-          <p class="title is-7 has-text-dark">Comprado por: {{card['buy_value']}} ₭</p>
-          <p class="title is-7 has-text-dark">Valor atual: {{card['current_value']}} ₭</p>
+          <p class="title is-7 has-text-dark">Comprado por: {{card['buy_value']}} ƒ</p>
+          <p class="title is-7 has-text-dark">Valor atual: {{card['current_value']}} ƒ</p>
             {% if transfer_window_open %}
           <button class="button is-danger is-small" form="formsell{{card.id}}" type="submit" name="sell">
-            Vender por {{card['sell_value']}} ₭
+            Vender por {{card['sell_value']}} ƒ
           </button>
             {% endif %}
         </div>
@@ -60,13 +60,13 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
     <div class="tile is-parent is-2">
         <div class="tile is-child notification box has-background-grey-light">
           <form id="formsilver{{card.id}}" action="/fantasy/silver" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
-            <p class="title is-5 has-text-dark">{{card['cost']}} ₭</p>
+            <p class="title is-5 has-text-dark">{{card['cost']}} ƒ</p>
             {% for perk in card['perks'] %}
                 <p class="title is-7 has-text-dark">{{perk}}</p>
             {% endfor %}
             {% if card['can_upgrade'] %}
           <button class="button is-success is-small" form="formsilver{{card.id}}" type="submit" name="silver">
-            Prata por {{card['cost']}} ₭
+            Prata por {{card['cost']}} ƒ
           </button>
             {% endif %}
         </div>
@@ -79,13 +79,13 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
     <div class="tile is-parent is-2">
         <div class="tile is-child notification box is-warning">
           <form id="formgold{{card.id}}" action="/fantasy/gold" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
-            <p class="title is-5 has-text-dark">{{card['cost']}} ₭</p>
+            <p class="title is-5 has-text-dark">{{card['cost']}} ƒ</p>
             {% for perk in card['perks'] %}
                 <p class="title is-7 has-text-dark">{{perk}}</p>
             {% endfor %}
             {% if card['can_upgrade'] %}
           <button class="button is-success is-small" form="formgold{{card.id}}" type="submit" name="gold">
-            Ouro por {{card['cost']}} ₭
+            Ouro por {{card['cost']}} ƒ
           </button>
             {% endif %}
         </div>
@@ -110,24 +110,24 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
             <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
              alt="{{card['name']}}" width="80" height="80">
           <br/>
-          <p class="title is-5">{{card['current_value']}} ₭</p>
+          <p class="title is-5">{{card['current_value']}} ƒ</p>
           {% if card['state'] == 'buy' %}
             <button class="button is-success is-small" form="formfantasy{{card.id}}" type="submit" name="buy">
-              Comprar por {{card['current_value']}} ₭
+              Comprar por {{card['current_value']}} ƒ
             </button>
           {% elif card['state'] == 'owned' %}
             <p class="title is-7">Você já possui essa carta</p>
           {% elif card['state'] == 'owned_player' %}
-            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ƒ</button>
             <p class="title is-7">Você já tem uma carta deste jogador</p>
           {% elif card['state'] == 'must_sell' %}
-            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ƒ</button>
             <p class="title is-7">Você já tem uma carta desta posição</p>
           {% elif card['state'] == 'no_funds' %}
-            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ƒ</button>
             <p class="title is-7">Sem fundos</p>
           {% elif card['state'] == 'blocked' %}
-            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ₭</button>
+            <button class="button is-success is-small" disabled>Comprar por {{card['current_value']}} ƒ</button>
             <p class="title is-7">Fora da janela de transferências</p>
           {% endif %}
         </div>

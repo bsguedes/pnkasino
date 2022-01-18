@@ -26,7 +26,7 @@
            <td style="color:#363636">{{item['name']}}</td>
            <td style="color:#212121;font-weight:bold">{{item['worth']}} ₭</td>
            <td style="color:#363636">{{item['pnkoins']}} ₭</td>
-           <td style="color:#363636">{{item['cards']}} ₭</td>
+           <td style="color:#363636">{{item['cards']}} ƒ</td>
            <td style="color:#363636">{{item['betted']}} ₭</td>
         </tr>
         {% endfor %}
@@ -71,9 +71,9 @@
            <td style="color:#ff0000;font-weight:bold">{{item['roulette']}} ₭</td>
             {% endif %}
             {% if item['fantasy_earnings'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['fantasy_earnings']}} ₭</td>
+           <td style="color:#009900;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['fantasy_earnings']}} ₭</td>
+           <td style="color:#ff0000;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
             {% endif %}
         </tr>
         {% endfor %}

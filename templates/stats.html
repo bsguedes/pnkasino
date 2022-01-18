@@ -26,8 +26,8 @@
         {% for player in fantasy_teams %}
         <tr>
            <td style="color:#212121;font-weight:bold">{{player['name']}}</td>
-           <td style="color:#212121;font-weight:bold">{{player['current']}} ₭</td>
-           <td style="color:#212121;font-weight:bold">{{player['price']}} ₭</td>
+           <td style="color:#212121;font-weight:bold">{{player['current']}} ƒ</td>
+           <td style="color:#212121;font-weight:bold">{{player['price']}} ƒ</td>
            {% if player['silver'] == 1 %}
             <td style="color:#999999;font-weight:bold">{{player['hard_carry']}}</td>
            {% elif player['gold'] == 1 %}
@@ -64,9 +64,9 @@
             <td style="color:#363636">{{player['hard_support']}}</td>
            {% endif %}
             {% if player['profit'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{player['profit']}} ₭</td>
+           <td style="color:#009900;font-weight:bold">{{player['profit']}} ƒ</td>
             {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{player['profit']}} ₭</td>
+           <td style="color:#ff0000;font-weight:bold">{{player['profit']}} ƒ</td>
             {% endif %}
         </tr>
         {% endfor %}

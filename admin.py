@@ -136,6 +136,22 @@ def add_player_to_fantasy():
         return redirect(url_for('main.profile'))
 
 
+@admin.route('/admin/fantasy/refund', methods=['POST'])
+@login_required
+def refund_fantasy():
+    starting_value = request.form.get('starting_value')
+    if current_user.is_admin_user():
+        if not starting_value.isdigit():
+            flash('Invalid credit value', 'error')
+            return redirect(url_for('admin.index'))
+        for user in User.query.all():
+            user.refund_cards(int(starting_value))
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.profile'))
+
+
 @admin.route('/admin/fantasy', methods=['POST'])
 @login_required
 def update_fantasy():

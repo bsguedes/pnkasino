@@ -30,6 +30,7 @@
                     <div class="navbar-end">
                         {% if current_user.is_authenticated %}
                         <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
+                        <h2 class="has-text-weight-bold navbar-item">{{current_user.fcoins}} Éficoins</h2>
                         {% endif %}
                         <a href="{{ url_for('main.index') }}" class="navbar-item">
                             Início
