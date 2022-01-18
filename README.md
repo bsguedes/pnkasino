@@ -4,6 +4,8 @@ A betting place for friends.
 
 ## Installation
 
+Please check that you have Python 3.8 installed.
+
 After cloning the repo and navigating to the project directory:
 
 ### Install flask and venv:
