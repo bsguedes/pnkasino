@@ -82,6 +82,7 @@
             <th>User Name</th>
             <th>PnKcoins</th>
             <th>Last Login</th>
+            <th>Email</th>
             <th>Reset Password</th>
         </tr>
         </thead>
@@ -91,8 +92,9 @@
             <td style="color:#363636">{{item['name']}}</td>
             <td style="color:#363636">{{item['coins']}}</td>
             <td style="color:#363636">{{item['login']}}</td>
+            <td style="color:#363636">{{item['email']}}</td>
             <td>
-                <button class="button is-block is-info is-small is-fullwidth">Reset Pwd</button>
+                <button class="button is-block is-danger is-small is-fullwidth">Reset Pwd</button>
                 <input type="hidden" name="id" value="{{item.id}}"/>
             </td>
         </tr>

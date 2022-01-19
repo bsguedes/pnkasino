@@ -46,6 +46,7 @@ def index():
                                users=sorted([
                                    {
                                        'id': u.id,
+                                       'email': u.email,
                                        'name': u.name,
                                        'coins': u.pnkoins,
                                        'login': str(u.last_login - timedelta(hours=3))
