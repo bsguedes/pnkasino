@@ -4,6 +4,7 @@ from models import User, Category, Option, Card, League
 from app import db
 from datetime import timedelta
 import json
+import os
 
 
 admin = Blueprint('admin', __name__)
@@ -44,6 +45,7 @@ def index():
             } for l in League.query.all()], key=lambda s: league_states.index(s['state'])),
                                users=sorted([
                                    {
+                                       'id': u.id,
                                        'name': u.name,
                                        'coins': u.pnkoins,
                                        'login': str(u.last_login - timedelta(hours=3))
@@ -68,6 +70,24 @@ def league_create_post():
         db.session.add(new_league)
         db.session.commit()
         flash('League %s created successfully!' % league_name, 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.profile'))
+
+
+@admin.route('/admin/reset', methods=['POST'])
+@login_required
+def reset_pwd():
+    user_id = int(request.form.get('id'))
+    if current_user.is_admin_user():
+        u = User.query.filter_by(id=user_id).first()
+        if u is None:
+            flash('Invalid user', 'error')
+            return redirect(url_for('admin.index'))
+        u.password = os.environ['DEFAULT_PWD']
+        db.session.commit()
+        flash('Password reset!', 'success')
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
