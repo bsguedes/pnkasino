@@ -1,6 +1,8 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import User, Card, League
+from models.user import User
+from models.card import Card
+from models.league import League
 from app import db
 from sqlalchemy import func
 

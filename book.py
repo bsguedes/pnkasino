@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import Message, Vote
+from models.message import Message
+from models.vote import Vote
 from app import db
 from sqlalchemy import func
 from datetime import timedelta

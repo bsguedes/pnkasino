@@ -4,7 +4,7 @@ from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from apscheduler.schedulers.background import BackgroundScheduler
 from app import socket_io, db
-from models import User
+from models.user import User
 from random import randint
 from threading import Timer
 from sqlalchemy import func

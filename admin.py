@@ -1,6 +1,10 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from flask_login import login_required, current_user
-from models import User, Category, Option, Card, League
+from models.user import User
+from models.category import Category
+from models.option import Option
+from models.card import Card
+from models.league import League
 from app import db
 from datetime import timedelta
 import json

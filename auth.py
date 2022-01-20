@@ -3,7 +3,8 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
-from models import User, League
+from models.user import User
+from models.league import League
 from app import db
 import sendgrid
 import os
@@ -14,6 +15,7 @@ import random
 
 auth = Blueprint('auth', __name__)
 COINS = 43000
+FCOINS = 13500
 
 
 @auth.route('/login')
@@ -58,7 +60,7 @@ def signup_post():
     credit = COINS if league is None else league.credit
 
     new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'),
-                    pnkoins=credit, earnings=0, last_login=func.now())
+                    fcoins=FCOINS, pnkoins=credit, earnings=0, last_login=func.now())
 
     db.session.add(new_user)
     db.session.commit()
