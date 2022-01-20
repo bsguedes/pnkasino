@@ -167,9 +167,9 @@ def ranking():
     return render_template('ranking.html', users=users_payload, performance=performance)
 
 
-@main.route('/profile')
+@main.route('/bets')
 @login_required
-def profile():
+def bets():
     leagues = League.query.filter_by(state='available').all()
     categories = []
     for league in leagues:
@@ -178,7 +178,7 @@ def profile():
                 categories.append(cat)
     categories_betted = [b.category_id for b in Bet.query.filter_by(user=current_user).all()]
     valid_categories = [c for c in categories if c.id not in categories_betted]
-    return render_template('profile.html', name=current_user.name,
+    return render_template('bets.html', name=current_user.name,
                            count=len(valid_categories),
                            categories=valid_categories,
                            pnkoins=current_user.pnkoins)
@@ -211,7 +211,7 @@ def place_post():
             db.session.commit()
             flash('Aposta feita com sucesso', 'success')
 
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('main.bets'))
 
 
 @main.route('/revert', methods=['POST'])
@@ -232,4 +232,4 @@ def revert_bet():
         db.session.delete(bet)
         db.session.commit()
         flash('Aposta revertida com sucesso', 'success')
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('main.bets'))

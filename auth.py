@@ -36,7 +36,7 @@ def login_post():
     login_user(user, remember=True)
     user.last_login = func.now()
     db.session.commit()
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('main.bets'))
 
 
 @auth.route('/signup')

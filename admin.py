@@ -53,13 +53,14 @@ def index():
                                        'email': u.email,
                                        'name': u.name,
                                        'coins': u.pnkoins,
+                                       'dota_name': u.stats_name if u.stats_name is not None else "-",
                                        'login': str(u.last_login - timedelta(hours=3))
                                                 if u.last_login is not None else "-"
                                    } for u in User.query.all()
                                ], key=lambda e: e['login'], reverse=True))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/league/create', methods=['POST'])
@@ -78,7 +79,7 @@ def league_create_post():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/reset', methods=['POST'])
@@ -96,7 +97,7 @@ def reset_pwd():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/coins', methods=['POST'])
@@ -114,7 +115,7 @@ def add_coins():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/fantasy/rewards', methods=['POST'])
@@ -135,7 +136,7 @@ def update_rewards():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/fantasy/player', methods=['POST'])
@@ -158,7 +159,7 @@ def add_player_to_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/fantasy/refund', methods=['POST'])
@@ -174,7 +175,7 @@ def refund_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/fantasy', methods=['POST'])
@@ -213,7 +214,7 @@ def update_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/admin/winner', methods=['POST'])
@@ -231,7 +232,7 @@ def winner():
         return redirect(url_for('admin.edit', league_id=league_id))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/league/edit/<int:league_id>')
@@ -242,7 +243,7 @@ def edit(league_id):
         return render_template('edit.html', league=league)
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/league/addcategory', methods=['POST'])
@@ -277,7 +278,7 @@ def add_category():
             return redirect(url_for('admin.edit', league_id=league_id))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
 
 
 @admin.route('/league/up', methods=['POST'])
@@ -311,4 +312,4 @@ def league_up():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('main.profile'))
+        return redirect(url_for('profile.index'))
