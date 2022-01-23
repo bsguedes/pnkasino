@@ -64,7 +64,7 @@ class User(UserMixin, db.Model):
             'achievements': sorted([au.as_json() for au in self.achievement_users],
                                    key=lambda e: e['created_at'], reverse=True),
             'scraps': sorted([s.as_json() for s in self.scraps if s.parent_scrap_id is None],
-                             key=lambda e: e['created_at'], reverse=True)
+                             key=lambda e: e['latest_at'], reverse=True)
         }
 
     def assign_achievement(self, hero_id):

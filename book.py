@@ -14,7 +14,7 @@ book = Blueprint('book', __name__)
 @book.route('/book')
 def index():
     message_list = sorted([m.as_json() for m in Message.query.all() if m.parent_message_id is None],
-                          key=lambda m: m['created_at'], reverse=True)
+                          key=lambda m: m['latest_at'], reverse=True)
     return render_template('book.html', message_list=message_list)
 
 

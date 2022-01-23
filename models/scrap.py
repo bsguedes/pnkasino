@@ -19,6 +19,7 @@ class Scrap(db.Model):
             'message': self.message,
             'scrap_id': self.id,
             'created_at': self.created_at - timedelta(hours=3),
+            'latest_at': self.latest_response() - timedelta(hours=3),
             'author_id': self.author_id,
             'author_name': None if self.author is None else self.author.stats_name,
             'is_anonymous': self.author_id is None,
@@ -32,3 +33,8 @@ class Scrap(db.Model):
                     'is_anonymous': r.author_id is None
                 } for r in self.responses], key=lambda r: r['created_at'])
         }
+
+    def latest_response(self):
+        responses = [r.created_at for r in self.responses]
+        responses.append(self.created_at)
+        return max(responses)

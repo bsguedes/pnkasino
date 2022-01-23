@@ -24,6 +24,7 @@ class Message(db.Model):
                         Vote.query.filter_by(message_id=self.id, user_id=current_user.id).first() is None,
             'message_id': self.id,
             'created_at': self.created_at - timedelta(hours=3),
+            'latest_at': self.latest_response() - timedelta(hours=3),
             'responses': sorted([
                 {
                     'message': r.message,
@@ -36,3 +37,8 @@ class Message(db.Model):
                     'id': r.id
                 } for r in self.responses], key=lambda r: r['created_at'])
         }
+
+    def latest_response(self):
+        responses = [r.created_at for r in self.responses]
+        responses.append(self.created_at)
+        return max(responses)
