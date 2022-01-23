@@ -38,7 +38,7 @@ def login_post():
     user.assign_achievement(heroes.DRAGON_KNIGHT)
     user.last_login = func.now()
     db.session.commit()
-    return redirect(url_for('main.bets'))
+    return redirect(url_for('prfl.index', user_id=user.id))
 
 
 @auth.route('/signup')
