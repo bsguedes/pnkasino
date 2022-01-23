@@ -5,83 +5,88 @@
 {% block content %}
 
 <h1 class="title">
-  Estatísticas do Fantasy
+    Estatísticas do Fantasy
 </h1>
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
-        <tr>
-            <th>Manager</th>
-            <th>Cotação Atual</th>
-            <th>Custo do Time</th>
-            <th>Hard Carry</th>
-            <th>Mid</th>
-            <th>Offlane</th>
-            <th>Support</th>
-            <th>Hard Support</th>
-            <th>Lucros</th>
-        </tr>
+    <tr>
+        <th>Manager</th>
+        <th>Cotação Atual</th>
+        <th>Custo do Time</th>
+        <th>Hard Carry</th>
+        <th>Mid</th>
+        <th>Offlane</th>
+        <th>Support</th>
+        <th>Hard Support</th>
+        <th>Lucros</th>
+    </tr>
     </thead>
     <tbody>
-        {% for player in fantasy_teams %}
-        <tr>
-           <td style="color:#212121;font-weight:bold">{{player['name']}}</td>
-           <td style="color:#212121;font-weight:bold">{{player['current']}} ƒ</td>
-           <td style="color:#212121;font-weight:bold">{{player['price']}} ƒ</td>
-           {% if player['silver'] == 1 %}
-            <td style="color:#999999;font-weight:bold">{{player['hard_carry']}}</td>
-           {% elif player['gold'] == 1 %}
-            <td style="color:#FFCC00;font-weight:bold">{{player['hard_carry']}}</td>
-           {% else %}
-            <td style="color:#363636">{{player['hard_carry']}}</td>
-           {% endif %}
-           {% if player['silver'] == 2 %}
-            <td style="color:#999999;font-weight:bold">{{player['mid']}}</td>
-           {% elif player['gold'] == 2 %}
-            <td style="color:#FFCC00;font-weight:bold">{{player['mid']}}</td>
-           {% else %}
-            <td style="color:#363636">{{player['mid']}}</td>
-           {% endif %}
-            {% if player['silver'] == 3 %}
-            <td style="color:#999999;font-weight:bold">{{player['offlane']}}</td>
-           {% elif player['gold'] == 3 %}
-            <td style="color:#FFCC00;font-weight:bold">{{player['offlane']}}</td>
-           {% else %}
-            <td style="color:#363636">{{player['offlane']}}</td>
-           {% endif %}
-            {% if player['silver'] == 4 %}
-            <td style="color:#999999;font-weight:bold">{{player['support']}}</td>
-           {% elif player['gold'] == 4 %}
-            <td style="color:#FFCC00;font-weight:bold">{{player['support']}}</td>
-           {% else %}
-            <td style="color:#363636">{{player['support']}}</td>
-           {% endif %}
-            {% if player['silver'] == 5 %}
-            <td style="color:#999999;font-weight:bold">{{player['hard_support']}}</td>
-           {% elif player['gold'] == 5 %}
-            <td style="color:#FFCC00;font-weight:bold">{{player['hard_support']}}</td>
-           {% else %}
-            <td style="color:#363636">{{player['hard_support']}}</td>
-           {% endif %}
-            {% if player['profit'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{player['profit']}} ƒ</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{player['profit']}} ƒ</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
+    {% for player in fantasy_teams %}
+    <tr>
+        {% if player['profile_id'] is not none %}
+        <td style="color:#212121;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['profile_id']) }}">{{player['name']}}</a>
+        </td>
+        {% else %}
+        <td style="color:#212121;font-weight:bold">{{player['name']}}</td>
+        {% endif %}
+        <td style="color:#212121;font-weight:bold">{{player['current']}} ƒ</td>
+        <td style="color:#212121;font-weight:bold">{{player['price']}} ƒ</td>
+        {% if player['silver'] == 1 %}
+        <td style="color:#999999;font-weight:bold">{{player['hard_carry']}}</td>
+        {% elif player['gold'] == 1 %}
+        <td style="color:#FFCC00;font-weight:bold">{{player['hard_carry']}}</td>
+        {% else %}
+        <td style="color:#363636">{{player['hard_carry']}}</td>
+        {% endif %}
+        {% if player['silver'] == 2 %}
+        <td style="color:#999999;font-weight:bold">{{player['mid']}}</td>
+        {% elif player['gold'] == 2 %}
+        <td style="color:#FFCC00;font-weight:bold">{{player['mid']}}</td>
+        {% else %}
+        <td style="color:#363636">{{player['mid']}}</td>
+        {% endif %}
+        {% if player['silver'] == 3 %}
+        <td style="color:#999999;font-weight:bold">{{player['offlane']}}</td>
+        {% elif player['gold'] == 3 %}
+        <td style="color:#FFCC00;font-weight:bold">{{player['offlane']}}</td>
+        {% else %}
+        <td style="color:#363636">{{player['offlane']}}</td>
+        {% endif %}
+        {% if player['silver'] == 4 %}
+        <td style="color:#999999;font-weight:bold">{{player['support']}}</td>
+        {% elif player['gold'] == 4 %}
+        <td style="color:#FFCC00;font-weight:bold">{{player['support']}}</td>
+        {% else %}
+        <td style="color:#363636">{{player['support']}}</td>
+        {% endif %}
+        {% if player['silver'] == 5 %}
+        <td style="color:#999999;font-weight:bold">{{player['hard_support']}}</td>
+        {% elif player['gold'] == 5 %}
+        <td style="color:#FFCC00;font-weight:bold">{{player['hard_support']}}</td>
+        {% else %}
+        <td style="color:#363636">{{player['hard_support']}}</td>
+        {% endif %}
+        {% if player['profit'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{player['profit']}} ƒ</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{player['profit']}} ƒ</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 
 
 <h1 class="title">
-  Estatísticas das Apostas
+    Estatísticas das Apostas
 </h1>
 
 {% if empty %}
 
 <h3 class="title">
-  Não há estatísticas disponíveis no momento.
+    Não há estatísticas disponíveis no momento.
 </h3>
 
 {% endif %}
@@ -92,36 +97,36 @@
     {% for cat in categories %}
     <div class="tile is-parent is-4">
         <div class="tile is-child notification box is-link">
-          <p class="title is-5">{{cat['name']}}</p>
-          {% for opt in cat['options'] %}
+            <p class="title is-5">{{cat['name']}}</p>
+            {% for opt in cat['options'] %}
             <div class="tile is-parent is-vertical">
                 <article class="tile is-child notification box is-primary">
                     <p class="title is-6">{{opt['name']}}</p>
                     <nav class="level">
-                          <div class="level-item has-text-centered">
+                        <div class="level-item has-text-centered">
                             <div>
-                              <p class="heading">Odds</p>
-                              <p class="title is-6">{{opt['odds']}}</p>
+                                <p class="heading">Odds</p>
+                                <p class="title is-6">{{opt['odds']}}</p>
                             </div>
-                          </div>
-                          <div class="level-item has-text-centered">
+                        </div>
+                        <div class="level-item has-text-centered">
                             <div>
-                              <p class="heading">Apostas</p>
-                              <p class="title is-6">{{opt['betters']}}</p>
+                                <p class="heading">Apostas</p>
+                                <p class="title is-6">{{opt['betters']}}</p>
                             </div>
-                          </div>
-                          <div class="level-item has-text-centered">
+                        </div>
+                        <div class="level-item has-text-centered">
                             <div>
-                              <p class="heading">PnKoins</p>
-                              <p class="title is-6">{{opt['pnkoins']}} ₭</p>
+                                <p class="heading">PnKoins</p>
+                                <p class="title is-6">{{opt['pnkoins']}} ₭</p>
                             </div>
-                          </div>
-                        </nav>
+                        </div>
+                    </nav>
                 </article>
             </div>
-          {% endfor %}
-          <p class="title is-6">Número de apostas: {{cat['bets']}}</p>
-          <p class="title is-6">PnKoins: {{cat['pnkoins']}} ₭</p>
+            {% endfor %}
+            <p class="title is-6">Número de apostas: {{cat['bets']}}</p>
+            <p class="title is-6">PnKoins: {{cat['pnkoins']}} ₭</p>
         </div>
     </div>
     {% endfor %}

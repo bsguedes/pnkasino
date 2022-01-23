@@ -83,6 +83,7 @@
             <th>PnKcoins</th>
             <th>Last Login</th>
             <th>Email</th>
+            <th>Dota Name</th>
             <th>Reset Password</th>
         </tr>
         </thead>
@@ -93,6 +94,7 @@
             <td style="color:#363636">{{item['coins']}}</td>
             <td style="color:#363636">{{item['login']}}</td>
             <td style="color:#363636">{{item['email']}}</td>
+            <td style="color:#363636">{{item['dota_name']}}</td>
             <td>
                 <button class="button is-block is-danger is-small is-fullwidth">Reset Pwd</button>
                 <input type="hidden" name="id" value="{{item.id}}"/>
@@ -103,7 +105,62 @@
     </table>
 </form>
 
-</br>
+<br/>
+<h2 align="left">Achievements</h2>
+<br/>
+
+<form method="POST" action="/achievement/create">
+    <table class="table table-striped table-responsive table-bordered is-fullwidth">
+        <tbody>
+        <tr>
+            <td>New Achievement</td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="hero_id" placeholder="Hero ID" autofocus="">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="hero_name" placeholder="Hero name" autofocus="">
+                </div>
+            </td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="description" placeholder="Description" autofocus="">
+                </div>
+            </td>
+            <td>
+                <button class="button is-block is-info is-small is-fullwidth">Create</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>Hero</th>
+        <th>Description</th>
+        <th>Earned by</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in achievements %}
+    <tr>
+        <td style="color:#363636">{{item['hero_name']}}</td>
+        <td style="color:#363636">{{item['description']}}</td>
+        <td style="color:#363636">{{item['earned_count']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+
+<br/>
+<h2 align="left">Danger Zone</h2>
+<br/>
+
 
 <form method="POST" action="/league/create">
     <table class="table table-striped table-responsive table-bordered is-fullwidth">
@@ -207,7 +264,7 @@
             <td>Refund All Fantasy Cards</td>
             <td>
                 <div class="control">
-                    <input class="input is-small" name="starting_value" placeholder="JSON" autofocus="">
+                    <input class="input is-small" name="starting_value" placeholder="Starting coins" autofocus="">
                 </div>
             </td>
             <td>

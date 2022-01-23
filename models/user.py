@@ -2,22 +2,30 @@
 
 from flask_login import UserMixin
 from app import db
+import heroes
 from models.card import Card
+from models.achievement_user import AchievementUser
+from models.achievement import Achievement
+from datetime import timedelta
 
 
 class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     email = db.Column(db.String(100), unique=True)
     password = db.Column(db.String(100))
     name = db.Column(db.String(1000), nullable=False)
     rec_key = db.Column(db.String(1000), nullable=True)
     pnkoins = db.Column(db.Integer, nullable=False)
     fcoins = db.Column(db.Integer, nullable=False)
+    roulette_streak = db.Column(db.Integer, nullable=False)
+    login_count = db.Column(db.Integer, nullable=False)
+    profile_views = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_earnings = db.Column(db.Integer, default=0, nullable=False)
     fantasy_earnings = db.Column(db.Integer, default=0, nullable=False)
     bets = db.relationship('Bet', backref='user', lazy=True)
     last_login = db.Column(db.DateTime)
+    last_seen = db.Column(db.DateTime)
     is_admin = db.Column(db.Integer, default=0)
     card_1_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
     card_2_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
@@ -32,6 +40,91 @@ class User(UserMixin, db.Model):
     buy_4 = db.Column(db.Integer, nullable=True)
     buy_5 = db.Column(db.Integer, nullable=True)
     stats_name = db.Column(db.String(100), nullable=True)
+    achievement_users = db.relationship('AchievementUser', backref='user', lazy=True)
+    scraps = db.relationship('Scrap', foreign_keys='Scrap.profile_id', backref='user', lazy=True)
+    votes = db.relationship('Vote', foreign_keys='Vote.user_id', backref='user', lazy=True)
+
+    def as_json(self):
+        return {
+            'id': self.id,
+            'email': self.email,
+            'name': self.name,
+            'coins': self.pnkoins,
+            'dota_name': self.stats_name if self.stats_name is not None else "-",
+            'login': str(self.last_login - timedelta(hours=3)) if self.last_login is not None else "-"
+        }
+
+    def profile_json(self):
+        return {
+            'id': self.id,
+            'dota_name': self.stats_name,
+            'name': self.name,
+            'pnkoins': self.pnkoins,
+            'fcoins': self.fcoins,
+            'achievements': sorted([au.as_json() for au in self.achievement_users],
+                                   key=lambda e: e['created_at'], reverse=True),
+            'scraps': sorted([s.as_json() for s in self.scraps if s.parent_scrap_id is None],
+                             key=lambda e: e['created_at'], reverse=True)
+        }
+
+    def assign_achievement(self, hero_id):
+        achievement = Achievement.query.filter_by(hero_id=hero_id).first()
+        if achievement is not None:
+            achievement_id = achievement.id
+            if AchievementUser.query.filter_by(user_id=self.id, achievement_id=achievement_id).first() is None:
+                AchievementUser.give_achievement(self.id, achievement_id)
+
+    def check_achievement(self, hero_id):
+        achievement = Achievement.query.filter_by(hero_id=hero_id).first()
+        if achievement is not None:
+            achievement_id = achievement.id
+            if AchievementUser.query.filter_by(user_id=self.id, achievement_id=achievement_id).first() is None:
+                if hero_id == heroes.ALCHEMIST:
+                    if self.pnkoins >= 100000:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.ZEUS:
+                    if self.fcoins >= 20000:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.MORPHLING:
+                    if len(self.votes) >= 20:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.WINDRANGER:
+                    if self.roulette_earnings >= 20000:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.OGRE_MAGI:
+                    if self.roulette_streak >= 4:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.BRISTLEBACK:
+                    if len(self.bets) >= 50:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.TIMBERSAW:
+                    if self.correct_bets() >= 50:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.SNIPER:
+                    if self.profile_views >= 100:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                else:
+                    return False
+        return False
+
+    def correct_bets(self):
+        return len([b for b in self.bets if b.correct_winner()])
+
+    def add_pnkoins(self, coins):
+        self.pnkoins += coins
+        db.session.commit()
+        self.check_achievement(heroes.ALCHEMIST)
+
+    def add_fcoins(self, coins):
+        self.fcoins += coins
+        db.session.commit()
+        self.check_achievement(heroes.ZEUS)
+
+    def has_achievement(self, achievement_id):
+        for achievement_user in self.achievement_users:
+            if achievement_user.achievement_id == achievement_id:
+                return True
+        return False
 
     def finished_bets_without_cashback(self):
         return sum([b.value for b in self.bets if b.category.league.state == 'finished' and b.correct_winner()])
@@ -70,6 +163,19 @@ class User(UserMixin, db.Model):
                (position == 3 and self.card_3_id is not None) or \
                (position == 4 and self.card_4_id is not None) or \
                (position == 5 and self.card_5_id is not None)
+
+    def card_at_position(self, position):
+        if position == 1:
+            return self.card_1_id
+        elif position == 2:
+            return self.card_2_id
+        elif position == 3:
+            return self.card_3_id
+        elif position == 4:
+            return self.card_4_id
+        elif position == 5:
+            return self.card_5_id
+        return None
 
     def set_card(self, card):
         if card.position == 1:
@@ -133,6 +239,11 @@ class User(UserMixin, db.Model):
                     return True
         return False
 
+    @staticmethod
+    def profile_id(card_name):
+        user = User.query.filter_by(stats_name=card_name).first()
+        return user.id if user is not None else None
+
     def refund_cards(self, new_starting_value):
         buy1 = self.buy_1 if self.buy_1 is not None else 0
         buy2 = self.buy_2 if self.buy_2 is not None else 0
@@ -153,6 +264,6 @@ class User(UserMixin, db.Model):
         self.card_4_id = None
         self.card_5_id = None
         self.fantasy_earnings = 0
-        self.pnkoins += refund_value
+        self.add_pnkoins(refund_value)
         self.fcoins = new_starting_value
         db.session.commit()

@@ -5,6 +5,7 @@ from models.card import Card
 from models.league import League
 from app import db
 from sqlalchemy import func
+import heroes
 
 
 fantasy = Blueprint('fantasy', __name__)
@@ -39,6 +40,7 @@ def index():
         available_cards[pos] = chunks(sorted([{
             'id': card.id,
             'name': card.name,
+            'profile_id': User.profile_id(card.name),
             'position': inv_positions[card.position].title(),
             'current_value': card.value(),
             'state': card_state(card, player_cards[i], current_players, transfer_window_open)
@@ -76,6 +78,7 @@ def index():
 def summary():
     return {'cards': [{
         'name': card.name,
+        'profile_id': User.profile_id(card.name),
         'position': inv_positions[card.position],
         'current_value': card.value(),
         'old_value': card.old_base_value if card.old_base_value is not None else card.new_base_value,
@@ -124,11 +127,13 @@ def buy():
         flash('Você já tem esse jogador no seu time', 'error')
     else:
         current_user.set_card(card)
-        current_user.fcoins -= card.value()
+        current_user.add_fcoins(-card.value())
         current_user.fantasy_earnings -= card.value()
         card.current_delta += 1
         current_user.last_login = func.now()
         db.session.commit()
+        card_value_updated(card.name, card.value())
+        card_bought(card.name)
         flash('Seu time agora tem %s como %s' % (card.name, inv_positions[card.position]), 'success')
 
     return redirect(url_for('fantasy.index'))
@@ -150,11 +155,13 @@ def silver():
     else:
         current_user.set_additional_buy_cost(card, card.silver_cost())
         current_user.silver_card = card.position
-        current_user.fcoins -= card.silver_cost()
+        current_user.add_fcoins(-card.silver_cost())
         current_user.fantasy_earnings -= card.silver_cost()
         card.current_delta += 1
         current_user.last_login = func.now()
         db.session.commit()
+        card_value_updated(card.name, card.value())
+        card_gold_silver_updated(card.name)
         flash('Você promoveu o %s %s para Prata!' % (card.name, inv_positions[card.position]), 'success')
 
     return redirect(url_for('fantasy.index'))
@@ -176,11 +183,13 @@ def gold():
     else:
         current_user.set_additional_buy_cost(card, card.gold_cost())
         current_user.gold_card = card.position
-        current_user.fcoins -= card.gold_cost()
+        current_user.add_fcoins(-card.gold_cost())
         current_user.fantasy_earnings -= card.gold_cost()
         card.current_delta += 1
         current_user.last_login = func.now()
         db.session.commit()
+        card_value_updated(card.name, card.value())
+        card_gold_silver_updated(card.name)
         flash('Você promoveu o %s %s para Ouro!' % (card.name, inv_positions[card.position]), 'success')
 
     return redirect(url_for('fantasy.index'))
@@ -200,7 +209,7 @@ def sell():
     elif not current_user.has_player(card.name):
         flash('Você não tem a carta marcada para venda', 'error')
     else:
-        current_user.fcoins += card.sell_value(current_user)
+        current_user.add_fcoins(card.sell_value(current_user))
         current_user.fantasy_earnings += card.sell_value(current_user)
         was_promoted = current_user.clear_card(card)
         card.current_delta -= 2 if was_promoted else 1
@@ -232,6 +241,7 @@ def card_dict(card_id, bought_at, user):
             'position': inv_positions[card.position].title(),
             'pos': card.position,
             'name': card.name,
+            'profile_id': User.profile_id(card.name),
             'current_value': card.current_value(user),
             'sell_value': card.sell_value(user),
             'buy_value': bought_at,
@@ -249,3 +259,64 @@ def card_dict(card_id, bought_at, user):
 def chunks(l, n):
     n = max(1, n)
     return (l[i:i+n] for i in range(0, len(l), n))
+
+
+def card_value_updated(card_name, current_value):
+    updated_user = User.query.filter_by(stats_name=card_name).first()
+    if updated_user is not None:
+        if current_value >= 3000:
+            updated_user.assign_achievement(heroes.SPECTRE)
+        if len([1 for c in Card.query.filter_by(name=card_name) if c.value() >= 1500]) == 5:
+            updated_user.assign_achievement(heroes.VOID_SPIRIT)
+    for user in User.query.all():
+        if sum([v['sell_value'] for _, v in user.team().items()]) >= 16000:
+            user.assign_achievement(heroes.MEEPO)
+
+
+def card_gold_silver_updated(card_name):
+    updated_user = User.query.filter_by(stats_name=card_name).first()
+    if updated_user is not None:
+        updated_user_cards = {c.position: c.id for c in Card.query.filter_by(name=card_name)}
+        has_gold = False
+        has_silver = False
+        for user in User.query.all():
+            if user.id != updated_user.id:
+                for i in range(5):
+                    pos = i + 1
+                    if updated_user_cards[pos] is not None:
+                        if user.card_at_position(pos) == updated_user_cards[pos]:
+                            if user.gold_card == pos:
+                                has_gold = True
+                            if user.silver_card == pos:
+                                has_silver = True
+                if has_gold and has_silver:
+                    updated_user.assign_achievement(heroes.EARTH_SPIRIT)
+                    return True
+        return False
+
+
+def card_bought(card_name):
+    for user in User.query.all():
+        if user.id != current_user.id:
+            if user.card_1_id == current_user.card_1_id and\
+               user.card_2_id == current_user.card_2_id and\
+               user.card_3_id == current_user.card_3_id and\
+               user.card_4_id == current_user.card_4_id and\
+               user.card_5_id == current_user.card_5_id:
+                user.assign_achievement(heroes.RUBICK)
+                current_user.assign_achievement(heroes.RUBICK)
+
+    updated_user = User.query.filter_by(stats_name=card_name).first()
+    if updated_user is not None:
+        updated_user_cards = {c.position: c.id for c in Card.query.filter_by(name=card_name)}
+        pos_1 = User.query.filter_by(card_1_id=updated_user_cards[1]).count() if updated_user_cards[1] is not None else 0
+        pos_2 = User.query.filter_by(card_2_id=updated_user_cards[2]).count() if updated_user_cards[2] is not None else 0
+        pos_3 = User.query.filter_by(card_3_id=updated_user_cards[3]).count() if updated_user_cards[3] is not None else 0
+        pos_4 = User.query.filter_by(card_4_id=updated_user_cards[4]).count() if updated_user_cards[4] is not None else 0
+        pos_5 = User.query.filter_by(card_5_id=updated_user_cards[5]).count() if updated_user_cards[5] is not None else 0
+        if pos_1 + pos_2 + pos_3 + pos_4 + pos_5 >= 10:
+            updated_user.assign_achievement(heroes.PUDGE)
+        if any(x >= 7 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]):
+            updated_user.assign_achievement(heroes.FACELESS_VOID)
+        if len([x > 0 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]]) >= 3:
+            updated_user.assign_achievement(heroes.NECROPHOS)

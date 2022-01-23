@@ -5,78 +5,88 @@
 {% block content %}
 
 <h1 class="title">
-  Patrimônio
+    Patrimônio
 </h1>
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
-        <tr>
-            <th>Posição</th>
-            <th>Jogador</th>
-            <th>Patrimônio</th>
-            <th>(em cash)</th>
-            <th>(em cartas do Fantasy)</th>
-            <th>(em apostas ativas)</th>
-        </tr>
+    <tr>
+        <th>Posição</th>
+        <th>Jogador</th>
+        <th>Patrimônio</th>
+        <th>(em cash)</th>
+        <th>(em cartas do Fantasy)</th>
+        <th>(em apostas ativas)</th>
+    </tr>
     </thead>
     <tbody>
-        {% for item in users %}
-        <tr>
-           <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
-           <td style="color:#363636">{{item['name']}}</td>
-           <td style="color:#212121;font-weight:bold">{{item['worth']}} ₭</td>
-           <td style="color:#363636">{{item['pnkoins']}} ₭</td>
-           <td style="color:#363636">{{item['cards']}} ƒ</td>
-           <td style="color:#363636">{{item['betted']}} ₭</td>
-        </tr>
-        {% endfor %}
+    {% for item in users %}
+    <tr>
+        <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
+        {% if item['profile_id'] is not none %}
+        <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=item['profile_id']) }}">{{item['name']}}</a>
+        </td>
+        {% else %}
+        <td style="color:#363636">{{item['name']}}</td>
+        {% endif %}
+        <td style="color:#212121;font-weight:bold">{{item['worth']}} ₭</td>
+        <td style="color:#363636">{{item['pnkoins']}} ₭</td>
+        <td style="color:#363636">{{item['cards']}} ƒ</td>
+        <td style="color:#363636">{{item['betted']}} ₭</td>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 
 <h1 class="title">
-  Performance
+    Performance
 </h1>
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
-        <tr>
-            <th>Posição</th>
-            <th>Jogador</th>
-            <th>Começou com</th>
-            <th>Rendimentos</th>
-            <th>(em apostas)</th>
-            <th>(na roleta)</th>
-            <th>(no fantasy)</th>
-        </tr>
+    <tr>
+        <th>Posição</th>
+        <th>Jogador</th>
+        <th>Começou com</th>
+        <th>Rendimentos</th>
+        <th>(em apostas)</th>
+        <th>(na roleta)</th>
+        <th>(no fantasy)</th>
+    </tr>
     </thead>
     <tbody>
-        {% for item in performance %}
-        <tr>
-           <td style="color:#212121;font-weight:bold">{{item['position_performance']}}</td>
-           <td style="color:#363636">{{item['name']}}</td>
-           <td style="color:#363636">{{item['base']}} ₭</td>
-            {% if item['total_earnings'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['total_earnings']}} ₭</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['total_earnings']}} ₭</td>
-            {% endif %}
-            {% if item['earnings'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['earnings']}} ₭</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['earnings']}} ₭</td>
-            {% endif %}
-            {% if item['roulette'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['roulette']}} ₭</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['roulette']}} ₭</td>
-            {% endif %}
-            {% if item['fantasy_earnings'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
+    {% for item in performance %}
+    <tr>
+        <td style="color:#212121;font-weight:bold">{{item['position_performance']}}</td>
+        {% if item['profile_id'] is not none %}
+        <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=item['profile_id']) }}">{{item['name']}}</a>
+        </td>
+        {% else %}
+        <td style="color:#363636">{{item['name']}}</td>
+        {% endif %}
+        <td style="color:#363636">{{item['base']}} ₭</td>
+        {% if item['total_earnings'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['total_earnings']}} ₭</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{item['total_earnings']}} ₭</td>
+        {% endif %}
+        {% if item['earnings'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['earnings']}} ₭</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{item['earnings']}} ₭</td>
+        {% endif %}
+        {% if item['roulette'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['roulette']}} ₭</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{item['roulette']}} ₭</td>
+        {% endif %}
+        {% if item['fantasy_earnings'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{item['fantasy_earnings']}} ƒ</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 

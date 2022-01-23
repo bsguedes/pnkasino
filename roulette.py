@@ -8,6 +8,7 @@ from models.user import User
 from random import randint
 from threading import Timer
 from sqlalchemy import func
+import heroes
 
 
 roulette = Blueprint('roulette', __name__)
@@ -50,7 +51,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
         payload['error'] = 'Aguarde o próximo ciclo de apostas em alguns segundos.'
     else:
         current_bets[int(user_id)] = {'value': int(bet_value), 'category': category}
-        current_user.pnkoins -= int(bet_value)
+        current_user.add_pnkoins(-int(bet_value))
         current_user.roulette_earnings -= int(bet_value)
         current_user.last_login = func.now()
         db.session.commit()
@@ -97,15 +98,23 @@ def roulette_hit():
         with app.app_context():
             if bet_object['category'] == winning_category:
                 user = User.query.filter_by(id=user_id).first()
-                user.pnkoins += multiplier * bet_object['value']
+                user.add_pnkoins(multiplier * bet_object['value'])
                 user.roulette_earnings += multiplier * bet_object['value']
+                user.roulette_streak += 1
                 db.session.commit()
+                user.check_achievement(heroes.WINDRANGER)
+                user.check_achievement(heroes.OGRE_MAGI)
+                if winning_category == 'btGreen':
+                    user.assign_achievement(heroes.SNAPFIRE)
                 winners.append({
                     'winnings': multiplier * bet_object['value'],
                     'new_balance': user.pnkoins,
                     'user_id': str(user_id)
                 })
             else:
+                user = User.query.filter_by(id=user_id).first()
+                user.roulette_streak = 0
+                db.session.commit()
                 losers.append(str(user_id))
     with app.app_context():
         socket_io.emit('winning_message', {'winners': winners, 'losers': losers})

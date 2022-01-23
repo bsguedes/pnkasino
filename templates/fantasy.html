@@ -39,7 +39,13 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
         <div class="tile is-child notification box {{card['color']}}">
           <form id="formsell{{card.id}}" action="/fantasy/sell" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
           <p class="title is-6 has-text-dark">{{card['position']}}</p>
-          <p class="title is-5 has-text-dark">{{card['name']}}</p>
+          <div class="title is-5 has-text-dark">
+              {% if card['profile_id'] is not none %}
+              <a href="{{ url_for('prfl.index', user_id=card['profile_id']) }}">{{card['name']}}</a>
+              {% else %}
+              {{card['name']}}
+              {% endif %}
+          </div>
           <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
              alt="{{card['name']}}" width="80" height="80">
             <br/>
@@ -106,7 +112,13 @@ Você pode ter até 1 jogador Prata e 1 jogador Ouro. Eles custam mais caro mas 
         <div class="tile is-child notification box is-dark">
           <form id="formfantasy{{card.id}}" action="/fantasy/buy" method="post"><input type="hidden" name="id" value="{{card.id}}"/></form>
           <p class="title is-6">{{card['position']}}</p>
-          <p class="title is-5">{{card['name']}}</p>
+          <div class="title is-5">
+              {% if card['profile_id'] is not none %}
+              <a href="{{ url_for('prfl.index', user_id=card['profile_id']) }}">{{card['name']}}</a>
+              {% else %}
+              {{card['name']}}
+              {% endif %}
+          </div>
             <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{card['name']}}.jpg"
              alt="{{card['name']}}" width="80" height="80">
           <br/>

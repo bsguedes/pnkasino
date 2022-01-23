@@ -38,6 +38,8 @@ def create_app():
     _app.register_blueprint(roulette_blueprint)
     from book import book as book_blueprint
     _app.register_blueprint(book_blueprint)
+    from prfl import prfl as profile_blueprint
+    _app.register_blueprint(profile_blueprint)
 
     socket_io.init_app(_app)
 

@@ -5,6 +5,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required
 from models.user import User
 from models.league import League
+from models.achievement import Achievement
 from app import db
 import sendgrid
 import os
@@ -34,9 +35,10 @@ def login_post():
         return redirect(url_for('auth.login'))
 
     login_user(user, remember=True)
+    user.check_achievement(Achievement.DRAGON_KNIGHT)
     user.last_login = func.now()
     db.session.commit()
-    return redirect(url_for('main.profile'))
+    return redirect(url_for('main.bets'))
 
 
 @auth.route('/signup')
