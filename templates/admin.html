@@ -140,6 +140,7 @@
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
     <tr>
+        <th>ID</th>
         <th>Hero</th>
         <th>Description</th>
         <th>Earned by</th>
@@ -148,6 +149,7 @@
     <tbody>
     {% for item in achievements %}
     <tr>
+        <td style="color:#363636">{{item['hero_id']}}</td>
         <td style="color:#363636">{{item['hero_name']}}</td>
         <td style="color:#363636">{{item['description']}}</td>
         <td style="color:#363636">{{item['earned_count']}}</td>
