@@ -95,10 +95,16 @@
             <td style="color:#363636">{{item['login']}}</td>
             <td style="color:#363636">{{item['email']}}</td>
             <td style="color:#363636">{{item['dota_name']}}</td>
+            {% if item['rec_url'] is none %}
             <td>
                 <button class="button is-block is-danger is-small is-fullwidth">Reset Pwd</button>
                 <input type="hidden" name="id" value="{{item.id}}"/>
             </td>
+            {% else %}
+            <td>
+                {{item['rec_url']}}
+            </td>
+            {% endif %}
         </tr>
         {% endfor %}
         </tbody>

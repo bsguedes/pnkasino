@@ -8,7 +8,7 @@ from models.league import League
 from models.achievement import Achievement
 from app import db
 import json
-import os
+import random
 import heroes
 
 
@@ -94,7 +94,8 @@ def reset_pwd():
         if u is None:
             flash('Invalid user', 'error')
             return redirect(url_for('admin.index'))
-        u.password = os.environ['DEFAULT_PWD']
+        h = random.getrandbits(128)
+        u.rec_key = "%032x" % h
         db.session.commit()
         flash('Password reset!', 'success')
         return redirect(url_for('admin.index'))

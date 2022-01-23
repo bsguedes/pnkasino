@@ -1,5 +1,6 @@
 # user.py
 
+from flask import url_for
 from flask_login import UserMixin
 from app import db
 import heroes
@@ -53,8 +54,14 @@ class User(UserMixin, db.Model):
             'name': self.name,
             'coins': self.pnkoins,
             'dota_name': self.stats_name if self.stats_name is not None else "-",
-            'login': str(self.last_login - timedelta(hours=3)) if self.last_login is not None else "-"
+            'login': str(self.last_login - timedelta(hours=3)) if self.last_login is not None else "-",
+            'rec_url': self.rec_url()
         }
+
+    def rec_url(self):
+        if self.rec_key is not None:
+            return '%s?code=%s' % (url_for('auth.redefine'), self.rec_key)
+        return None
 
     def profile_json(self):
         return {
