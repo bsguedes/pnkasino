@@ -5,7 +5,7 @@
 {% block content %}
 
 <h1 class="title">
-  Histórico
+    Histórico
 </h1>
 
 {% for league in leagues %}
@@ -16,37 +16,40 @@
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
-        <tr>
-            <th>Evento</th>
-            <th colspan="2">Sua Aposta</th>
-            <th>Opção 1</th>
-            <th>Odds</th>
-            <th>X</th>
-            <th>Odds</th>
-            <th>Opção 2</th>
-            <th colspan="2">Ações</th>
-        </tr>
+    <tr>
+        <th>Evento</th>
+        <th colspan="2">Sua Aposta</th>
+        <th>Opção 1</th>
+        <th>Odds</th>
+        <th>X</th>
+        <th>Odds</th>
+        <th>Opção 2</th>
+        <th colspan="2">Ações</th>
+    </tr>
     </thead>
     <tbody>
-        {% for item in league['bets'] %}
-        <tr>
-           <td style="color:#363636">{{item['question']}}</td>
-           <td style="color:#212121;font-weight:bold">{{item['option']}}</td>
-           <td style="color:#212121;font-weight:bold">{{item['bet']}} ₭</td>
-           <td style="color:#363636">{{item['options'][0]['name']}}</td>
-           <td style="color:#363636">{{item['options'][0]['odds']}}</td>
-           <td style="color:#363636"><SPAN> X </SPAN></td>
-           <td style="color:#363636">{{item['options'][1]['odds']}}</td>
-           <td style="color:#363636">{{item['options'][1]['name']}}</td>
-           <td><form id="formrevert{{item.id}}" action="/revert" method="post"><input type="hidden" name="id" value="{{item.id}}"/></form></td>
-            {% if item['sell_value'] %}
-           <td><input class="button is-block is-info is-small" form="formrevert{{item.id}}" type="submit" name="bet"
-                      value="Recuperar {{item.sell_value}} ₭" /></td>
-            {% else %}
-           <td style="color:#363636">{{item['result']}}</td>
-            {% endif %}
-        </tr>
-        {% endfor %}
+    {% for item in league['bets'] %}
+    <tr>
+        <td style="color:#363636">{{item['question']}}</td>
+        <td style="color:#212121;font-weight:bold">{{item['option']}}</td>
+        <td style="color:#212121;font-weight:bold">{{item['bet']}} ₭</td>
+        <td style="color:#363636">{{item['options'][0]['name']}}</td>
+        <td style="color:#363636">{{item['options'][0]['odds']}}</td>
+        <td style="color:#363636"><SPAN> X </SPAN></td>
+        <td style="color:#363636">{{item['options'][1]['odds']}}</td>
+        <td style="color:#363636">{{item['options'][1]['name']}}</td>
+        <td>
+            <form id="formrevert{{item.id}}" action="/revert" method="post"><input type="hidden" name="id"
+                                                                                   value="{{item.id}}"/></form>
+        </td>
+        {% if item['sell_value'] %}
+        <td><input class="button is-block is-info is-small" form="formrevert{{item.id}}" type="submit" name="bet"
+                   value="Recuperar {{item.sell_value}} ₭"/></td>
+        {% else %}
+        <td style="color:#363636">{{item['result']}}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 
@@ -54,28 +57,32 @@
 
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
     <thead>
-        <tr>
-            <th>Posição</th>
-            <th>Jogador</th>
-            <th>Ganhos</th>
-            <th>Acertos</th>
-            <th>Erros</th>
-        </tr>
+    <tr>
+        <th>Posição</th>
+        <th>Jogador</th>
+        <th>Ganhos</th>
+        <th>Acertos</th>
+        <th>Erros</th>
+    </tr>
     </thead>
     <tbody>
-        {% for item in league['ranking'] %}
-        <tr>
-           <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
-           <td style="color:#363636">{{item['name']}}</td>
-            {% if item['coins'] >= 0 %}
-           <td style="color:#009900;font-weight:bold">{{item['coins']}} ₭</td>
-            {% else %}
-           <td style="color:#ff0000;font-weight:bold">{{item['coins']}} ₭</td>
-            {% endif %}
-            <td style="color:#363636">{{item['hits']}}</td>
-            <td style="color:#363636">{{item['misses']}}</td>
-        </tr>
-        {% endfor %}
+    {% for item in league['ranking'] %}
+    <tr>
+        <td style="color:#212121;font-weight:bold">{{item['position']}}</td>
+        {% if item['profile_id'] is not none %}
+        <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=item['profile_id']) }}">{{item['name']}}</a></td>
+        {% else %}
+        <td style="color:#363636">{{item['name']}}</td>
+        {% endif %}
+        {% if item['coins'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['coins']}} ₭</td>
+        {% else %}
+        <td style="color:#ff0000;font-weight:bold">{{item['coins']}} ₭</td>
+        {% endif %}
+        <td style="color:#363636">{{item['hits']}}</td>
+        <td style="color:#363636">{{item['misses']}}</td>
+    </tr>
+    {% endfor %}
     </tbody>
 </table>
 

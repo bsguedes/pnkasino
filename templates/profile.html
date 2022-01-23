@@ -4,6 +4,22 @@
 
 {% block content %}
 
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+{% if category == 'error' %}
+<div class="notification is-danger">
+    {{ message }}
+</div>
+{% else %}
+<div class="notification is-success">
+    {{ message }}
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 <div class="block">
     <div class="columns is-multiline is-mobile">
         <div class="column is-one-third">
@@ -14,18 +30,19 @@
         </div>
         <div class="column">
             <div class="block">
-                <font size="6"><h2 align="left">{{ user['dota_name'] }}</h2></font>
+                <font size="8"><h2 align="left">{{ user['dota_name'] }}</h2></font>
             </div>
             <div class="block">
                 <font size="3"><h6 align="left">{{ user['name'] }}</h6></font>
             </div>
         </div>
         <div class="column is-one-fifth">
+            <br/><br/>
             <div class="block">
-                <font size="3"><h2 align="left">{{ user['pnkoins']}} ₭</h2></font>
+                <font size="3">{{ user['pnkoins']}} ₭</font>
             </div>
             <div class="block">
-                <font size="3"><h6 align="left">{{ user['fcoins']}} ƒ</h6></font>
+                <font size="3">{{ user['fcoins']}} ƒ</font>
             </div>
         </div>
     </div>
@@ -34,29 +51,176 @@
 <div class="block">
     <div class="columns is-multiline is-mobile">
         <div class="column is-one-third">
+            {% if has_hero_pool %}
             <block>
                 <b>Hero Pool</b>
             </block>
+            {% endif %}
+            <br/><br/>
+            {% for item in user['achievements'] %}
+            <div class="columns">
+                <div class="column is-4">
+                    <figure class="image is-16by9">
+                        <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/heroes/{{item['id']}}.jpg"/>
+                    </figure>
+                </div>
+                <div class="column">
+                    <h6 class="title is-size-6">{{ item['hero'] }}</h6>
+                    <h6 class="subtitle is-size-7">{{ item['description'] }}</h6>
+                </div>
+            </div>
+            {% endfor %}
         </div>
         <div class="column">
             <block>
                 <b>Scrapbook</b>
             </block>
             <br/><br/>
-            <block>
-                <form method="POST" action="/book/create">
-                    <div class="columns is-gapless is-multiline is-mobile">
-                        <div class="column">
-                            <input class="input is-small" name="book_message" placeholder="Mensagem" autofocus="">
+
+
+            <article class="media">
+
+                <figure class="media-left">
+                    <p class="image is-64x64">
+                        <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{current_user_name}}.jpg">
+                    </p>
+                </figure>
+
+                <div class="media-content">
+                    <form method="POST" action="/profile/{{user.id}}/scrap">
+                        <div class="field">
+                            <input class="input is-small" name="scrap_message" placeholder="Mensagem" autofocus="">
                         </div>
-                        <div class="column is-one-fifth">
-                            <button class="button is-block is-info is-small is-fullwidth">Enviar</button>
-                        </div>
+                        <nav class="level">
+                            <div class="level-left">
+                                <div class="level-item">
+                                    <label class="checkbox">
+                                        <input type="checkbox" name="anonymous_scrap"> Anônimo
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="level-right">
+                                <div class="level-item">
+                                    <button class="button is-block is-info is-small is-fullwidth">Enviar</button>
+                                </div>
+                            </div>
+                        </nav>
+                    </form>
+                </div>
+
+            </article>
+
+            {% for scrap in user['scraps'] %}
+
+            <article class="media">
+
+
+                <figure class="media-left">
+                    <p class="image is-64x64">
+                        {% if scrap['is_anonymous'] %}
+                        <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/anonymous.jpg">
+                        {% else %}
+                        <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{scrap['author_name']}}.jpg">
+                        {% endif %}
+                    </p>
+                </figure>
+
+                <div class="media-content">
+
+                    <div class="content">
+                        <p>
+                            {% if not scrap['is_anonymous'] %}
+                            <strong><a href="{{ url_for('prfl.index', user_id=scrap['author_id']) }}">{{scrap['author_name']}}</a></strong>
+                            <br>
+                            {% endif %}
+                            {{scrap['message']}}
+                            <br>
+                        </p>
                     </div>
-                </form>
-            </block>
+
+
+                    {% for response in scrap['responses'] %}
+
+                    <article class="media">
+                        <figure class="media-left">
+                            <p class="image is-48x48">
+                                {% if scrap['is_anonymous'] %}
+                                <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/anonymous.jpg">
+                                {% else %}
+                                <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{response['author_name']}}.jpg">
+                                {% endif %}
+                            </p>
+                        </figure>
+
+                        <div class="media-content">
+                            <div class="content is-size-7">
+                                <p>
+                                    {% if not scrap['is_anonymous'] %}
+                                    <strong><a href="{{ url_for('prfl.index', user_id=response['author_id']) }}">{{response['author_name']}}</a></strong>
+                                    <br>
+                                    {% endif %}
+                                    {{response['message']}}
+                                    <br>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="media-right">
+                            <div class="content">
+                                <p><font size="1.7">{{response['created_at'].strftime('%d %b')}}</font></p>
+                            </div>
+                        </div>
+                    </article>
+
+                    {% endfor %}
+
+                    <article class="media">
+                        <figure class="media-left">
+                            <p class="image is-48x48">
+                                <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{current_user_name}}.jpg">
+                            </p>
+                        </figure>
+                        <div class="media-content">
+                            <form method="POST" action="/profile/{{user.id}}/reply">
+                                <div class="field">
+                                    <input class="input is-small" name="scrap_response" placeholder="Mensagem"
+                                           autofocus="">
+                                </div>
+                                <nav class="level">
+                                    <div class="level-left">
+                                        <div class="level-item">
+                                            <label class="checkbox">
+                                                <input type="checkbox"> Anônimo
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="level-right">
+                                        <div class="level-item">
+                                            <input type="hidden" name="id" value="{{scrap['scrap_id']}}"/>
+                                            <button class="button is-block is-info is-small is-fullwidth">Responder
+                                            </button>
+                                        </div>
+                                    </div>
+                                </nav>
+                            </form>
+                        </div>
+                    </article>
+                </div>
+
+                <div class="media-right">
+                    <div class="content">
+                        <p><font size="2">{{scrap['created_at'].strftime('%d %b')}}</font></p>
+                    </div>
+                </div>
+
+            </article>
+
+            {% endfor %}
+
+
         </div>
+
     </div>
+</div>
 </div>
 
 {% endblock %}

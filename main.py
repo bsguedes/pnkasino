@@ -12,6 +12,7 @@ from admin import league_states
 from app import db
 from itertools import groupby
 from sqlalchemy import func
+import heroes
 
 
 main = Blueprint('main', __name__)
@@ -36,7 +37,7 @@ def index():
 @login_required
 def history():
     user_bets = Bet.query.filter_by(user_id=current_user.id).all()
-    bets = sorted([{
+    presenter_bets = sorted([{
                 'id': bet.id,
                 'question': bet.category.question,
                 'option': bet.option.name,
@@ -56,7 +57,7 @@ def history():
         'name': league_name,
         'bets': list(user_bets),
         'ranking': League.query.filter_by(name=league_name).first().ranking()
-    } for league_name, user_bets in groupby(bets, key=lambda x: x['league_name'])]
+    } for league_name, user_bets in groupby(presenter_bets, key=lambda x: x['league_name'])]
     return render_template('history.html', leagues=leagues)
 
 
@@ -100,6 +101,7 @@ def stats():
             current = sum([v['sell_value'] for v in player_cards if v is not None])
             fantasy_teams.append({
                 'name': user.name,
+                'profile_id': user.id,
                 'price': price,
                 'current': current,
                 'hard_carry': pos_1['name'] if pos_1 is not None else '',
@@ -145,6 +147,7 @@ def ranking():
         user_object = {
             'position': i+1,
             'name': u.name,
+            'profile_id': u.id,
             'base': u.pnkoins - total_earnings + on_hold,
             'earnings': u.earnings - finished,
             'roulette': u.roulette_earnings,
@@ -205,7 +208,8 @@ def place_post():
             flash('Aposta duplicada', 'error')
         else:
             new_bet = Bet(user_id=current_user.id, option_id=option.id, category_id=category_id, value=int(bet))
-            current_user.pnkoins -= int(bet)
+            current_user.add_pnkoins(-int(bet))
+            current_user.check_achievement(heroes.BRISTLEBACK)
             db.session.add(new_bet)
             current_user.last_login = func.now()
             db.session.commit()
@@ -226,7 +230,7 @@ def revert_bet():
         flash('Operação inválida', 'error')
     else:
         delta = int(bet.value * 0.7)
-        current_user.pnkoins += delta
+        current_user.add_pnkoins(delta)
         current_user.earnings -= (bet.value - delta)
         current_user.last_login = func.now()
         db.session.delete(bet)

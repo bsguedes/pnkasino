@@ -5,10 +5,11 @@ from models.category import Category
 from models.option import Option
 from models.card import Card
 from models.league import League
+from models.achievement import Achievement
 from app import db
-from datetime import timedelta
 import json
 import os
+import heroes
 
 
 admin = Blueprint('admin', __name__)
@@ -26,41 +27,43 @@ positions = {
 
 inv_positions = {v: k for k, v in positions.items()}
 
-next_state = {
-    'new': 'available',
-    'available': 'blocked',
-    'blocked': 'finished',
-    'finished': None
-}
-
 
 @admin.route('/admin')
 @login_required
 def index():
     if current_user.is_admin_user():
-        return render_template('admin.html', leagues=sorted([
-            {
-                'id': l.id,
-                'name': l.name,
-                'state': l.state,
-                'credit': l.credit,
-                'next_state': next_state[l.state],
-                'unset': len([c for c in l.categories if c.winner_option_id is None])
-            } for l in League.query.all()], key=lambda s: league_states.index(s['state'])),
-                               users=sorted([
-                                   {
-                                       'id': u.id,
-                                       'email': u.email,
-                                       'name': u.name,
-                                       'coins': u.pnkoins,
-                                       'dota_name': u.stats_name if u.stats_name is not None else "-",
-                                       'login': str(u.last_login - timedelta(hours=3))
-                                                if u.last_login is not None else "-"
-                                   } for u in User.query.all()
-                               ], key=lambda e: e['login'], reverse=True))
+        return render_template('admin.html',
+                               leagues=sorted([l.as_json() for l in League.query.all()],
+                                              key=lambda s: (league_states.index(s['state']), -s['id'])),
+                               users=sorted([u.as_json() for u in User.query.all()],
+                                            key=lambda e: e['login'], reverse=True),
+                               achievements=[a.as_json() for a in Achievement.query.all()])
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/achievement/create', methods=['POST'])
+@login_required
+def achievement_create_post():
+    hero_name = request.form.get('hero_name')
+    hero_id = request.form.get('hero_id')
+    description = request.form.get('description')
+    if current_user.is_admin_user():
+        if not hero_id.isdigit():
+            flash('Invalid hero id', 'error')
+            return redirect(url_for('admin.index'))
+        if Achievement.query.filter_by(hero_id=int(hero_id)).first() is not None:
+            flash('Hero ID already exists', 'error')
+            return redirect(url_for('admin.index'))
+        new_achievement = Achievement(hero_id=int(hero_id), hero_name=hero_name, description=description)
+        db.session.add(new_achievement)
+        db.session.commit()
+        flash('Achievement created successfully!', 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/league/create', methods=['POST'])
@@ -79,7 +82,7 @@ def league_create_post():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/reset', methods=['POST'])
@@ -97,7 +100,7 @@ def reset_pwd():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/coins', methods=['POST'])
@@ -109,13 +112,13 @@ def add_coins():
             flash('Invalid credit value', 'error')
             return redirect(url_for('admin.index'))
         for user in User.query.all():
-            user.pnkoins += int(credit)
+            user.add_pnkoins(int(credit))
         db.session.commit()
         flash('Everyone got %s PnKoins!' % credit, 'success')
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/fantasy/rewards', methods=['POST'])
@@ -129,14 +132,16 @@ def update_rewards():
             user = User.query.filter_by(name=player['name']).first()
             if user is not None:
                 prize = player['earnings'] + player['bonus']
-                user.pnkoins += prize
+                user.add_pnkoins(prize)
                 user.fantasy_earnings += prize
                 db.session.commit()
+                if player['bonus'] == 5000:
+                    user.assign_achievement(heroes.LUNA)
         flash('Rewards added', 'success')
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/fantasy/player', methods=['POST'])
@@ -159,7 +164,7 @@ def add_player_to_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/fantasy/refund', methods=['POST'])
@@ -175,7 +180,7 @@ def refund_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/fantasy', methods=['POST'])
@@ -214,7 +219,7 @@ def update_fantasy():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/admin/winner', methods=['POST'])
@@ -232,7 +237,7 @@ def winner():
         return redirect(url_for('admin.edit', league_id=league_id))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/league/edit/<int:league_id>')
@@ -243,7 +248,7 @@ def edit(league_id):
         return render_template('edit.html', league=league)
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/league/addcategory', methods=['POST'])
@@ -278,7 +283,7 @@ def add_category():
             return redirect(url_for('admin.edit', league_id=league_id))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))
 
 
 @admin.route('/league/up', methods=['POST'])
@@ -290,7 +295,7 @@ def league_up():
         if league.state == 'new':
             league.state = 'available'
             for user in User.query.all():
-                user.pnkoins += league.credit
+                user.add_pnkoins(league.credit)
         elif league.state == 'available':
             league.state = 'blocked'
         elif league.state == 'blocked':
@@ -298,10 +303,11 @@ def league_up():
             for category in league.categories:
                 for bet in category.bets:
                     if bet.option_id == category.winner_option_id:
-                        bet.user.pnkoins += int(category.winner_option().odds * bet.value)
+                        bet.user.add_pnkoins(int(category.winner_option().odds * bet.value))
                         bet.user.earnings += int(category.winner_option().odds * bet.value)
+                        bet.user.check_achievement(heroes.TIMBERSAW)
                     elif category.winner_option_id is None:
-                        bet.user.pnkoins += bet.value
+                        bet.user.add_pnkoins(bet.value)
                     else:
                         bet.user.earnings -= bet.value
         else:
@@ -312,4 +318,4 @@ def league_up():
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')
-        return redirect(url_for('profile.index'))
+        return redirect(url_for('main.index'))

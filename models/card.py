@@ -20,7 +20,7 @@ GOLD_PERKS = {
 
 
 class Card(db.Model):
-    id = db.Column(db.Integer, primary_key=True) # primary keys are required by SQLAlchemy
+    id = db.Column(db.Integer, primary_key=True)  # primary keys are required by SQLAlchemy
     name = db.Column(db.String(50))
     position = db.Column(db.Integer)
     old_base_value = db.Column(db.Integer)
