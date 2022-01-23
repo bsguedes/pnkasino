@@ -22,6 +22,7 @@ class User(UserMixin, db.Model):
     profile_views = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_earnings = db.Column(db.Integer, default=0, nullable=False)
+    roulette_attempts = db.Column(db.Integer, default=0, nullable=False)
     fantasy_earnings = db.Column(db.Integer, default=0, nullable=False)
     bets = db.relationship('Bet', backref='user', lazy=True)
     last_login = db.Column(db.DateTime)
@@ -42,6 +43,7 @@ class User(UserMixin, db.Model):
     stats_name = db.Column(db.String(100), nullable=True)
     achievement_users = db.relationship('AchievementUser', backref='user', lazy=True)
     scraps = db.relationship('Scrap', foreign_keys='Scrap.profile_id', backref='user', lazy=True)
+    scraps_written = db.relationship('Scrap', foreign_keys='Scrap.author_id', lazy=True)
     votes = db.relationship('Vote', foreign_keys='Vote.user_id', backref='user', lazy=True)
 
     def as_json(self):
@@ -102,6 +104,24 @@ class User(UserMixin, db.Model):
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.SNIPER:
                     if self.profile_views >= 100:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.WRAITH_KING:
+                    if len(self.scraps_written) >= 30:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.DARK_SEER:
+                    if len(set([s.profile_id for s in self.scraps_written])) >= 10:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.MARCI:
+                    if len([s.id for s in self.scraps if s.author_id != self.id]) >= 20:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.HOODWINK:
+                    if len(set([s.author_id for s in self.scraps if s.author_id != self.id])) >= 5:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.SKYWRATH_MAGE:
+                    if self.roulette_attempts >= 100:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.DARK_WILLOW:
+                    if self.login_count >= 10:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 else:
                     return False

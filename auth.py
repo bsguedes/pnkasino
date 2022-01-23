@@ -37,7 +37,9 @@ def login_post():
     login_user(user, remember=True)
     user.assign_achievement(heroes.DRAGON_KNIGHT)
     user.last_login = func.now()
+    user.login_count += 1
     db.session.commit()
+    user.check_achievement(heroes.DARK_WILLOW)
     return redirect(url_for('prfl.index', user_id=user.id))
 
 

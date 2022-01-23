@@ -46,6 +46,11 @@ def scrap(user_id):
                           author_id=author_id, profile_id=user_id)
         db.session.add(new_scrap)
         db.session.commit()
+        if author_id is not None:
+            current_user.check_achievement(heroes.WRAITH_KING)
+            current_user.check_achievement(heroes.DARK_SEER)
+        user.check_achievement(heroes.MARCI)
+        user.check_achievement(heroes.HOODWINK)
         flash('Scrap enviado!', 'success')
         return redirect(url_for('prfl.index', user_id=user_id))
     else:
