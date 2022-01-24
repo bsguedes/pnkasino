@@ -105,10 +105,15 @@ def stats():
                 'price': price,
                 'current': current,
                 'hard_carry': pos_1['name'] if pos_1 is not None else '',
+                'hard_carry_profile_id': pos_1['profile_id'] if pos_1 is not None else None,
                 'mid': pos_2['name'] if pos_2 is not None else '',
+                'mid_profile_id': pos_2['profile_id'] if pos_2 is not None else None,
                 'offlane': pos_3['name'] if pos_3 is not None else '',
+                'offlane_profile_id': pos_3['profile_id'] if pos_3 is not None else None,
                 'support': pos_4['name'] if pos_4 is not None else '',
+                'support_profile_id': pos_4['profile_id'] if pos_4 is not None else None,
                 'hard_support': pos_5['name'] if pos_5 is not None else '',
+                'hard_support_profile_id': pos_5['profile_id'] if pos_5 is not None else None,
                 'silver': user.silver_card,
                 'gold': user.gold_card,
                 'profit': current - price
@@ -127,6 +132,7 @@ def card_dict(card_id, bought_at, user):
             'id': card_id,
             'position': inv_positions[card.position].title(),
             'name': card.name,
+            'profile_id': User.profile_id(card.name),
             'current_value': card.current_value(user),
             'sell_value': card.sell_value(user),
             'buy_value': bought_at

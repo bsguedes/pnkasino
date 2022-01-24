@@ -33,41 +33,107 @@
         {% endif %}
         <td style="color:#212121;font-weight:bold">{{player['current']}} ƒ</td>
         <td style="color:#212121;font-weight:bold">{{player['price']}} ƒ</td>
+
         {% if player['silver'] == 1 %}
-        <td style="color:#999999;font-weight:bold">{{player['hard_carry']}}</td>
+            {% if player['hard_carry_profile_id'] is not none %}
+                <td style="color:#999999;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['hard_carry_profile_id']) }}">{{player['hard_carry']}}</a></td>
+            {% else %}
+                <td style="color:#999999;font-weight:bold">{{player['hard_carry']}}</td>
+            {% endif %}
         {% elif player['gold'] == 1 %}
-        <td style="color:#FFCC00;font-weight:bold">{{player['hard_carry']}}</td>
+            {% if player['hard_carry_profile_id'] is not none %}
+                <td style="color:#FFCC00;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['hard_carry_profile_id']) }}">{{player['hard_carry']}}</a></td>
+            {% else %}
+                <td style="color:#FFCC00;font-weight:bold">{{player['hard_carry']}}</td>
+            {% endif %}
         {% else %}
-        <td style="color:#363636">{{player['hard_carry']}}</td>
+            {% if player['hard_carry_profile_id'] is not none %}
+                <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=player['hard_carry_profile_id']) }}">{{player['hard_carry']}}</a></td>
+            {% else %}
+                <td style="color:#363636">{{player['hard_carry']}}</td>
+            {% endif %}
         {% endif %}
+
         {% if player['silver'] == 2 %}
-        <td style="color:#999999;font-weight:bold">{{player['mid']}}</td>
+            {% if player['mid_profile_id'] is not none %}
+                <td style="color:#999999;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['mid_profile_id']) }}">{{player['mid']}}</a></td>
+            {% else %}
+                <td style="color:#999999;font-weight:bold">{{player['mid']}}</td>
+            {% endif %}
         {% elif player['gold'] == 2 %}
-        <td style="color:#FFCC00;font-weight:bold">{{player['mid']}}</td>
+            {% if player['mid_profile_id'] is not none %}
+                <td style="color:#FFCC00;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['mid_profile_id']) }}">{{player['mid']}}</a></td>
+            {% else %}
+                <td style="color:#FFCC00;font-weight:bold">{{player['mid']}}</td>
+            {% endif %}
         {% else %}
-        <td style="color:#363636">{{player['mid']}}</td>
+            {% if player['mid_profile_id'] is not none %}
+                <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=player['mid_profile_id']) }}">{{player['mid']}}</a></td>
+            {% else %}
+                <td style="color:#363636">{{player['mid']}}</td>
+            {% endif %}
         {% endif %}
+
         {% if player['silver'] == 3 %}
-        <td style="color:#999999;font-weight:bold">{{player['offlane']}}</td>
+            {% if player['offlane_profile_id'] is not none %}
+                <td style="color:#999999;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['offlane_profile_id']) }}">{{player['offlane']}}</a></td>
+            {% else %}
+                <td style="color:#999999;font-weight:bold">{{player['offlane']}}</td>
+            {% endif %}
         {% elif player['gold'] == 3 %}
-        <td style="color:#FFCC00;font-weight:bold">{{player['offlane']}}</td>
+            {% if player['offlane_profile_id'] is not none %}
+                <td style="color:#FFCC00;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['offlane_profile_id']) }}">{{player['offlane']}}</a></td>
+            {% else %}
+                <td style="color:#FFCC00;font-weight:bold">{{player['offlane']}}</td>
+            {% endif %}
         {% else %}
-        <td style="color:#363636">{{player['offlane']}}</td>
+            {% if player['offlane_profile_id'] is not none %}
+                <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=player['offlane_profile_id']) }}">{{player['offlane']}}</a></td>
+            {% else %}
+                <td style="color:#363636">{{player['offlane']}}</td>
+            {% endif %}
         {% endif %}
+
         {% if player['silver'] == 4 %}
-        <td style="color:#999999;font-weight:bold">{{player['support']}}</td>
+            {% if player['support_profile_id'] is not none %}
+                <td style="color:#999999;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['support_profile_id']) }}">{{player['support']}}</a></td>
+            {% else %}
+                <td style="color:#999999;font-weight:bold">{{player['support']}}</td>
+            {% endif %}
         {% elif player['gold'] == 4 %}
-        <td style="color:#FFCC00;font-weight:bold">{{player['support']}}</td>
+            {% if player['support_profile_id'] is not none %}
+                <td style="color:#FFCC00;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['support_profile_id']) }}">{{player['support']}}</a></td>
+            {% else %}
+                <td style="color:#FFCC00;font-weight:bold">{{player['support']}}</td>
+            {% endif %}
         {% else %}
-        <td style="color:#363636">{{player['support']}}</td>
+            {% if player['support_profile_id'] is not none %}
+                <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=player['support_profile_id']) }}">{{player['support']}}</a></td>
+            {% else %}
+                <td style="color:#363636">{{player['support']}}</td>
+            {% endif %}
         {% endif %}
+
         {% if player['silver'] == 5 %}
-        <td style="color:#999999;font-weight:bold">{{player['hard_support']}}</td>
+            {% if player['hard_support_profile_id'] is not none %}
+                <td style="color:#999999;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['hard_support_profile_id']) }}">{{player['hard_support']}}</a></td>
+            {% else %}
+                <td style="color:#999999;font-weight:bold">{{player['hard_support']}}</td>
+            {% endif %}
         {% elif player['gold'] == 5 %}
-        <td style="color:#FFCC00;font-weight:bold">{{player['hard_support']}}</td>
+            {% if player['hard_support_profile_id'] is not none %}
+                <td style="color:#FFCC00;font-weight:bold"><a href="{{ url_for('prfl.index', user_id=player['hard_support_profile_id']) }}">{{player['hard_support']}}</a></td>
+            {% else %}
+                <td style="color:#FFCC00;font-weight:bold">{{player['hard_support']}}</td>
+            {% endif %}
         {% else %}
-        <td style="color:#363636">{{player['hard_support']}}</td>
+            {% if player['hard_support_profile_id'] is not none %}
+                <td style="color:#363636"><a href="{{ url_for('prfl.index', user_id=player['hard_support_profile_id']) }}">{{player['hard_support']}}</a></td>
+            {% else %}
+                <td style="color:#363636">{{player['hard_support']}}</td>
+            {% endif %}
         {% endif %}
+
         {% if player['profit'] >= 0 %}
         <td style="color:#009900;font-weight:bold">{{player['profit']}} ƒ</td>
         {% else %}
