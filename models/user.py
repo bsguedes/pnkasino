@@ -104,6 +104,9 @@ class User(UserMixin, db.Model):
                 elif hero_id == heroes.OGRE_MAGI:
                     if self.roulette_streak >= 4:
                         AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.SVEN:
+                    if len(self.bets) >= 1:
+                        AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.BRISTLEBACK:
                     if len(self.bets) >= 50:
                         AchievementUser.give_achievement(self.id, achievement_id)
@@ -112,6 +115,9 @@ class User(UserMixin, db.Model):
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.SNIPER:
                     if self.profile_views >= 100:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.RIKI:
+                    if len(self.scraps_written) >= 1:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.WRAITH_KING:
                     if len(self.scraps_written) >= 30:
@@ -122,14 +128,23 @@ class User(UserMixin, db.Model):
                 elif hero_id == heroes.MARCI:
                     if len([s.id for s in self.scraps if s.author_id != self.id]) >= 20:
                         AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.VIPER:
+                    if len([s.id for s in self.scraps if s.author_id != self.id]) >= 1:
+                        AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.HOODWINK:
                     if len(set([s.author_id for s in self.scraps if s.author_id != self.id])) >= 5:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.CRYSTAL_MAIDEN:
+                    if self.roulette_attempts >= 1:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.SKYWRATH_MAGE:
                     if self.roulette_attempts >= 100:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.DARK_WILLOW:
                     if self.login_count >= 10:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.SAND_KING:
+                    if self.has_team():
                         AchievementUser.give_achievement(self.id, achievement_id)
                 else:
                     return False

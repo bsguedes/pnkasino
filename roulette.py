@@ -56,6 +56,7 @@ def handle_do_bet_event(json, methods=['GET', 'POST']):
         current_user.roulette_attempts += 1
         current_user.last_login = func.now()
         db.session.commit()
+        current_user.check_achievement(heroes.CRYSTAL_MAIDEN)
         current_user.check_achievement(heroes.SKYWRATH_MAGE)
         payload['user_name'] = current_user.name
         payload['value'] = int(bet_value)

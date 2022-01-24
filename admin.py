@@ -10,6 +10,7 @@ from app import db
 import json
 import random
 import heroes
+import time
 
 
 admin = Blueprint('admin', __name__)
@@ -180,6 +181,40 @@ def refund_fantasy():
             return redirect(url_for('admin.index'))
         for user in User.query.all():
             user.refund_cards(int(starting_value))
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/admin/evaluate', methods=['POST'])
+@login_required
+def evaluate():
+    if current_user.is_admin_user():
+        from fantasy import card_value_updated, card_bought, card_gold_silver_updated
+        start = time.time()
+
+        for user in User.query.all():
+            user.check_achievement(heroes.ALCHEMIST)
+            user.check_achievement(heroes.ZEUS)
+            user.check_achievement(heroes.MORPHLING)
+            user.check_achievement(heroes.WINDRANGER)
+            user.check_achievement(heroes.BRISTLEBACK)
+            user.check_achievement(heroes.TIMBERSAW)
+            user.check_achievement(heroes.SVEN)
+            user.check_achievement(heroes.RIKI)
+            user.check_achievement(heroes.VIPER)
+            user.check_achievement(heroes.CRYSTAL_MAIDEN)
+            user.check_achievement(heroes.SAND_KING)
+
+        for card_name in set([c.name for c in Card.query.all()]):
+            card_gold_silver_updated(card_name)
+            card_bought(card_name, True)
+
+        for card in Card.query.all():
+            card_value_updated(card.name, card.value())
+
+        flash('Evaluated achievements in  %.3f seconds' % (time.time() - start), 'success')
         return redirect(url_for('admin.index'))
     else:
         flash('User is not an admin', 'error')

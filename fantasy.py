@@ -134,6 +134,7 @@ def buy():
         db.session.commit()
         card_value_updated(card.name, card.value())
         card_bought(card.name)
+        current_user.check_achievement(heroes.SAND_KING)
         flash('Seu time agora tem %s como %s' % (card.name, inv_positions[card.position]), 'success')
 
     return redirect(url_for('fantasy.index'))
@@ -295,19 +296,21 @@ def card_gold_silver_updated(card_name):
         return False
 
 
-def card_bought(card_name):
-    for user in User.query.all():
-        if user.id != current_user.id:
-            if user.card_1_id == current_user.card_1_id and\
-               user.card_2_id == current_user.card_2_id and\
-               user.card_3_id == current_user.card_3_id and\
-               user.card_4_id == current_user.card_4_id and\
-               user.card_5_id == current_user.card_5_id:
-                user.assign_achievement(heroes.RUBICK)
-                current_user.assign_achievement(heroes.RUBICK)
+def card_bought(card_name, skip_similar=False):
+    if not skip_similar:
+        for user in User.query.all():
+            if user.id != current_user.id:
+                if user.card_1_id == current_user.card_1_id and\
+                   user.card_2_id == current_user.card_2_id and\
+                   user.card_3_id == current_user.card_3_id and\
+                   user.card_4_id == current_user.card_4_id and\
+                   user.card_5_id == current_user.card_5_id:
+                    user.assign_achievement(heroes.RUBICK)
+                    current_user.assign_achievement(heroes.RUBICK)
 
     updated_user = User.query.filter_by(stats_name=card_name).first()
     if updated_user is not None:
+        updated_user.assign_achievement(heroes.EARTHSHAKER)
         updated_user_cards = {c.position: c.id for c in Card.query.filter_by(name=card_name)}
         pos_1 = User.query.filter_by(card_1_id=updated_user_cards[1]).count() if updated_user_cards[1] is not None else 0
         pos_2 = User.query.filter_by(card_2_id=updated_user_cards[2]).count() if updated_user_cards[2] is not None else 0
