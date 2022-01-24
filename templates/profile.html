@@ -22,8 +22,8 @@
 
 <div class="block">
     <div class="columns is-multiline is-mobile">
-        <div class="column is-one-quarter">
-            <figure class="image is-128x128">
+        <div class="column is-one-quarter is-narrow" style="width: 130px">
+            <figure class="image is-1by1">
                 <img class="is-rounded"
                      src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{user['dota_name']}}.jpg">
             </figure>
@@ -34,15 +34,17 @@
             </div>
             <div class="block">
                 <font size="3"><h6 align="left">{{ user['name'] }}</h6></font>
+                <font size="3"><h6 align="left">{{ user['pnkoins']}} ₭</h6></font>
+                <font size="3"><h6 align="left">{{ user['fcoins']}} ƒ</h6></font>
             </div>
         </div>
         <div class="column is-one-fifth">
             <br/><br/>
             <div class="block">
-                <font size="3">{{ user['pnkoins']}} ₭</font>
+
             </div>
             <div class="block">
-                <font size="3">{{ user['fcoins']}} ƒ</font>
+
             </div>
         </div>
     </div>
