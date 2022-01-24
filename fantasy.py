@@ -310,13 +310,14 @@ def card_bought(card_name, skip_similar=False):
 
     updated_user = User.query.filter_by(stats_name=card_name).first()
     if updated_user is not None:
-        updated_user.assign_achievement(heroes.EARTHSHAKER)
         updated_user_cards = {c.position: c.id for c in Card.query.filter_by(name=card_name)}
         pos_1 = User.query.filter_by(card_1_id=updated_user_cards[1]).count() if updated_user_cards[1] is not None else 0
         pos_2 = User.query.filter_by(card_2_id=updated_user_cards[2]).count() if updated_user_cards[2] is not None else 0
         pos_3 = User.query.filter_by(card_3_id=updated_user_cards[3]).count() if updated_user_cards[3] is not None else 0
         pos_4 = User.query.filter_by(card_4_id=updated_user_cards[4]).count() if updated_user_cards[4] is not None else 0
         pos_5 = User.query.filter_by(card_5_id=updated_user_cards[5]).count() if updated_user_cards[5] is not None else 0
+        if any(x >= 1 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]):
+            updated_user.assign_achievement(heroes.EARTHSHAKER)
         if pos_1 + pos_2 + pos_3 + pos_4 + pos_5 >= 10:
             updated_user.assign_achievement(heroes.PUDGE)
         if any(x >= 7 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]):
