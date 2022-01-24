@@ -63,7 +63,7 @@
 
         <td style="color:#363636;font-weight:bold">
             {% if item['state'] == 'blocked' %}
-                {{item['unset']}}
+            {{item['unset']}}
             {% endif %}
         </td>
     </tr>
@@ -75,41 +75,43 @@
 <h2 align="left">User Information</h2>
 <br/>
 
-<form method="POST" action="/admin/reset">
-    <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
-        <thead>
-        <tr>
-            <th>User Name</th>
-            <th>PnKcoins</th>
-            <th>Last Login</th>
-            <th>Email</th>
-            <th>Dota Name</th>
-            <th>Reset Password</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for item in users %}
-        <tr>
-            <td style="color:#363636">{{item['name']}}</td>
-            <td style="color:#363636">{{item['coins']}}</td>
-            <td style="color:#363636">{{item['login']}}</td>
-            <td style="color:#363636">{{item['email']}}</td>
-            <td style="color:#363636">{{item['dota_name']}}</td>
-            {% if item['rec_url'] is none %}
-            <td>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>User Name</th>
+        <th>PnKcoins</th>
+        <th>Last Login</th>
+        <th>Email</th>
+        <th>Dota Name</th>
+        <th>Reset Password</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in users %}
+    <tr>
+        <td style="color:#363636">{{item['name']}}</td>
+        <td style="color:#363636">{{item['coins']}}</td>
+        <td style="color:#363636">{{item['login']}}</td>
+        <td style="color:#363636">{{item['email']}}</td>
+        <td style="color:#363636">{{item['dota_name']}}</td>
+        {% if item['rec_url'] is none %}
+        <td>
+            <form method="POST" action="/admin/reset">
                 <button class="button is-block is-danger is-small is-fullwidth">Reset Pwd</button>
-                <input type="hidden" name="id" value="{{item.id}}"/>
-            </td>
-            {% else %}
-            <td>
-                {{item['rec_url']}}
-            </td>
-            {% endif %}
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</form>
+                <input type="hidden" name="pwdid" value="{{item['id']}}"/>
+            </form>
+        </td>
+        {% else %}
+        <td>
+            {{item['rec_url']}}
+        </td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
 
 <br/>
 <h2 align="left">Achievements</h2>

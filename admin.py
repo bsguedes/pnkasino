@@ -88,9 +88,11 @@ def league_create_post():
 @admin.route('/admin/reset', methods=['POST'])
 @login_required
 def reset_pwd():
-    user_id = int(request.form.get('id'))
+    user_id = request.form.get('pwdid')
     if current_user.is_admin_user():
+        print(user_id)
         u = User.query.filter_by(id=user_id).first()
+        print(u.name)
         if u is None:
             flash('Invalid user', 'error')
             return redirect(url_for('admin.index'))

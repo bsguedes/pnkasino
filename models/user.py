@@ -54,7 +54,8 @@ class User(UserMixin, db.Model):
             'name': self.name,
             'coins': self.pnkoins,
             'dota_name': self.stats_name if self.stats_name is not None else "-",
-            'login': str(self.last_login - timedelta(hours=3)) if self.last_login is not None else "-",
+            'login': (self.last_login - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M") if self.last_login is not None
+            else '-',
             'rec_url': self.rec_url()
         }
 
