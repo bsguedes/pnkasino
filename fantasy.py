@@ -318,5 +318,5 @@ def card_bought(card_name):
             updated_user.assign_achievement(heroes.PUDGE)
         if any(x >= 7 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]):
             updated_user.assign_achievement(heroes.FACELESS_VOID)
-        if len([x > 0 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]]) >= 3:
+        if len([1 for x in [pos_1, pos_2, pos_3, pos_4, pos_5] if x > 0]) >= 3:
             updated_user.assign_achievement(heroes.NECROPHOS)
