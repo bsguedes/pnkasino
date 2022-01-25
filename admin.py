@@ -4,9 +4,14 @@ from models.user import User
 from models.category import Category
 from models.option import Option
 from models.card import Card
+from models.scrap import Scrap
 from models.league import League
 from models.achievement import Achievement
+from models.achievement_user import AchievementUser
+from models.message import Message
+from models.vote import Vote
 from app import db
+from sqlalchemy import text
 import json
 import random
 import heroes
@@ -38,7 +43,15 @@ def index():
                                               key=lambda s: (league_states.index(s['state']), -s['id'])),
                                users=sorted([u.as_json() for u in User.query.all()],
                                             key=lambda e: e['login'], reverse=True),
-                               achievements=[a.as_json() for a in Achievement.query.all()])
+                               scraps=[s.as_json() for s in Scrap.query.order_by(text("id desc")).limit(10)],
+                               achievements=sorted([a.as_json() for a in Achievement.query.all()],
+                                                   key=lambda e: e['earned_count'], reverse=True),
+                               amounts={
+                                   'scraps': Scrap.query.count(),
+                                   'achievements': AchievementUser.query.count(),
+                                   'votes': Vote.query.count(),
+                                   'book': Message.query.count(),
+                               })
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.index'))

@@ -112,6 +112,49 @@
     </tbody>
 </table>
 
+<div class="columns">
+  <div class="column">
+    <p class="title">{{ amounts['scraps'] }}</p>
+    <p class="subtitle">Scraps</p>
+  </div>
+  <div class="column">
+    <p class="title">{{ amounts['votes'] }}</p>
+    <p class="subtitle">Votes</p>
+  </div>
+  <div class="column">
+    <p class="title">{{ amounts['achievements'] }}</p>
+    <p class="subtitle">Achievements Earned</p>
+  </div>
+  <div class="column">
+    <p class="title">{{ amounts['book'] }}</p>
+    <p class="subtitle">Book Messages</p>
+  </div>
+</div>
+
+<br/>
+<h2 align="left">Recent Scraps</h2>
+<br/>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>From</th>
+        <th>To</th>
+        <th>Message</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in scraps %}
+    <tr>
+        <td style="color:#363636">{{item['created_at'].strftime("%Y-%m-%d %H:%M")}}</td>
+        <td style="color:#363636">{{item['author_name']}}</td>
+        <td style="color:#363636">{{item['profile_name']}}</td>
+        <td style="color:#363636">{{item['message']}}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
 
 <br/>
 <h2 align="left">Achievements</h2>
@@ -166,11 +209,9 @@
     </tbody>
 </table>
 
-
 <br/>
 <h2 align="left">Danger Zone</h2>
 <br/>
-
 
 <form method="POST" action="/league/create">
     <table class="table table-striped table-responsive table-bordered is-fullwidth">

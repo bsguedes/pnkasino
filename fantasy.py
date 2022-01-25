@@ -104,7 +104,8 @@ def scores():
                 'gold': user.gold_card,
                 'total_score': score,
                 'earnings': int(score ** 3) // 100 * 10,
-                'worth': user.worth()
+                'worth': user.worth(),
+                'fcoins': user.fcoins(),
             }
             score_list.append(u)
     return {'scores': sorted(score_list, key=lambda e: (-e['total_score'], e['cost']))}

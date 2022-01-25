@@ -11,6 +11,7 @@ class Scrap(db.Model):
     parent_scrap_id = db.Column(db.Integer, db.ForeignKey('scrap.id'), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     author = db.relationship("User", back_populates="scraps", foreign_keys="Scrap.author_id")
+    profile = db.relationship("User", foreign_keys="Scrap.profile_id")
     profile_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     responses = db.relationship('Scrap', lazy=True, foreign_keys="Scrap.parent_scrap_id")
 
@@ -22,6 +23,7 @@ class Scrap(db.Model):
             'latest_at': self.latest_response() - timedelta(hours=3),
             'author_id': self.author_id,
             'author_name': None if self.author is None else self.author.stats_name,
+            'profile_name': self.profile.name,
             'is_anonymous': self.author_id is None,
             'responses': sorted([
                 {
@@ -29,6 +31,7 @@ class Scrap(db.Model):
                     'scrap_id': r.id,
                     'created_at': r.created_at - timedelta(hours=3),
                     'author_id': r.author_id,
+                    'profile_name': self.profile.name,
                     'author_name': None if r.author is None else r.author.stats_name,
                     'is_anonymous': r.author_id is None
                 } for r in self.responses], key=lambda r: r['created_at'])
