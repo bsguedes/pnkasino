@@ -118,7 +118,7 @@
 
 
                 <figure class="media-left">
-                    <p class="image is-64x64">
+                    <p class="image is-48x48">
                         {% if scrap['is_anonymous'] %}
                         <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/anonymous.jpg">
                         {% else %}
@@ -145,8 +145,8 @@
 
                     <article class="media">
                         <figure class="media-left">
-                            <p class="image is-48x48">
-                                {% if scrap['is_anonymous'] %}
+                            <p class="image is-32x32">
+                                {% if response['is_anonymous'] %}
                                 <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/anonymous.jpg">
                                 {% else %}
                                 <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{response['author_name']}}.jpg">
@@ -157,7 +157,7 @@
                         <div class="media-content">
                             <div class="content is-size-7">
                                 <p>
-                                    {% if not scrap['is_anonymous'] %}
+                                    {% if not response['is_anonymous'] %}
                                     <strong><a href="{{ url_for('prfl.index', user_id=response['author_id']) }}">{{response['author_name']}}</a></strong>
                                     <br>
                                     {% endif %}
@@ -191,7 +191,7 @@
                                     <div class="level-left">
                                         <div class="level-item">
                                             <label class="checkbox">
-                                                <input type="checkbox"> Anônimo
+                                                <input type="checkbox" name="anonymous_reply"> Anônimo
                                             </label>
                                         </div>
                                     </div>

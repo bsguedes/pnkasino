@@ -64,13 +64,15 @@ def reply(user_id):
     parent_scrap_id = request.form.get('id')
     user = User.query.filter_by(id=user_id).first()
     parent_scrap = Scrap.query.filter_by(id=parent_scrap_id).first()
+    is_anonymous = request.form.get('anonymous_reply')
 
     if user is None:
         flash('Perfil não encontrado.', 'error')
         return redirect(url_for('prfl.index', user_id=current_user.id))
     if 0 < len(message) <= MAX_MESSAGE_LENGTH:
+        author_id = None if is_anonymous else current_user.id
         new_scrap = Scrap(message=message, created_at=func.now(), parent_scrap_id=parent_scrap.id,
-                          author_id=current_user.id, profile_id=user_id)
+                          author_id=author_id, profile_id=user_id)
         db.session.add(new_scrap)
         db.session.commit()
         flash('Resposta enviada!', 'success')
