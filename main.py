@@ -8,6 +8,8 @@ from models.option import Option
 from models.bet import Bet
 from models.card import Card
 from models.league import League
+from models.achievement import Achievement
+from models.achievement_user import AchievementUser
 from admin import league_states
 from app import db
 from itertools import groupby
@@ -139,6 +141,39 @@ def card_dict(card_id, bought_at, user):
         }
     return None
 
+
+@main.route('/pool')
+@login_required
+def pool():
+    achievements_user = [au.as_json() for au in AchievementUser.query.filter_by(user_id=current_user.id)]
+    achievements = [a.as_json() for a in Achievement.query.all()]
+    achievement_ids_user = [u['achievement_id'] for u in achievements_user]
+
+    hero_pool = []
+
+    for achievement in achievements:
+        if achievement['id'] in achievement_ids_user:
+            hero_pool.append(
+                {
+                    'hero_id': achievement['hero_id'],
+                    'hero_name': achievement['hero_name'],
+                    'description': achievement['description'],
+                    'earned_count': achievement['earned_count'],
+                    'has_earned': True
+                })
+        else:
+            hero_pool.append(
+                {
+                    'hero_id': achievement['hero_id'],
+                    'hero_name': achievement['hero_name'],
+                    'description': None,
+                    'earned_count': achievement['earned_count'],
+                    'has_earned': False
+                })
+
+    hero_pool = sorted(hero_pool, key=lambda e: (not e['has_earned'], -e['earned_count']))
+
+    return render_template('pool.html', achievements=hero_pool)
 
 @main.route('/ranking')
 @login_required

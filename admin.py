@@ -205,7 +205,7 @@ def refund_fantasy():
 def regulate():
     if current_user.is_admin_user():
         for user in User.query.all():
-            user.pnkoins = user.earnings + 43000
+            user.pnkoins = user.earnings + user.roulette_earnings - user.finished_bets_without_cashback() + 43000
             db.session.commit()
         return redirect(url_for('admin.index'))
     else:

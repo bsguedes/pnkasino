@@ -1,0 +1,42 @@
+<!-- templates/index.html -->
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h1 class="title">
+    Hero Pool
+</h1>
+
+<table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth">
+    <thead>
+    <tr>
+        <th>Hero</th>
+        <th>Hero</th>
+        <th>Description</th>
+        <th>Players</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for item in achievements %}
+    <tr>
+        <td style="color:#212121;font-weight:bold">
+            <figure class="image is-16by9">
+                <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/heroes/{{item['hero_id']}}.jpg"/>
+            </figure>
+        </td>
+        {% if item['has_earned'] %}
+        <td style="color:#363636">{{item['hero_name']}}</td>
+        <td style="color:#363636">{{item['description']}}</td>
+        <td style="color:#363636">{{item['earned_count']}}</td>
+        {% else %}
+        <td style="color:#777777">{{item['hero_name']}}</td>
+        <td style="color:#777777"><i>Não disponível</i></td>
+        <td style="color:#363636">{{item['earned_count']}}</td>
+        {% endif %}
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

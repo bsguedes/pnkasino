@@ -19,6 +19,7 @@ class AchievementUser(db.Model):
         return {
             'hero': self.achievement.hero_name,
             'id': self.achievement.hero_id,
+            'achievement_id': self.achievement.id,
             'description': description,
             'created_at': self.created_at
         }
