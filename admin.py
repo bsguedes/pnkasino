@@ -200,6 +200,19 @@ def refund_fantasy():
         return redirect(url_for('main.index'))
 
 
+@admin.route('/admin/regulate', methods=['POST'])
+@login_required
+def regulate():
+    if current_user.is_admin_user():
+        for user in User.query.all():
+            user.pnkoins = user.earnings + 43000
+            db.session.commit()
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
 @admin.route('/admin/evaluate', methods=['POST'])
 @login_required
 def evaluate():
