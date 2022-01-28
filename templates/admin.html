@@ -195,6 +195,7 @@
         <th>Hero</th>
         <th>Description</th>
         <th>Earned by</th>
+        <th>Edit</th>
     </tr>
     </thead>
     <tbody>
@@ -204,6 +205,9 @@
         <td style="color:#363636">{{item['hero_name']}}</td>
         <td style="color:#363636">{{item['description']}}</td>
         <td style="color:#363636">{{item['earned_count']}}</td>
+        <td>
+            <a class="button is-link is-success is-small" href="/achievement/edit/{{item['id']}}">Edit</a>
+        </td>
     </tr>
     {% endfor %}
     </tbody>

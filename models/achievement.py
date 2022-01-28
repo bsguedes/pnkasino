@@ -12,8 +12,12 @@ class Achievement(db.Model):
 
     def as_json(self):
         return {
+            'id': self.id,
             'hero_id': self.hero_id,
             'hero_name': self.hero_name,
             'description': self.description,
             'earned_count': len(self.earners)
         }
+
+    def earners_names(self):
+        return [e.user.stats_name for e in self.earners]

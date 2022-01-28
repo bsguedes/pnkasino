@@ -302,6 +302,38 @@ def edit(league_id):
         return redirect(url_for('main.index'))
 
 
+@admin.route('/achievement/edit/<int:achievement_id>')
+@login_required
+def edit_achievement(achievement_id):
+    if current_user.is_admin_user():
+        achievement = Achievement.query.filter_by(id=achievement_id).first()
+        return render_template('achievement.html', achievement=achievement.as_json(),
+                               earners=achievement.earners_names())
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/achievement/edit/description', methods=['POST'])
+@login_required
+def edit_achievement_description():
+    achievement_id = request.form.get('id')
+    if current_user.is_admin_user():
+        try:
+            description = request.form.get('description')
+            achievement = Achievement.query.filter_by(id=achievement_id).first()
+            achievement.description = description
+            db.session.commit()
+            flash('Description changed', 'success')
+            return redirect(url_for('admin.edit_achievement', achievement_id=achievement_id))
+        except:
+            flash('Please check your data', 'error')
+            return redirect(url_for('admin.edit_achievement', achievement_id=achievement_id))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
 @admin.route('/league/addcategory', methods=['POST'])
 @login_required
 def add_category():

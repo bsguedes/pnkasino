@@ -93,7 +93,7 @@ class User(UserMixin, db.Model):
                     if self.pnkoins >= 100000:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.ZEUS:
-                    if self.fcoins >= 20000:
+                    if self.fcoins + self.team_value() >= 18000:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.MORPHLING:
                     if len(self.votes) >= 20:
@@ -162,6 +162,9 @@ class User(UserMixin, db.Model):
         self.fcoins += coins
         db.session.commit()
         self.check_achievement(heroes.ZEUS)
+
+    def team_value(self):
+        return sum(v['sell_value'] for _, v in self.team().items())
 
     def has_achievement(self, achievement_id):
         for achievement_user in self.achievement_users:
