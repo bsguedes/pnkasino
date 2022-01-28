@@ -227,6 +227,12 @@ def evaluate():
         for card in Card.query.all():
             card_value_updated(card.name, card.value())
 
+        for league in League.query.all():
+            ranking = league.ranking()
+            if ranking is not None and len(ranking) > 0:
+                user = User.query.filter_by(id=ranking[0]['profile_id']).first()
+                user.assign_achievement(heroes.MARS)
+
         flash('Evaluated achievements in  %.3f seconds' % (time.time() - start), 'success')
         return redirect(url_for('admin.index'))
     else:
@@ -297,6 +303,26 @@ def edit(league_id):
     if current_user.is_admin_user():
         league = League.query.filter_by(id=league_id).first()
         return render_template('edit.html', league=league)
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/league/edit/name', methods=['POST'])
+@login_required
+def edit_league_name():
+    league_id = request.form.get('id')
+    if current_user.is_admin_user():
+        try:
+            name = request.form.get('name')
+            league = League.query.filter_by(id=league_id).first()
+            league.name = name
+            db.session.commit()
+            flash('Name changed', 'success')
+            return redirect(url_for('admin.edit', league_id=league_id))
+        except:
+            flash('Please check your data', 'error')
+            return redirect(url_for('admin.edit', league_id=league_id))
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.index'))
@@ -386,13 +412,19 @@ def league_up():
             for category in league.categories:
                 for bet in category.bets:
                     if bet.option_id == category.winner_option_id:
-                        bet.user.add_pnkoins(int(category.winner_option().odds * bet.value))
                         bet.user.earnings += int(category.winner_option().odds * bet.value)
+                        bet.user.add_pnkoins(int(category.winner_option().odds * bet.value))
                         bet.user.check_achievement(heroes.TIMBERSAW)
                     elif category.winner_option_id is None:
                         bet.user.add_pnkoins(bet.value)
                     else:
                         bet.user.earnings -= bet.value
+            ranking = league.ranking()
+            if ranking is not None and len(ranking) > 0:
+                winner_player = User.query.filter_by(id=ranking[0]['profile_id']).first()
+                winner_player.assign_achievement(heroes.MARS)
+            for user in User.query.all():
+                user.check_achievement(heroes.SPIRIT_BREAKER)
         else:
             flash('Cannot change league state', 'error')
             return redirect(url_for('admin.index'))

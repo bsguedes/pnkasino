@@ -24,6 +24,29 @@
   Editing League {{ league.name }}
 </h2>
 
+<br/>
+<h2 align="left">Change Name</h2>
+<br/>
+
+<form method="POST" action="/league/edit/name">
+    <table class="table table-striped table-responsive table-bordered is-fullwidth">
+        <tbody>
+        <tr>
+            <td>Description<input type="hidden" name="id" value="{{league.id}}"/></td>
+            <td>
+                <div class="control">
+                    <input class="input is-small" name="name" value="{{league.name}}">
+                </div>
+            </td>
+            <td>
+                <button class="button is-block is-info is-small is-fullwidth">Change</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</form>
+
+
 {% if league.state == 'new' %}
 
 <br/>

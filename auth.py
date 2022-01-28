@@ -60,11 +60,13 @@ def signup_post():
         flash('O endereço de email já está cadastrado')
         return redirect(url_for('auth.signup'))
 
-    league = League.query.filter_by(state='available').first()
-    credit = COINS if league is None else league.credit
-
-    new_user = User(email=email, name=name, password=generate_password_hash(password, method='sha256'),
-                    fcoins=FCOINS, pnkoins=credit, earnings=0, last_login=func.now())
+    new_user = User(email=email,
+                    name=name,
+                    password=generate_password_hash(password, method='sha256'),
+                    fcoins=FCOINS,
+                    pnkoins=COINS,
+                    earnings=0,
+                    last_login=func.now())
 
     db.session.add(new_user)
     db.session.commit()

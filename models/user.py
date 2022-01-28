@@ -146,6 +146,10 @@ class User(UserMixin, db.Model):
                 elif hero_id == heroes.SAND_KING:
                     if self.has_team():
                         AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.SPIRIT_BREAKER:
+                    print(self.earnings)
+                    if self.earnings >= 25000:
+                        AchievementUser.give_achievement(self.id, achievement_id)
                 else:
                     return False
         return False

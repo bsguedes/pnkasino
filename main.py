@@ -236,8 +236,8 @@ def revert_bet():
         flash('Operação inválida', 'error')
     else:
         delta = int(bet.value * 0.7)
-        current_user.add_pnkoins(delta)
         current_user.earnings -= (bet.value - delta)
+        current_user.add_pnkoins(delta)
         current_user.last_login = func.now()
         db.session.delete(bet)
         db.session.commit()
