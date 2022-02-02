@@ -66,6 +66,9 @@ def signup_post():
                     fcoins=FCOINS,
                     pnkoins=COINS,
                     earnings=0,
+                    roulette_streak=0,
+                    login_count=0,
+                    profile_views=0,
                     last_login=func.now())
 
     db.session.add(new_user)

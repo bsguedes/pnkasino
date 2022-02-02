@@ -59,7 +59,7 @@
                     {% endif %}
                     <a href="{{ url_for('book.index') }}" class="navbar-item">
                         Doteiros Anônimos
-                        {% if current_user.unread_messages() > 0 %}
+                        {% if current_user.is_authenticated and current_user.unread_messages() > 0 %}
                         <span class="button__badge">{{ current_user.unread_messages() }}</span>
                         {% endif %}
                     </a>
