@@ -24,6 +24,7 @@ class User(UserMixin, db.Model):
     login_count = db.Column(db.Integer, nullable=False)
     profile_views = db.Column(db.Integer, nullable=False)
     earnings = db.Column(db.Integer, default=0, nullable=False)
+    rewards_earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_earnings = db.Column(db.Integer, default=0, nullable=False)
     roulette_attempts = db.Column(db.Integer, default=0, nullable=False)
     fantasy_earnings = db.Column(db.Integer, default=0, nullable=False)

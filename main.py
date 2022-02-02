@@ -192,12 +192,17 @@ def ranking():
             'profile_id': u.id,
             'base': u.pnkoins - total_earnings + on_hold,
             'earnings': u.earnings - finished,
+            'bets_on_hold': on_hold,
+            'finished': finished,
             'roulette': u.roulette_earnings,
             'fantasy': u.fantasy_earnings,
             'total_earnings': total_earnings,
+            'rewards_earnings': u.rewards_earnings,
             'pnkoins': u.pnkoins,
             'betted': on_hold,
             'cards': cards,
+            'fcoins': u.fcoins,
+            'fworth': u.fcoins + cards,
             'worth': u.worth()
         }
         users_payload.append(user_object)
@@ -206,10 +211,19 @@ def ranking():
     i = 1
     for item in performance:
         item['position_performance'] = i
-        item['fantasy_earnings'] = item['fantasy'] + item['cards']
+        item['fantasy_earnings'] = item['fantasy']
         i += 1
 
-    return render_template('ranking.html', users=users_payload, performance=performance)
+    users_fcoins = sorted(users_payload, key=lambda e: -e['fworth'])
+    i = 1
+    for item in users_fcoins:
+        item['position'] = i
+        i += 1
+
+    return render_template('ranking.html',
+                           users=users_payload,
+                           users_fcoins=users_fcoins,
+                           performance=performance)
 
 
 @main.route('/bets')

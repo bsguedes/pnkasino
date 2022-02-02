@@ -150,7 +150,7 @@ def update_rewards():
             if user is not None:
                 prize = player['earnings'] + player['bonus']
                 user.add_pnkoins(prize)
-                user.fantasy_earnings += prize
+                user.rewards_earnings += prize
                 db.session.commit()
                 if player['bonus'] == 5000:
                     user.assign_achievement(heroes.LUNA)
