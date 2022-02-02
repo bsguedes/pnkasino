@@ -187,7 +187,7 @@ def ranking():
             'position': i+1,
             'name': u.name,
             'profile_id': u.id,
-            'base': u.pnkoins + u.bets_on_hold(),
+            'base': u.pnkoins - u.total_earnings() + u.bets_on_hold(),
             'bets_earnings': u.bets_earnings(),
             'roulette_earnings': u.roulette_earnings,
             'total_earnings': u.total_earnings(),

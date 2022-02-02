@@ -203,7 +203,7 @@ class User(UserMixin, db.Model):
         return sum([b.value for b in self.bets if b.category.league.state in ['available', 'blocked']])
 
     def total_earnings(self):
-        return self.roulette_earnings + self.fantasy_earnings + self.bets_earnings() - self.bets_on_hold()
+        return self.roulette_earnings + self.rewards_earnings + self.bets_earnings()
 
     def is_admin_user(self):
         return self.is_admin == 1
