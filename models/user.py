@@ -2,6 +2,8 @@
 
 from flask import url_for
 from flask_login import UserMixin
+from sqlalchemy.sql.functions import session_user
+
 from app import db
 import heroes
 from models.card import Card
@@ -166,8 +168,7 @@ class User(UserMixin, db.Model):
                     if self.has_team():
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.SPIRIT_BREAKER:
-                    print(self.earnings)
-                    if self.earnings >= 25000:
+                    if self.bets_earnings() >= 25000:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 else:
                     return False
@@ -198,8 +199,17 @@ class User(UserMixin, db.Model):
     def finished_bets_without_cashback(self):
         return sum([b.value for b in self.bets if b.category.league.state == 'finished' and b.correct_winner()])
 
+    def bets_on_hold(self):
+        return sum([b.value for b in self.bets if b.category.league.state in ['available', 'blocked']])
+
+    def total_earnings(self):
+        return self.roulette_earnings + self.fantasy_earnings + self.bets_earnings()
+
     def is_admin_user(self):
         return self.is_admin == 1
+
+    def bets_earnings(self):
+        return self.earnings - self.finished_bets_without_cashback()
 
     def has_team(self):
         v = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]

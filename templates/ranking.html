@@ -79,8 +79,6 @@
         <th>Jogador</th>
         <th>Começou com</th>
         <th>Rendimentos</th>
-        <th>Finished</th>
-        <th>On hold</th>
         <th>(em apostas)</th>
         <th>(na roleta)</th>
         <th>(no fantasy)</th>
@@ -102,17 +100,15 @@
         {% else %}
         <td style="color:#ff0000;font-weight:bold">{{item['total_earnings']}} ₭</td>
         {% endif %}
-        <td style="color:#009900;font-weight:bold">{{item['finished']}} ₭</td>
-        <td style="color:#009900;font-weight:bold">{{item['bets_on_hold']}} ₭</td>
-        {% if item['earnings'] >= 0 %}
-        <td style="color:#009900;font-weight:bold">{{item['earnings']}} ₭</td>
+        {% if item['bets_earnings'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['bets_earnings']}} ₭</td>
         {% else %}
-        <td style="color:#ff0000;font-weight:bold">{{item['earnings']}} ₭</td>
+        <td style="color:#ff0000;font-weight:bold">{{item['bets_earnings']}} ₭</td>
         {% endif %}
-        {% if item['roulette'] >= 0 %}
-        <td style="color:#009900;font-weight:bold">{{item['roulette']}} ₭</td>
+        {% if item['roulette_earnings'] >= 0 %}
+        <td style="color:#009900;font-weight:bold">{{item['roulette_earnings']}} ₭</td>
         {% else %}
-        <td style="color:#ff0000;font-weight:bold">{{item['roulette']}} ₭</td>
+        <td style="color:#ff0000;font-weight:bold">{{item['roulette_earnings']}} ₭</td>
         {% endif %}
         {% if item['rewards_earnings'] >= 0 %}
         <td style="color:#009900;font-weight:bold">{{item['rewards_earnings']}} ₭</td>

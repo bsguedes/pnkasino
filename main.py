@@ -182,24 +182,18 @@ def ranking():
     users = User.query.all()
     users_payload = []
     for u, i in zip(sorted(users, key=lambda e: -e.worth()), range(len(users))):
-        finished = u.finished_bets_without_cashback()
-        on_hold = sum([b.value for b in u.bets if b.category.league.state in ['available', 'blocked']])
         cards = sum(v['sell_value'] for _, v in u.team().items())
-        total_earnings = u.earnings + u.roulette_earnings - finished
         user_object = {
             'position': i+1,
             'name': u.name,
             'profile_id': u.id,
-            'base': u.pnkoins - total_earnings + on_hold,
-            'earnings': u.earnings - finished,
-            'bets_on_hold': on_hold,
-            'finished': finished,
-            'roulette': u.roulette_earnings,
-            'fantasy': u.fantasy_earnings,
-            'total_earnings': total_earnings,
+            'base': u.pnkoins - u.total_earnings(),
+            'bets_earnings': u.bets_earnings(),
+            'roulette_earnings': u.roulette_earnings,
+            'total_earnings': u.total_earnings(),
             'rewards_earnings': u.rewards_earnings,
             'pnkoins': u.pnkoins,
-            'betted': on_hold,
+            'betted': u.bets_on_hold(),
             'cards': cards,
             'fcoins': u.fcoins,
             'fworth': u.fcoins + cards,
@@ -211,7 +205,6 @@ def ranking():
     i = 1
     for item in performance:
         item['position_performance'] = i
-        item['fantasy_earnings'] = item['fantasy']
         i += 1
 
     users_fcoins = sorted(users_payload, key=lambda e: -e['fworth'])
