@@ -7,7 +7,6 @@ from app import db
 from sqlalchemy import func
 import heroes
 
-
 fantasy = Blueprint('fantasy', __name__)
 
 positions = {
@@ -49,9 +48,9 @@ def index():
         {
             'id': card['id'],
             'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and
-            current_user.gold_card != card['pos'] and
-            current_user.fcoins >= card['silver_cost'] and
-            transfer_window_open,
+                           current_user.gold_card != card['pos'] and
+                           current_user.fcoins >= card['silver_cost'] and
+                           transfer_window_open,
             'cost': card['silver_cost'],
             'perks': [card['silver_perk']]
         } for card in cards]
@@ -59,9 +58,9 @@ def index():
         {
             'id': card['id'],
             'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and
-            current_user.silver_card != card['pos'] and
-            current_user.fcoins >= card['silver_cost'] and
-            transfer_window_open,
+                           current_user.silver_card != card['pos'] and
+                           current_user.fcoins >= card['silver_cost'] and
+                           transfer_window_open,
             'cost': card['gold_cost'],
             'perks': [card['silver_perk'], card['gold_perk']]
         } for card in cards]
@@ -72,6 +71,60 @@ def index():
                            silver_upgrades=silver_upgrades,
                            gold_upgrades=gold_upgrades,
                            titles=[k for k, v in positions.items()])
+
+
+@fantasy.route('/fantasy/payload')
+@login_required
+def fantasy_payload():
+    pos_1 = card_dict(current_user.card_1_id, current_user.buy_1, current_user)
+    pos_2 = card_dict(current_user.card_2_id, current_user.buy_2, current_user)
+    pos_3 = card_dict(current_user.card_3_id, current_user.buy_3, current_user)
+    pos_4 = card_dict(current_user.card_4_id, current_user.buy_4, current_user)
+    pos_5 = card_dict(current_user.card_5_id, current_user.buy_5, current_user)
+    player_cards = [pos_1, pos_2, pos_3, pos_4, pos_5]
+    cards = [c for c in player_cards if c is not None]
+    current_players = [c['name'] for c in cards]
+    transfer_window_open = League.query.filter_by(state='available').first() is not None
+    available_cards = {}
+    for i in range(5):
+        pos = i + 1
+        db_cards = Card.query.filter_by(position=pos)
+        available_cards[pos] = sorted([{
+            'id': card.id,
+            'name': card.name,
+            'profile_id': User.profile_id(card.name),
+            'position': inv_positions[card.position].title(),
+            'current_value': card.value(),
+            'state': card_state(card, player_cards[i], current_players, transfer_window_open)
+        } for card in db_cards if card.value() > 0], key=lambda e: -e['current_value'])
+    silver_upgrades = [
+        {
+            'id': card['id'],
+            'can_upgrade': current_user.silver_card not in [1, 2, 3, 4, 5] and
+                           current_user.gold_card != card['pos'] and
+                           current_user.fcoins >= card['silver_cost'] and
+                           transfer_window_open,
+            'cost': card['silver_cost'],
+            'perks': [card['silver_perk']]
+        } for card in cards]
+    gold_upgrades = [
+        {
+            'id': card['id'],
+            'can_upgrade': current_user.gold_card not in [1, 2, 3, 4, 5] and
+                           current_user.silver_card != card['pos'] and
+                           current_user.fcoins >= card['silver_cost'] and
+                           transfer_window_open,
+            'cost': card['gold_cost'],
+            'perks': [card['silver_perk'], card['gold_perk']]
+        } for card in cards]
+    return {
+        'current_cards': cards,
+        'transfer_window_open': transfer_window_open,
+        'available_cards': available_cards,
+        'silver_upgrades': silver_upgrades,
+        'gold_upgrades': gold_upgrades,
+        'titles': [k for k, v in positions.items()]
+    }
 
 
 @fantasy.route('/fantasy/summary')
@@ -262,7 +315,7 @@ def card_dict(card_id, bought_at, user):
 
 def chunks(l, n):
     n = max(1, n)
-    return (l[i:i+n] for i in range(0, len(l), n))
+    return (l[i:i + n] for i in range(0, len(l), n))
 
 
 def card_value_updated(card_name, current_value):
@@ -303,22 +356,27 @@ def card_bought(card_name, skip_similar=False):
     if not skip_similar:
         for user in User.query.all():
             if user.id != current_user.id:
-                if user.card_1_id == current_user.card_1_id and\
-                   user.card_2_id == current_user.card_2_id and\
-                   user.card_3_id == current_user.card_3_id and\
-                   user.card_4_id == current_user.card_4_id and\
-                   user.card_5_id == current_user.card_5_id:
+                if user.card_1_id == current_user.card_1_id and \
+                        user.card_2_id == current_user.card_2_id and \
+                        user.card_3_id == current_user.card_3_id and \
+                        user.card_4_id == current_user.card_4_id and \
+                        user.card_5_id == current_user.card_5_id:
                     user.assign_achievement(heroes.RUBICK)
                     current_user.assign_achievement(heroes.RUBICK)
 
     updated_user = User.query.filter_by(stats_name=card_name).first()
     if updated_user is not None:
         updated_user_cards = {c.position: c.id for c in Card.query.filter_by(name=card_name)}
-        pos_1 = User.query.filter_by(card_1_id=updated_user_cards[1]).count() if updated_user_cards[1] is not None else 0
-        pos_2 = User.query.filter_by(card_2_id=updated_user_cards[2]).count() if updated_user_cards[2] is not None else 0
-        pos_3 = User.query.filter_by(card_3_id=updated_user_cards[3]).count() if updated_user_cards[3] is not None else 0
-        pos_4 = User.query.filter_by(card_4_id=updated_user_cards[4]).count() if updated_user_cards[4] is not None else 0
-        pos_5 = User.query.filter_by(card_5_id=updated_user_cards[5]).count() if updated_user_cards[5] is not None else 0
+        pos_1 = User.query.filter_by(card_1_id=updated_user_cards[1]).count() if updated_user_cards[
+                                                                                     1] is not None else 0
+        pos_2 = User.query.filter_by(card_2_id=updated_user_cards[2]).count() if updated_user_cards[
+                                                                                     2] is not None else 0
+        pos_3 = User.query.filter_by(card_3_id=updated_user_cards[3]).count() if updated_user_cards[
+                                                                                     3] is not None else 0
+        pos_4 = User.query.filter_by(card_4_id=updated_user_cards[4]).count() if updated_user_cards[
+                                                                                     4] is not None else 0
+        pos_5 = User.query.filter_by(card_5_id=updated_user_cards[5]).count() if updated_user_cards[
+                                                                                     5] is not None else 0
         if any(x >= 1 for x in [pos_1, pos_2, pos_3, pos_4, pos_5]):
             updated_user.assign_achievement(heroes.EARTHSHAKER)
         if pos_1 + pos_2 + pos_3 + pos_4 + pos_5 >= 10:
