@@ -10,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PnKasino</title>
     <link rel="icon" href="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
     <style>
     .progress::-webkit-progress-value {
       transition: width 0.5s ease;
@@ -19,6 +20,18 @@
       pointer-events: none;
       box-shadow: none;
     }
+    .button__badge {
+      background-color: #fa3e3e;
+      border-radius: 2px;
+      color: white;
+
+      padding: 1px 3px;
+      font-size: 10px;
+
+      position: absolute; /* Position the badge within the relatively positioned button */
+      top: 0;
+      right: 0;
+    }
     </style>
 </head>
 
@@ -26,8 +39,8 @@
 <section class="hero is-primary is-fullheight has-background-black has-text-grey-lighter">
     <div class="hero-head">
         <nav class="navbar">
-            <div id="navbarMenuHeroA" class="navbar-menu is-active">
-                <div class="navbar-end">
+            <div id="navbarMenuHeroA" class="navbar-menu is-active has-background-black">
+                <div class="navbar-end has-background-black">
                     {% if current_user.is_authenticated %}
                     <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
                     <h2 class="has-text-weight-bold navbar-item">{{current_user.fcoins}} Éficoins</h2>
@@ -46,7 +59,10 @@
                     </a>
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('main.bets') }}" class="navbar-item has-text-weight-bold">
-                        Apostar!
+                        Apostas
+                        {% if current_user.open_bets_count() > 0 %}
+                        <span class="button__badge">{{ current_user.open_bets_count() }}</span>
+                        {% endif %}
                     </a>
                     <a href="{{ url_for('roulette.index') }}" class="navbar-item">
                         Roleta

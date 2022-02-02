@@ -175,6 +175,7 @@ def pool():
 
     return render_template('pool.html', achievements=hero_pool)
 
+
 @main.route('/ranking')
 @login_required
 def ranking():

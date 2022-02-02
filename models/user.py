@@ -5,6 +5,8 @@ from flask_login import UserMixin
 from app import db
 import heroes
 from models.card import Card
+from models.league import League
+from models.bet import Bet
 from models.achievement_user import AchievementUser
 from models.achievement import Achievement
 from datetime import timedelta
@@ -76,6 +78,17 @@ class User(UserMixin, db.Model):
             'scraps': sorted([s.as_json() for s in self.scraps if s.parent_scrap_id is None],
                              key=lambda e: e['latest_at'], reverse=True)
         }
+
+    def open_bets_count(self):
+        leagues = League.query.filter_by(state='available').all()
+        categories = []
+        for league in leagues:
+            for cat in league.categories:
+                if not cat.has_winner():
+                    categories.append(cat)
+        categories_betted = [b.category_id for b in Bet.query.filter_by(user_id=self.id).all()]
+        valid_categories = [c for c in categories if c.id not in categories_betted]
+        return len(valid_categories)
 
     def assign_achievement(self, hero_id):
         achievement = Achievement.query.filter_by(hero_id=hero_id).first()
