@@ -76,8 +76,8 @@ class User(UserMixin, db.Model):
     def profile_json(self):
         return {
             'id': self.id,
-            'dota_name': self.stats_name,
-            'name': self.name,
+            'dota_name': self.name if self.stats_name is None else self.stats_name,
+            'name': '' if self.name == self.stats_name or self.stats_name is None else self.name,
             'pnkoins': self.pnkoins,
             'fcoins': self.fcoins,
             'achievements': sorted([au.as_json() for au in self.achievement_users],
