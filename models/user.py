@@ -90,6 +90,11 @@ class User(UserMixin, db.Model):
         valid_categories = [c for c in categories if c.id not in categories_betted]
         return len(valid_categories)
 
+    def can_recruit(self):
+        has_available_league = League.query.filter_by(state='available').first() is not None
+        missing_team = not self.has_full_team()
+        return has_available_league and missing_team
+
     def assign_achievement(self, hero_id):
         achievement = Achievement.query.filter_by(hero_id=hero_id).first()
         if achievement is not None:
@@ -198,6 +203,10 @@ class User(UserMixin, db.Model):
     def has_team(self):
         v = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]
         return any(x is not None for x in v)
+
+    def has_full_team(self):
+        v = [self.card_1_id, self.card_2_id, self.card_3_id, self.card_4_id, self.card_5_id]
+        return all(x is not None for x in v)
 
     def worth(self):
         on_hold = sum([b.value for b in self.bets if b.category.league.state in ['available', 'blocked']])

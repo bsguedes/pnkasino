@@ -10,8 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PnKasino</title>
     <link rel="icon" href="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png">
-    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet"/>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
 
     <style>
     .progress::-webkit-progress-value {
@@ -29,7 +28,7 @@
       padding: 1px 3px;
       font-size: 10px;
 
-      position: absolute; /* Position the badge within the relatively positioned button */
+      position: absolute;
       top: 0;
       left: 10px;
     }
@@ -70,6 +69,9 @@
                     </a>
                     <a href="{{ url_for('fantasy.index') }}" class="navbar-item has-text-weight-bold">
                         Fantasy
+                        {% if current_user.can_recruit() %}
+                        <span class="button__badge">!</span>
+                        {% endif %}
                     </a>
                     {% if current_user.is_admin_user() %}
                     <a href="{{ url_for('admin.index') }}" class="navbar-item">
