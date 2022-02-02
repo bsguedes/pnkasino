@@ -11,7 +11,7 @@ SILVER_PERKS = {
 }
 
 GOLD_PERKS = {
-    1: '1 ponto a cada 4 jogos com < 1 morte a cada 15 min',
+    1: '1 ponto a cada 3 jogos com < 1 morte a cada 15 min',
     2: '1 ponto a cada 500k hero damage',
     3: '1 ponto a cada 12 utility items (*)',
     4: '1 ponto a cada 150 assists',
