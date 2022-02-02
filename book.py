@@ -15,6 +15,13 @@ book = Blueprint('book', __name__)
 def index():
     message_list = sorted([m.as_json() for m in Message.query.all() if m.parent_message_id is None],
                           key=lambda m: m['latest_at'], reverse=True)
+
+    if not current_user.is_anonymous:
+        last_message_id = max([m.id for m in Message.query.all()])
+        if last_message_id is not None:
+            current_user.last_message_seen = last_message_id
+            db.session.commit()
+
     return render_template('book.html', message_list=message_list)
 
 

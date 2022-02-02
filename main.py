@@ -210,7 +210,7 @@ def ranking():
     users_fcoins = sorted(users_payload, key=lambda e: -e['fworth'])
     i = 1
     for item in users_fcoins:
-        item['position'] = i
+        item['position_f'] = i
         i += 1
 
     return render_template('ranking.html',

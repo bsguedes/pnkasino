@@ -133,6 +133,7 @@ def buy():
         current_user.fantasy_earnings -= card.value()
         card.current_delta += 1
         current_user.last_login = func.now()
+        current_user.last_fantasy_at = func.now()
         db.session.commit()
         card_value_updated(card.name, card.value())
         card_bought(card.name)

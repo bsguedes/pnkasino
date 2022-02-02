@@ -25,6 +25,11 @@ def index(user_id):
         user.profile_views += 1
         db.session.commit()
         user.check_achievement(heroes.SNIPER)
+    else:
+        last_scrap_id = 0 if len(current_user.scraps) == 0 else max([s.id for s in current_user.scraps])
+        if last_scrap_id is not None:
+            user.last_scrap_seen = last_scrap_id
+            db.session.commit()
 
     user_profile = user.profile_json()
     return render_template('profile.html', user=user_profile,

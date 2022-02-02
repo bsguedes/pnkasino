@@ -9,9 +9,10 @@ import heroes
 from models.card import Card
 from models.league import League
 from models.bet import Bet
+from models.message import Message
 from models.achievement_user import AchievementUser
 from models.achievement import Achievement
-from datetime import timedelta
+from datetime import timedelta, date
 
 
 class User(UserMixin, db.Model):
@@ -33,6 +34,9 @@ class User(UserMixin, db.Model):
     bets = db.relationship('Bet', backref='user', lazy=True)
     last_login = db.Column(db.DateTime)
     last_seen = db.Column(db.DateTime)
+    last_fantasy_at = db.Column(db.DateTime)
+    last_message_seen = db.Column(db.Integer)
+    last_scrap_seen = db.Column(db.Integer)
     is_admin = db.Column(db.Integer, default=0)
     card_1_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
     card_2_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
@@ -82,6 +86,14 @@ class User(UserMixin, db.Model):
                              key=lambda e: e['latest_at'], reverse=True)
         }
 
+    def unread_scraps(self):
+        last_scrap_seen = self.last_scrap_seen if self.last_scrap_seen is not None else 0
+        return len([1 for scrap in self.scraps if scrap.id > last_scrap_seen])
+
+    def unread_messages(self):
+        last_message_seen = self.last_message_seen if self.last_message_seen is not None else 0
+        return len([1 for message in Message.query.all() if message.id > last_message_seen])
+
     def open_bets_count(self):
         leagues = League.query.filter_by(state='available').all()
         categories = []
@@ -96,7 +108,14 @@ class User(UserMixin, db.Model):
     def can_recruit(self):
         has_available_league = League.query.filter_by(state='available').first() is not None
         missing_team = not self.has_full_team()
-        return has_available_league and missing_team
+        modified_this_month = not(self.last_fantasy_at is None or self.last_fantasy_at.month != date.today().month)
+        if not has_available_league:
+            return False
+        if missing_team:
+            return True
+        if modified_this_month:
+            return False
+        return True
 
     def assign_achievement(self, hero_id):
         achievement = Achievement.query.filter_by(hero_id=hero_id).first()
