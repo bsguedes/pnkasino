@@ -34,6 +34,8 @@
       left: 10px;
     }
 
+
+
     </style>
 </head>
 
@@ -42,86 +44,87 @@
     <div class="hero-head">
         <nav class="navbar">
             <div class="navbar-brand">
+                {% if current_user.is_authenticated %}
                 <div class="navbar-item">
-                    <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png" width="28" height="28">
+                    <h3 id="coinsHeader" class="has-text-weight-bold">{{current_user.pnkoins}} ₭</h3>
                 </div>
-                    {% if current_user.is_authenticated %}
-                    <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} ₭</h2>
-                    <h2 class="has-text-weight-bold navbar-item">{{current_user.fcoins}} ƒ</h2>
-                    {% endif %}
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('prfl.index', user_id=current_user.id) }}" class="navbar-item">
+                <div class="navbar-item">
+                    <h3 class="has-text-weight-bold">{{current_user.fcoins}} ƒ</h3>
+                </div>
+                {% endif %}
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('prfl.index', user_id=current_user.id) }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-user"></i>
                         </span>
-                        {% if current_user.unread_scraps() > 0 %}
-                        <span class="button__badge">{{ current_user.unread_scraps() }}</span>
-                        {% endif %}
-                    </a>
-                    {% else %}
-                    <a href="{{ url_for('main.index') }}" class="navbar-item">
+                    {% if current_user.unread_scraps() > 0 %}
+                    <span class="button__badge">{{ current_user.unread_scraps() }}</span>
+                    {% endif %}
+                </a>
+                {% else %}
+                <a href="{{ url_for('main.index') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-home"></i>
                         </span>
-                    </a>
-                    {% endif %}
-                    <a href="{{ url_for('book.index') }}" class="navbar-item">
+                </a>
+                {% endif %}
+                <a href="{{ url_for('book.index') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-book"></i>
                         </span>
-                        {% if current_user.is_authenticated and current_user.unread_messages() > 0 %}
-                        <span class="button__badge">{{ current_user.unread_messages() }}</span>
-                        {% endif %}
-                    </a>
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('main.bets') }}" class="navbar-item has-text-weight-bold">
+                    {% if current_user.is_authenticated and current_user.unread_messages() > 0 %}
+                    <span class="button__badge">{{ current_user.unread_messages() }}</span>
+                    {% endif %}
+                </a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.bets') }}" class="navbar-item has-text-weight-bold">
                         <span class="icon">
                           <i class="fas fa-dice"></i>
                         </span>
-                        {% if current_user.open_bets_count() > 0 %}
-                        <span class="button__badge">{{ current_user.open_bets_count() }}</span>
-                        {% endif %}
-                    </a>
-                    <a href="{{ url_for('roulette.index') }}" class="navbar-item">
+                    {% if current_user.open_bets_count() > 0 %}
+                    <span class="button__badge">{{ current_user.open_bets_count() }}</span>
+                    {% endif %}
+                </a>
+                <a href="{{ url_for('roulette.index') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-sun"></i>
                         </span>
-                    </a>
-                    <a href="{{ url_for('fantasy.index') }}" class="navbar-item has-text-weight-bold">
+                </a>
+                <a href="{{ url_for('fantasy.index') }}" class="navbar-item has-text-weight-bold">
                         <span class="icon">
                           <i class="fas fa-clipboard"></i>
                         </span>
-                        {% if current_user.can_recruit() %}
-                        <span class="button__badge">!</span>
-                        {% endif %}
-                    </a>
-                    {% if current_user.is_admin_user() %}
-                    <a href="{{ url_for('admin.index') }}" class="navbar-item">
+                    {% if current_user.can_recruit() %}
+                    <span class="button__badge">!</span>
+                    {% endif %}
+                </a>
+                {% if current_user.is_admin_user() %}
+                <a href="{{ url_for('admin.index') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-cog"></i>
                         </span>
-                    </a>
-                    {% endif %}
-                    {% endif %}
-                    {% if not current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.login') }}" class="navbar-item">
+                </a>
+                {% endif %}
+                {% endif %}
+                {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('auth.login') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-sign-in"></i>
                         </span>
-                    </a>
-                    <a href="{{ url_for('auth.signup') }}" class="navbar-item">
+                </a>
+                <a href="{{ url_for('auth.signup') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-user-plus"></i>
                         </span>
-                    </a>
-                    {% endif %}
-                    {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('auth.logout') }}" class="navbar-item">
+                </a>
+                {% endif %}
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('auth.logout') }}" class="navbar-item">
                         <span class="icon">
                           <i class="fas fa-sign-out-alt"></i>
                         </span>
-                    </a>
-                    {% endif %}
+                </a>
+                {% endif %}
             </div>
         </nav>
     </div>

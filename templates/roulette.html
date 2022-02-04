@@ -137,7 +137,7 @@
     winners.forEach(msg=> {
       if ( msg.user_id === $('input')[1].value  ){
         $( '#rouletteHeader' ).html( 'Boouuuuua! Ganhou ' + msg.winnings + ' PnKoins!' )
-        $( '#coinsHeader' ).html( msg.new_balance + ' PnKoins' )
+        $( '#coinsHeader' ).html( msg.new_balance + ' ₭' )
         changed = true
       }
     });
@@ -171,7 +171,7 @@
     if ( error === null ) {
       $( '#rouletteHeader' ).empty()
       if ( msg.user_id === $('input')[1].value ){
-        $( '#coinsHeader' ).html( msg.new_balance + ' PnKoins' )
+        $( '#coinsHeader' ).html( msg.new_balance + ' ₭' )
         $('#btG').prop('disabled', true)
         $('#btR').prop('disabled', true)
         $('#btB').prop('disabled', true)
