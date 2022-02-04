@@ -26,12 +26,13 @@
 
 <form method="POST" action="/book/create">
     <div class="columns is-gapless is-multiline is-mobile">
-      <div class="column">
-        <input class="input is-small" name="book_message" placeholder="Mensagem" autofocus="">
-      </div>
-      <div class="column is-one-fifth">
-        <button class="button is-block is-light is-small is-fullwidth">Enviar</button>
-      </div>
+        <div class="column">
+            <input class="input is-small" name="book_message" placeholder="Mensagem" autofocus="">
+        </div>
+        <div class="column is-1"></div>
+        <div class="column is-one-fifth">
+            <button class="button is-block is-light is-small is-fullwidth">Enviar</button>
+        </div>
     </div>
 </form>
 
@@ -43,59 +44,67 @@
 
 <form method="POST" action="/book/vote">
     <div class="columns is-gapless is-multiline is-mobile">
-      <div class="column">
-        <h3 align="left" style="color:#eeeeee">{{ message['message'] }}</h3>
-      </div>
-      <div class="column is-1">
-        <font size="2"><h6 align="left">{{ message['created_at'].strftime('%d %b') }}</h6></font>
-      </div>
-      <div class="column is-1">
-          <font size="2"><h6 align="center"><b>{{message['likes']}}-{{message['dislikes']}}</b></h6></font>
-      </div>
-      <div class="column is-1">
-        {% if message['can_vote'] %}
-        <input class="button is-block is-success is-small" type="submit" align="right"
-                   name="upvote_message" value="+1"/>
-        {% endif %}
-      </div>
-      <div class="column is-1">
-          {% if message['can_vote'] %}
-        <input type="hidden" name="id" value="{{message['message_id']}}"/>
-        <input class="button is-block is-danger is-small" type="submit" align="left"
-                   name="downvote_message" value="-1"/>
-          {% endif %}
-      </div>
+        <div class="column">
+            <h3 align="left" style="color:#eeeeee">{{ message['message'] }}</h3>
+        </div>
+        <div class="column is-1">
+            <font size="2"><h6 align="left">{{ message['created_at'].strftime('%d %b') }}</h6></font>
+        </div>
+        <div class="column is-1">
+            <font size="2"><h6 align="center"><b>{{message['likes']}}-{{message['dislikes']}}</b></h6></font>
+        </div>
+        <div class="column is-1">
+            {% if message['can_vote'] %}
+            <p class="buttons">
+                <button class="button is-block is-success is-small" name="upvote_message">
+            <span class="icon">
+              <i class="fas fa-thumbs-up"></i>
+            </span>
+                </button>
+                <input type="hidden" name="id" value="{{message['message_id']}}"/>
+                <button class="button is-block is-danger is-small" name="downvote_message">
+            <span class="icon">
+              <i class="fas fa-thumbs-down"></i>
+            </span>
+                </button>
+            </p>
+            {% endif %}
+        </div>
     </div>
 </form>
 
 {% for response in message['responses'] %}
 <form method="POST" action="/book/vote">
     <div class="columns is-gapless is-multiline is-mobile">
-      <div class="column is-1">
+        <div class="column is-1">
 
-      </div>
-      <div class="column">
-          <h3 align="left" style="color:#cdcdcd"><i>{{ response['message'] }}</i></h3>
-      </div>
-      <div class="column is-1">
-        <font size="2"><h6 align="left">{{ response['created_at'].strftime('%d %b') }}</h6></font>
-      </div>
-      <div class="column is-1">
-          <font size="2"><h6 align="center"><b>{{response['likes']}}-{{response['dislikes']}}</b></h6></font>
-      </div>
-      <div class="column is-1">
-        {% if response['can_vote'] %}
-        <input class="button is-block is-success is-small" type="submit" align="right"
-                   name="upvote_message" value="+1"/>
-          {% endif %}
-      </div>
-      <div class="column is-1">
-          {% if response['can_vote'] %}
-        <input type="hidden" name="id" value="{{response['message_id']}}"/>
-        <input class="button is-block is-danger is-small" type="submit" align="left"
-                   name="downvote_message" value="-1"/>
-        {% endif %}
-      </div>
+        </div>
+        <div class="column">
+            <h3 align="left" style="color:#cdcdcd"><i>{{ response['message'] }}</i></h3>
+        </div>
+        <div class="column is-1">
+            <font size="2"><h6 align="left">{{ response['created_at'].strftime('%d %b') }}</h6></font>
+        </div>
+        <div class="column is-1">
+            <font size="2"><h6 align="center"><b>{{response['likes']}}-{{response['dislikes']}}</b></h6></font>
+        </div>
+        <div class="column is-1">
+            {% if response['can_vote'] %}
+            <p class="buttons">
+                <button class="button is-block is-success is-small" name="upvote_message">
+            <span class="icon">
+              <i class="fas fa-thumbs-up"></i>
+            </span>
+                </button>
+                <input type="hidden" name="id" value="{{response['message_id']}}"/>
+                <button class="button is-block is-danger is-small" name="downvote_message">
+            <span class="icon">
+              <i class="fas fa-thumbs-down"></i>
+            </span>
+                </button>
+            </p>
+            {% endif %}
+        </div>
     </div>
 </form>
 {% endfor %}
@@ -103,12 +112,12 @@
 
 <form method="POST" action="/book/reply">
     <div class="columns is-gapless is-multiline is-mobile">
-        <div class="column is-1">
-        </div>
+        <div class="column is-1"></div>
         <div class="column">
             <input class="input is-small" name="book_reply" placeholder="Resposta">
             <input type="hidden" name="id" value="{{message['message_id']}}"/>
         </div>
+        <div class="column is-1"></div>
         <div class="column is-one-fifth">
             <button class="button is-block is-light is-small is-fullwidth">Responder</button>
         </div>

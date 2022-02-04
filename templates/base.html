@@ -10,7 +10,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>PnKasino</title>
     <link rel="icon" href="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.2/css/bulma.min.css"/>
+    <link rel="stylesheet" href="//use.fontawesome.com/releases/v5.10.2/css/all.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.3/css/bulma.min.css">
 
     <style>
     .progress::-webkit-progress-value {
@@ -32,6 +33,7 @@
       top: 0;
       left: 10px;
     }
+
     </style>
 </head>
 
@@ -39,66 +41,87 @@
 <section class="hero is-primary is-fullheight has-background-black has-text-grey-lighter">
     <div class="hero-head">
         <nav class="navbar">
-            <div id="navbarMenuHeroA" class="navbar-menu is-active has-background-black">
-                <div class="navbar-end has-background-black">
+            <div class="navbar-brand">
+                <div class="navbar-item">
+                    <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png" width="28" height="28">
+                </div>
                     {% if current_user.is_authenticated %}
-                    <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} PnKoins</h2>
-                    <h2 class="has-text-weight-bold navbar-item">{{current_user.fcoins}} Éficoins</h2>
+                    <h2 id="coinsHeader" class="has-text-weight-bold navbar-item">{{current_user.pnkoins}} ₭</h2>
+                    <h2 class="has-text-weight-bold navbar-item">{{current_user.fcoins}} ƒ</h2>
                     {% endif %}
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('prfl.index', user_id=current_user.id) }}" class="navbar-item">
-                        Perfil
+                        <span class="icon">
+                          <i class="fas fa-user"></i>
+                        </span>
                         {% if current_user.unread_scraps() > 0 %}
                         <span class="button__badge">{{ current_user.unread_scraps() }}</span>
                         {% endif %}
                     </a>
                     {% else %}
                     <a href="{{ url_for('main.index') }}" class="navbar-item">
-                        Início
+                        <span class="icon">
+                          <i class="fas fa-home"></i>
+                        </span>
                     </a>
                     {% endif %}
                     <a href="{{ url_for('book.index') }}" class="navbar-item">
-                        Doteiros Anônimos
+                        <span class="icon">
+                          <i class="fas fa-book"></i>
+                        </span>
                         {% if current_user.is_authenticated and current_user.unread_messages() > 0 %}
                         <span class="button__badge">{{ current_user.unread_messages() }}</span>
                         {% endif %}
                     </a>
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('main.bets') }}" class="navbar-item has-text-weight-bold">
-                        Apostas
+                        <span class="icon">
+                          <i class="fas fa-dice"></i>
+                        </span>
                         {% if current_user.open_bets_count() > 0 %}
                         <span class="button__badge">{{ current_user.open_bets_count() }}</span>
                         {% endif %}
                     </a>
                     <a href="{{ url_for('roulette.index') }}" class="navbar-item">
-                        Roleta
+                        <span class="icon">
+                          <i class="fas fa-sun"></i>
+                        </span>
                     </a>
                     <a href="{{ url_for('fantasy.index') }}" class="navbar-item has-text-weight-bold">
-                        Fantasy
+                        <span class="icon">
+                          <i class="fas fa-clipboard"></i>
+                        </span>
                         {% if current_user.can_recruit() %}
                         <span class="button__badge">!</span>
                         {% endif %}
                     </a>
                     {% if current_user.is_admin_user() %}
                     <a href="{{ url_for('admin.index') }}" class="navbar-item">
-                        Admin
+                        <span class="icon">
+                          <i class="fas fa-cog"></i>
+                        </span>
                     </a>
                     {% endif %}
                     {% endif %}
                     {% if not current_user.is_authenticated %}
                     <a href="{{ url_for('auth.login') }}" class="navbar-item">
-                        Login
+                        <span class="icon">
+                          <i class="fas fa-sign-in"></i>
+                        </span>
                     </a>
                     <a href="{{ url_for('auth.signup') }}" class="navbar-item">
-                        Cadastrar
+                        <span class="icon">
+                          <i class="fas fa-user-plus"></i>
+                        </span>
                     </a>
                     {% endif %}
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('auth.logout') }}" class="navbar-item">
-                        Logout
+                        <span class="icon">
+                          <i class="fas fa-sign-out-alt"></i>
+                        </span>
                     </a>
                     {% endif %}
-                </div>
             </div>
         </nav>
     </div>

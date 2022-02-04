@@ -127,7 +127,7 @@
 
                 <div class="media-content">
 
-                    <div class="content">
+                    <div class="content has-text-left">
                         <p>
                             {% if not scrap['is_anonymous'] %}
                             <strong><a href="{{ url_for('prfl.index', user_id=scrap['author_id']) }}">{{scrap['author_name']}}</a></strong>
@@ -153,7 +153,7 @@
                         </figure>
 
                         <div class="media-content">
-                            <div class="content is-size-7">
+                            <div class="content is-size-7 has-text-left">
                                 <p>
                                     {% if not response['is_anonymous'] %}
                                     <strong><a href="{{ url_for('prfl.index', user_id=response['author_id']) }}">{{response['author_name']}}</a></strong>
