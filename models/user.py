@@ -37,6 +37,7 @@ class User(UserMixin, db.Model):
     last_fantasy_at = db.Column(db.DateTime)
     last_message_seen = db.Column(db.Integer)
     last_scrap_seen = db.Column(db.Integer)
+    achievements_seen = db.Column(db.Integer)
     is_admin = db.Column(db.Integer, default=0)
     card_1_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
     card_2_id = db.Column(db.Integer, db.ForeignKey('card.id'), nullable=True)
@@ -93,6 +94,10 @@ class User(UserMixin, db.Model):
     def unread_messages(self):
         last_message_seen = self.last_message_seen if self.last_message_seen is not None else 0
         return len([1 for message in Message.query.all() if message.id > last_message_seen])
+
+    def unseen_achievements(self):
+        achievements_seen = self.achievements_seen if self.achievements_seen is not None else 0
+        return len(self.achievement_users) - achievements_seen
 
     def open_bets_count(self):
         leagues = League.query.filter_by(state='available').all()

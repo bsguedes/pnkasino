@@ -33,12 +33,18 @@
       top: 2px;
       left: 25px;
     }
+    .relative__badge {
+      background-color: #fa3e3e;
+      border-radius: 8px;
+      color: white;
 
+      padding: 1px 6px 2px 5px;
+      font-size: 9px;
 
-
-
-
-
+      position: relative;
+      bottom: 10px;
+      left: 0px;
+    }
     </style>
 </head>
 
@@ -188,6 +194,9 @@
             |
             <a href="{{ url_for('main.pool') }}">
                 Hero Pool
+                {% if current_user.unseen_achievements() > 0 %}
+                <span class="relative__badge has-text-weight-bold">{{ current_user.unseen_achievements() }}</span>
+                {% endif %}
             </a>
             <br/>
             <br/>

@@ -173,6 +173,9 @@ def pool():
 
     hero_pool = sorted(hero_pool, key=lambda e: (not e['has_earned'], -e['earned_count']))
 
+    current_user.achievements_seen = len(current_user.achievement_users)
+    db.session.commit()
+
     return render_template('pool.html', achievements=hero_pool)
 
 
