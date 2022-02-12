@@ -84,7 +84,7 @@
         <th>Last Login</th>
         <th>Email</th>
         <th>Dota Name</th>
-        <th>Reset Password</th>
+        <th>Edit User</th>
     </tr>
     </thead>
     <tbody>
@@ -95,18 +95,9 @@
         <td style="color:#363636">{{item['login']}}</td>
         <td style="color:#363636">{{item['email']}}</td>
         <td style="color:#363636">{{item['dota_name']}}</td>
-        {% if item['rec_url'] is none %}
         <td>
-            <form method="POST" action="/admin/reset">
-                <button class="button is-block is-danger is-small is-fullwidth">Reset Pwd</button>
-                <input type="hidden" name="pwdid" value="{{item['id']}}"/>
-            </form>
+            <a class="button is-link is-success is-small" href="/admin/edit/{{item.id}}">Edit</a>
         </td>
-        {% else %}
-        <td>
-            {{item['rec_url']}}
-        </td>
-        {% endif %}
     </tr>
     {% endfor %}
     </tbody>
@@ -195,6 +186,7 @@
         <th>Hero</th>
         <th>Description</th>
         <th>Earned by</th>
+        <th colspan="4">Category</th>
         <th>Edit</th>
     </tr>
     </thead>
@@ -205,6 +197,26 @@
         <td style="color:#363636">{{item['hero_name']}}</td>
         <td style="color:#363636">{{item['description']}}</td>
         <td style="color:#363636">{{item['earned_count']}}</td>
+        <td style="color:#363636">{{item['category']}}</td>
+        <td>
+            <form id="formach{{item.id}}" action="/achievement/category" method="post">
+                <input type="hidden" name="achievement_id" value="{{item.id}}"/>
+            </form>
+        </td>
+        <td>
+            <select name="category" form="formach{{item.id}}">
+              {% for category in achievement_categories %}
+                <option value="t_{{category.id}}">{{category.name}}</option>
+              {% endfor %}
+            </select>
+        </td>
+        <td>
+            <input class="button is-block is-info is-small is-danger"
+                   form="formach{{item.id}}"
+                   type="submit"
+                   name="up"
+                   value="Change category"/>
+        </td>
         <td>
             <a class="button is-link is-success is-small" href="/achievement/edit/{{item['id']}}">Edit</a>
         </td>

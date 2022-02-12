@@ -27,7 +27,8 @@
 <form method="POST" action="/book/create">
     <div class="columns is-gapless is-multiline is-mobile">
         <div class="column">
-            <input class="input is-small" name="book_message" placeholder="Mensagem" autofocus="">
+            <input class="input is-small has-background-grey-light"
+                   name="book_message" placeholder="Mensagem" autofocus="">
         </div>
         <div class="column is-1"></div>
         <div class="column is-one-fifth">
@@ -44,7 +45,7 @@
 
 <form method="POST" action="/book/vote">
     <div class="columns is-gapless is-multiline is-mobile">
-        <div class="column">
+        <div class="column dont-break-out">
             <h3 align="left" style="color:#eeeeee">{{ message['message'] }}</h3>
         </div>
         <div class="column is-1">
@@ -114,7 +115,7 @@
     <div class="columns is-gapless is-multiline is-mobile">
         <div class="column is-1"></div>
         <div class="column">
-            <input class="input is-small" name="book_reply" placeholder="Resposta">
+            <input class="input is-small has-background-grey-light" name="book_reply" placeholder="Resposta">
             <input type="hidden" name="id" value="{{message['message_id']}}"/>
         </div>
         <div class="column is-1"></div>

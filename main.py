@@ -159,6 +159,7 @@ def pool():
                     'hero_name': achievement['hero_name'],
                     'description': achievement['description'],
                     'earned_count': achievement['earned_count'],
+                    'category': achievement['category'],
                     'has_earned': True
                 })
         else:
@@ -167,16 +168,17 @@ def pool():
                     'hero_id': achievement['hero_id'],
                     'hero_name': achievement['hero_name'],
                     'description': None,
+                    'category': achievement['category'],
                     'earned_count': achievement['earned_count'],
                     'has_earned': False
                 })
 
-    hero_pool = sorted(hero_pool, key=lambda e: (not e['has_earned'], -e['earned_count']))
+    hero_pool = sorted(hero_pool, key=lambda e: (e['category'], not e['has_earned'], -e['earned_count']))
 
     current_user.achievements_seen = len(current_user.achievement_users)
     db.session.commit()
 
-    return render_template('pool.html', achievements=hero_pool)
+    return render_template('pool.html', achievements=groupby(hero_pool, key=lambda e: e['category']))
 
 
 @main.route('/ranking')

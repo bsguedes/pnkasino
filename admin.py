@@ -17,9 +17,7 @@ import random
 import heroes
 import time
 
-
 admin = Blueprint('admin', __name__)
-
 
 league_states = ['new', 'available', 'blocked', 'finished']
 
@@ -46,12 +44,25 @@ def index():
                                scraps=[s.as_json() for s in Scrap.query.order_by(text("id desc")).limit(10)],
                                achievements=sorted([a.as_json() for a in Achievement.query.all()],
                                                    key=lambda e: e['earned_count'], reverse=True),
+                               achievement_categories=[{'id': k, 'name': v} for k, v in
+                                                       Achievement.categories().items()],
                                amounts={
                                    'scraps': Scrap.query.count(),
                                    'achievements': AchievementUser.query.count(),
                                    'votes': Vote.query.count(),
                                    'book': Message.query.count(),
                                })
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/admin/edit/<int:user_id>')
+@login_required
+def edit_user(user_id):
+    if current_user.is_admin_user():
+        user = User.query.filter_by(id=user_id).first()
+        return render_template('edit_user.html', user=user.as_json())
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.index'))
@@ -114,7 +125,7 @@ def reset_pwd():
         u.rec_key = "%032x" % h
         db.session.commit()
         flash('Password reset!', 'success')
-        return redirect(url_for('admin.index'))
+        return redirect(url_for('admin.edit_user', user_id=user_id))
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.index'))
@@ -353,6 +364,23 @@ def edit_achievement(achievement_id):
         return redirect(url_for('main.index'))
 
 
+@admin.route('/achievement/category', methods=['POST'])
+@login_required
+def achievement_change_category():
+    if current_user.is_admin_user():
+        achievement_id = int(request.form.get('achievement_id'))
+        achievement = Achievement.query.filter_by(id=achievement_id).first()
+        category_label = request.form.get('category')
+        category_id = int(category_label[2:])
+        achievement.category = category_id
+        db.session.commit()
+        flash('Moved %s to %s successfully' % (achievement.hero_name, Achievement.categories()[category_id]), 'success')
+        return redirect(url_for('admin.index'))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
 @admin.route('/achievement/edit/description', methods=['POST'])
 @login_required
 def edit_achievement_description():
@@ -368,6 +396,26 @@ def edit_achievement_description():
         except:
             flash('Please check your data', 'error')
             return redirect(url_for('admin.edit_achievement', achievement_id=achievement_id))
+    else:
+        flash('User is not an admin', 'error')
+        return redirect(url_for('main.index'))
+
+
+@admin.route('/admin/edit/name', methods=['POST'])
+@login_required
+def edit_user_stats_name():
+    user_id = request.form.get('id')
+    if current_user.is_admin_user():
+        try:
+            new_name = request.form.get('stats_name')
+            user = User.query.filter_by(id=user_id).first()
+            user.stats_name = new_name
+            db.session.commit()
+            flash('Stats Name changed', 'success')
+            return redirect(url_for('admin.edit_user', user_id=user_id))
+        except:
+            flash('Please check your data', 'error')
+            return redirect(url_for('admin.edit_user', user_id=user_id))
     else:
         flash('User is not an admin', 'error')
         return redirect(url_for('main.index'))

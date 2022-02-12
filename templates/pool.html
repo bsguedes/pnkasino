@@ -8,6 +8,8 @@
     Hero Pool
 </h1>
 
+{% for group, items in achievements %}
+<h2> {{ group }} </h2>
 <table class="table is-narrow table-striped table-responsive table-bordered is-fullwidth has-text-left">
     <thead>
     <tr>
@@ -18,9 +20,9 @@
     </tr>
     </thead>
     <tbody>
-    {% for item in achievements %}
+    {% for item in items %}
     <tr>
-        <td style="color:#212121;font-weight:bold">
+        <td style="color:#212121;font-weight:bold;width:96px">
             <figure class="image is-16by9">
                 <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/heroes/{{item['hero_id']}}.jpg"/>
             </figure>
@@ -37,5 +39,5 @@
     {% endfor %}
     </tbody>
 </table>
-
+{% endfor %}
 {% endblock %}

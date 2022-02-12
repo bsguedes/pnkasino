@@ -12,6 +12,7 @@ from models.bet import Bet
 from models.message import Message
 from models.achievement_user import AchievementUser
 from models.achievement import Achievement
+from models.friendship import Friendship
 from datetime import timedelta, date
 
 
@@ -56,6 +57,7 @@ class User(UserMixin, db.Model):
     scraps = db.relationship('Scrap', foreign_keys='Scrap.profile_id', backref='user', lazy=True)
     scraps_written = db.relationship('Scrap', foreign_keys='Scrap.author_id', lazy=True)
     votes = db.relationship('Vote', foreign_keys='Vote.user_id', backref='user', lazy=True)
+    friends = db.relationship('Friendship', foreign_keys='Friendship.invited_id', backref='user', lazy=True)
 
     def as_json(self):
         return {
@@ -81,6 +83,7 @@ class User(UserMixin, db.Model):
             'name': '' if self.name == self.stats_name or self.stats_name is None else self.name,
             'pnkoins': self.pnkoins,
             'fcoins': self.fcoins,
+            'friends': [f.as_json() for f in self.friends],
             'achievements': sorted([au.as_json() for au in self.achievement_users],
                                    key=lambda e: e['created_at'], reverse=True),
             'scraps': sorted([s.as_json() for s in self.scraps if s.parent_scrap_id is None],
@@ -109,6 +112,11 @@ class User(UserMixin, db.Model):
         categories_betted = [b.category_id for b in Bet.query.filter_by(user_id=self.id).all()]
         valid_categories = [c for c in categories if c.id not in categories_betted]
         return len(valid_categories)
+
+    def notification_text(self):
+        if self.can_recruit():
+            return '!'
+        return self.open_bets_count() + self.unread_messages() + self.unread_scraps()
 
     def can_recruit(self):
         has_available_league = League.query.filter_by(state='available').first() is not None

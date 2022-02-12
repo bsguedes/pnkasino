@@ -45,17 +45,59 @@
       bottom: 10px;
       left: 0px;
     }
+.dont-break-out {
+
+  /* These are technically the same, but use both */
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+
+  -ms-word-break: break-all;
+  /* This is the dangerous one in WebKit, as it breaks things wherever */
+  word-break: break-all;
+  /* Instead use this non-standard one: */
+  word-break: break-word;
+
+  /* Adds a hyphen where the word breaks, if supported (No Blink) */
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+
+}
     </style>
 </head>
 
 <body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+  // Check for click events on the navbar burger icon
+  $(".navbar-burger").click(function() {
+
+      // Toggle the "is-active" class on both the "navbar-burger" and the "navbar-menu"
+      $(".navbar-burger").toggleClass("is-active");
+      $(".navbar-menu").toggleClass("is-active");
+
+  });
+});
+
+
+</script>
+
 <section class="hero is-primary is-fullheight has-background-black has-text-grey-lighter">
     <div class="hero-head">
         <nav class="navbar">
             <div class="navbar-brand">
                 <div class="navbar-item">
-                    <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png" width="28"
-                         height="28">
+                    <a href="{{ url_for('main.index') }}">
+                        <img src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/pnkoins.png" width="28"
+                             height="28">
+                        {% if current_user.is_authenticated and current_user.notification_text() is not none %}
+                        <span aria-hidden="true" class="button__badge has-text-weight-bold">{{ current_user.notification_text() }}</span>
+                        {% endif %}
+                    </a>
                 </div>
                 {% if current_user.is_authenticated %}
                 <div class="navbar-item">
@@ -65,8 +107,13 @@
                     <h3 class="has-text-weight-bold">{{current_user.fcoins}} ƒ</h3>
                 </div>
                 {% endif %}
+                <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
             </div>
-            <div id="navbarMenuHeroA" class="navbar-menu is-active has-background-black">
+            <div id="navbarMenuHeroA" class="navbar-menu has-background-black">
                 <div class="navbar-end has-background-black">
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('prfl.index', user_id=current_user.id) }}" class="navbar-item">
@@ -98,7 +145,7 @@
                             <span>Doteiros Anônimos</span>
                         </span>
                         {% if current_user.is_authenticated and current_user.unread_messages() > 0 %}
-                            <span class="button__badge has-text-weight-bold">{{ current_user.unread_messages() }}</span>
+                        <span class="button__badge has-text-weight-bold">{{ current_user.unread_messages() }}</span>
                         {% endif %}
                     </a>
                     {% if current_user.is_authenticated %}
@@ -110,7 +157,7 @@
                             <span>Apostas</span>
                         </span>
                         {% if current_user.open_bets_count() > 0 %}
-                            <span class="button__badge has-text-weight-bold">{{ current_user.open_bets_count() }}</span>
+                        <span class="button__badge has-text-weight-bold">{{ current_user.open_bets_count() }}</span>
                         {% endif %}
                     </a>
                     <a href="{{ url_for('roulette.index') }}" class="navbar-item">
@@ -129,7 +176,7 @@
                             <span>Fantasy</span>
                         </span>
                         {% if current_user.can_recruit() %}
-                            <span class="button__badge has-text-weight-bold">!</span>
+                        <span class="button__badge has-text-weight-bold">!</span>
                         {% endif %}
                     </a>
                     {% if current_user.is_admin_user() %}
