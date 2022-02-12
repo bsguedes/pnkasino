@@ -3,7 +3,7 @@
 from flask import url_for
 from flask_login import UserMixin
 from sqlalchemy.sql.functions import session_user
-
+from sqlalchemy import func
 from app import db
 import heroes
 from models.card import Card
@@ -68,6 +68,8 @@ class User(UserMixin, db.Model):
             'dota_name': self.stats_name if self.stats_name is not None else "-",
             'login': (self.last_login - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M") if self.last_login is not None
             else '-',
+            'seen': (self.last_seen - timedelta(hours=3)).strftime("%Y-%m-%d %H:%M") if self.last_seen is not None
+            else '-',
             'rec_url': self.rec_url()
         }
 
@@ -114,6 +116,8 @@ class User(UserMixin, db.Model):
         return len(valid_categories)
 
     def notification_text(self):
+        self.last_seen = func.now()
+        db.session.commit()
         if self.can_recruit():
             return '!'
         count = self.open_bets_count() + self.unread_messages() + self.unread_scraps()
