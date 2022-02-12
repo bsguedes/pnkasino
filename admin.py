@@ -40,7 +40,7 @@ def index():
                                leagues=sorted([l.as_json() for l in League.query.all()],
                                               key=lambda s: (league_states.index(s['state']), -s['id'])),
                                users=sorted([u.as_json() for u in User.query.all()],
-                                            key=lambda e: e['login'], reverse=True),
+                                            key=lambda e: e['seen'], reverse=True),
                                scraps=[s.as_json() for s in Scrap.query.order_by(text("id desc")).limit(10)],
                                achievements=sorted([a.as_json() for a in Achievement.query.all()],
                                                    key=lambda e: e['earned_count'], reverse=True),
