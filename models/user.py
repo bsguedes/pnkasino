@@ -116,7 +116,9 @@ class User(UserMixin, db.Model):
     def notification_text(self):
         if self.can_recruit():
             return '!'
-        return self.open_bets_count() + self.unread_messages() + self.unread_scraps()
+        count = self.open_bets_count() + self.unread_messages() + self.unread_scraps()
+        if count > 0:
+            return count
 
     def can_recruit(self):
         has_available_league = League.query.filter_by(state='available').first() is not None
