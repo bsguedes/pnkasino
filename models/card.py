@@ -30,13 +30,13 @@ class Card(db.Model):
     def sell_value(self, user):
         extra = 0
         if user.silver_card == self.position:
-            extra += self.silver_cost()
+            extra += self.silver_cost(-1)
         if user.gold_card == self.position:
-            extra += self.gold_cost()
-        return Card.card_value(self.new_base_value + extra, self.current_delta - (2 if extra == 0 else 4))
+            extra += self.gold_cost(-1)
+        return Card.card_value(self.new_base_value, self.current_delta - (1 if extra == 0 else 2)) + extra
 
-    def value(self):
-        return Card.card_value(self.new_base_value, self.current_delta)
+    def value(self, delta=0):
+        return Card.card_value(self.new_base_value, self.current_delta + delta)
 
     def current_value(self, user):
         extra = 0
@@ -46,11 +46,11 @@ class Card(db.Model):
             extra += self.gold_cost()
         return Card.card_value(self.new_base_value + extra, self.current_delta)
 
-    def silver_cost(self):
-        return int(((self.value()/10) ** 2)/1000) * 10
+    def silver_cost(self, delta=0):
+        return int(((self.value(delta)/10) ** 2)/1000) * 10
 
-    def gold_cost(self):
-        return int(((self.value()/10) ** 2)/500) * 10
+    def gold_cost(self, delta=0):
+        return int(((self.value(delta)/10) ** 2)/500) * 10
 
     def silver_perk(self):
         return SILVER_PERKS[self.position]

@@ -266,9 +266,9 @@ def sell():
     elif not current_user.has_player(card.name):
         flash('Você não tem a carta marcada para venda', 'error')
     else:
+        was_promoted = current_user.clear_card(card)
         current_user.add_fcoins(card.sell_value(current_user))
         current_user.fantasy_earnings += card.sell_value(current_user)
-        was_promoted = current_user.clear_card(card)
         card.current_delta -= 2 if was_promoted else 1
         current_user.last_login = func.now()
         db.session.commit()

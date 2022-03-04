@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, flash, request, redirect, url_for
 from flask_login import login_required, current_user
 from models.user import User
 from models.scrap import Scrap
+from models.friendship import Friendship
 import heroes
 from sqlalchemy import func
 from app import db
@@ -34,6 +35,8 @@ def index(user_id):
     user_profile = user.profile_json()
     return render_template('profile.html', user=user_profile,
                            current_user_name=current_user.stats_name,
+                           friend_state=current_user.friend_state(user),
+                           pending_requests=current_user.pending_friendships(),
                            has_hero_pool=(len(user_profile['achievements']) > 0))
 
 
@@ -87,3 +90,76 @@ def reply(user_id):
     else:
         flash('Tamanho inválido de mensagem.', 'error')
         return redirect(url_for('prfl.index', user_id=user_id))
+
+
+@prfl.route('/profile/<int:user_id>/add', methods=['POST'])
+def add(user_id):
+    # add a friend from their profile
+    return inner_add(user_id, user_id)
+
+
+@prfl.route('/profile/<int:user_id>/remove', methods=['POST'])
+def remove(user_id):
+    # remove a friend from their profile
+    return inner_remove(user_id, user_id)
+
+
+@prfl.route('/profile/<int:user_id>/add/self', methods=['POST'])
+def add_self(user_id):
+    # accept a friend request
+    return inner_add(user_id, current_user.id)
+
+
+@prfl.route('/profile/<int:user_id>/remove/self', methods=['POST'])
+def remove_self(user_id):
+    # refuse a friend request
+    return inner_remove(user_id, current_user.id)
+
+
+def inner_add(user_id, redirect_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash('Perfil não encontrado.', 'error')
+        return redirect(url_for('prfl.index', user_id=current_user.id))
+    friendship_out = Friendship.query.filter_by(friend_id=current_user.id, invited_id=user.id).first()
+    friendship_in = Friendship.query.filter_by(friend_id=user.id, invited_id=current_user.id).first()
+
+    if friendship_out is None:
+        friendship_out = Friendship(friend_id=current_user.id, invited_id=user.id,
+                                    state='pending', created_at=func.now())
+        db.session.add(friendship_out)
+
+    if friendship_in is not None:
+        friendship_in.state = 'friend'
+        friendship_out.state = 'friend'
+
+    db.session.commit()
+    if user_id == redirect_id:
+        current_user.assign_achievement(heroes.LONE_DRUID)
+    else:
+        current_user.assign_achievement(heroes.ORACLE)
+
+    current_user.check_achievement(heroes.CHEN)
+    user.check_achievement(heroes.CHEN)
+
+    flash('Adicionou %s aos amigos!' % user.name, 'success')
+    return redirect(url_for('prfl.index', user_id=redirect_id))
+
+
+def inner_remove(user_id, redirect_id):
+    user = User.query.filter_by(id=user_id).first()
+    if user is None:
+        flash('Perfil não encontrado.', 'error')
+        return redirect(url_for('prfl.index', user_id=current_user.id))
+    friendship_out = Friendship.query.filter_by(friend_id=current_user.id, invited_id=user.id).first()
+    friendship_in = Friendship.query.filter_by(friend_id=user.id, invited_id=current_user.id).first()
+
+    if friendship_out is not None:
+        db.session.delete(friendship_out)
+
+    if friendship_in is not None:
+        db.session.delete(friendship_in)
+
+    db.session.commit()
+    flash('Removeu %s dos amigos!' % user.name, 'success')
+    return redirect(url_for('prfl.index', user_id=redirect_id))

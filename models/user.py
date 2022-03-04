@@ -85,16 +85,40 @@ class User(UserMixin, db.Model):
             'name': '' if self.name == self.stats_name or self.stats_name is None else self.name,
             'pnkoins': self.pnkoins,
             'fcoins': self.fcoins,
-            'friends': [f.as_json() for f in self.friends],
+            'friends': [f.as_json() for f in self.friends if f.state == 'friend'],
             'achievements': sorted([au.as_json() for au in self.achievement_users],
                                    key=lambda e: e['created_at'], reverse=True),
             'scraps': sorted([s.as_json() for s in self.scraps if s.parent_scrap_id is None],
                              key=lambda e: e['latest_at'], reverse=True)
         }
 
+    def pending_friendships(self):
+        return [{
+            'id': f.friend_id,
+            'name': f.friend.stats_name,
+        } for f in Friendship.query.filter_by(invited_id=self.id, state='pending')]
+
+    def friend_state(self, target_user):
+        if self.id == target_user.id:
+            return None
+        user_added = Friendship.query.filter_by(friend_id=self.id, invited_id=target_user.id).first()
+        user_invited = Friendship.query.filter_by(friend_id=target_user.id, invited_id=self.id).first()
+        if user_added is None and user_invited is None:
+            # no friendship exists, I can add this person
+            return 'can_add'
+        elif user_added is not None and user_invited is not None:
+            # friendship already exists
+            return 'friend'
+        if user_invited is None:
+            # I've already added, they haven't accepted yet
+            return 'pending_out' if user_added.state == 'pending' else 'can_add'
+        if user_added is None:
+            # they added me, they haven't accepted yet
+            return 'pending_in' if user_invited.state == 'pending' else 'can_add'
+
     def unread_scraps(self):
         last_scrap_seen = self.last_scrap_seen if self.last_scrap_seen is not None else 0
-        return len([1 for scrap in self.scraps if scrap.id > last_scrap_seen])
+        return len([1 for scrap in self.scraps if scrap.id > last_scrap_seen]) + len(self.pending_friendships())
 
     def unread_messages(self):
         last_message_seen = self.last_message_seen if self.last_message_seen is not None else 0
@@ -207,6 +231,9 @@ class User(UserMixin, db.Model):
                         AchievementUser.give_achievement(self.id, achievement_id)
                 elif hero_id == heroes.SPIRIT_BREAKER:
                     if self.bets_earnings() >= 25000:
+                        AchievementUser.give_achievement(self.id, achievement_id)
+                elif hero_id == heroes.CHEN:
+                    if len(self.friends) >= 10:
                         AchievementUser.give_achievement(self.id, achievement_id)
                 else:
                     return False

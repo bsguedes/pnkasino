@@ -27,6 +27,43 @@
                 <img class="is-rounded"
                      src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{user['dota_name']}}.jpg">
             </figure>
+            <br/>
+            <div class="block">
+                {% if friend_state == 'can_add' or friend_state == 'pending_in' %}
+                <form method="POST" action="/profile/{{user.id}}/add">
+                    <button class="button is-block is-primary is-small is-fullwidth">
+                        {% if friend_state == 'can_add' %}
+                        <span class="icon is-small">
+                              <i class="fas fa-user-plus"></i>
+                            </span>
+                        <span>Adicionar</span>
+                        {% else %}
+                        <span class="icon is-small">
+                              <i class="fas fa-user-check"></i>
+                            </span>
+                        <span>Aceitar</span>
+                        {% endif %}
+                    </button>
+                </form>
+
+                {% endif %}
+                {% if friend_state == 'friend' or friend_state == 'pending_in' or friend_state == 'pending_out' %}
+                <form method="POST" action="/profile/{{user.id}}/remove">
+                    <button class="button is-block is-danger is-small is-fullwidth">
+                        <span class="icon is-small">
+                          <i class="fas fa-user-minus"></i>
+                        </span>
+                        {% if friend_state == 'friend' %}
+                        <span>Remover</span>
+                        {% elif friend_state == 'pending_in' %}
+                        <span>Recusar</span>
+                        {% else %}
+                        <span>Cancelar</span>
+                        {% endif %}
+                    </button>
+                </form>
+                {% endif %}
+            </div>
         </div>
         <div class="column">
             <div class="block">
@@ -37,6 +74,7 @@
                 <font size="3"><h6 align="left">{{ user['pnkoins']}} ₭</h6></font>
                 <font size="3"><h6 align="left">{{ user['fcoins']}} ƒ</h6></font>
             </div>
+
         </div>
         <div class="column is-one-fifth">
             <br/><br/>
@@ -50,9 +88,71 @@
     </div>
 </div>
 
+{% for friend in pending_requests %}
+<div class="block">
+    <div class="columns is-multiline is-mobile">
+        <div class="column is-one-fifth" style="width: 96px">
+            <figure class="image is-1by1">
+                <img class="is-rounded"
+                     src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{friend['name']}}.jpg">
+            </figure>
+        </div>
+        <div class="column">
+            <h6 class="title is-size-6">{{ friend['name'] }} quer adicionar você como amigo.</h6>
+        </div>
+        <div class="column is-one-quarter">
+            <form method="POST" action="/profile/{{friend.id}}/add/self">
+                <button class="button is-block is-primary is-small is-fullwidth">
+                    <span class="icon is-small">
+                          <i class="fas fa-user-plus"></i>
+                        </span>
+                    <span>Aceitar</span>
+                </button>
+            </form>
+        </div>
+        <div class="column is-one-quarter">
+            <form method="POST" action="/profile/{{friend.id}}/remove/self">
+                <button class="button is-block is-danger is-small is-fullwidth">
+                        <span class="icon is-small">
+                          <i class="fas fa-user-minus"></i>
+                        </span>
+                    <span>Recusar</span>
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
 <div class="block">
     <div class="columns is-multiline is-mobile">
         <div class="column is-one-quarter">
+            {% if user['friends']|length > 0 %}
+            <block>
+                <b>Amigos ({{ user['friends']|length }})</b>
+            </block>
+            {% endif %}
+            <br/><br/>
+
+            <div class="columns is-multiline">
+                {% for item in user['friends'] %}
+                <div class="column is-4" style="width: 96px">
+                    <a href="{{ url_for('prfl.index', user_id=item['friend_id']) }}">
+                        <figure class="image is-1by1">
+                            <img class="is-rounded"
+                                 src="https://raw.githubusercontent.com/bsguedes/pnkasino/master/img/{{item['friend_name']}}.jpg">
+                        </figure>
+                    </a>
+                    <span>
+                        <a href="{{ url_for('prfl.index', user_id=item['friend_id']) }}">
+                            <h6 class="title is-size-7">{{ item['friend_name'] }}</h6>
+                        </a>
+                    </span>
+                </div>
+                {% endfor %}
+            </div>
+
+
             {% if has_hero_pool %}
             <block>
                 <b>Hero Pool ({{ user['achievements']|length }})</b>
@@ -91,7 +191,8 @@
                 <div class="media-content">
                     <form method="POST" action="/profile/{{user.id}}/scrap">
                         <div class="field">
-                            <input class="input is-small has-background-grey-light" name="scrap_message" placeholder="Mensagem" autofocus="">
+                            <input class="input is-small has-background-grey-light" name="scrap_message"
+                                   placeholder="Mensagem" autofocus="">
                         </div>
                         <nav class="level">
                             <div class="level-left">
@@ -182,7 +283,8 @@
                         <div class="media-content">
                             <form method="POST" action="/profile/{{user.id}}/reply">
                                 <div class="field">
-                                    <input class="input is-small has-background-grey-light" name="scrap_response" placeholder="Mensagem"
+                                    <input class="input is-small has-background-grey-light" name="scrap_response"
+                                           placeholder="Mensagem"
                                            autofocus="">
                                 </div>
                                 <nav class="level">

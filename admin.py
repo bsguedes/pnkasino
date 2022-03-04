@@ -115,9 +115,7 @@ def league_create_post():
 def reset_pwd():
     user_id = request.form.get('pwdid')
     if current_user.is_admin_user():
-        print(user_id)
         u = User.query.filter_by(id=user_id).first()
-        print(u.name)
         if u is None:
             flash('Invalid user', 'error')
             return redirect(url_for('admin.index'))
@@ -165,6 +163,8 @@ def update_rewards():
                 db.session.commit()
                 if player['bonus'] == 5000:
                     user.assign_achievement(heroes.LUNA)
+                if user.fantasy_earnings >= 20000:
+                    user.assign_achievement(heroes.PUGNA)
         flash('Rewards added', 'success')
         return redirect(url_for('admin.index'))
     else:
@@ -256,6 +256,10 @@ def evaluate():
             if ranking is not None and len(ranking) > 0:
                 user = User.query.filter_by(id=ranking[0]['profile_id']).first()
                 user.assign_achievement(heroes.MARS)
+            for user in ranking:
+                if user['coins'] >= 10000:
+                    player = User.query.filter_by(id=user['profile_id']).first()
+                    player.assign_achievement(heroes.BREWMASTER)
 
         flash('Evaluated achievements in  %.3f seconds' % (time.time() - start), 'success')
         return redirect(url_for('admin.index'))
@@ -482,6 +486,13 @@ def league_up():
                         bet.user.earnings -= bet.value
             ranking = league.ranking()
             if ranking is not None and len(ranking) > 0:
+                for user in ranking:
+                    if user['hits'] == len(league.categories) and len(league.categories) > 0:
+                        player = User.query.filter_by(id=user['profile_id']).first()
+                        player.assign_achievement(heroes.MONKEY_KING)
+                    if user['coins'] >= 10000:
+                        player = User.query.filter_by(id=user['profile_id']).first()
+                        player.assign_achievement(heroes.BREWMASTER)
                 winner_player = User.query.filter_by(id=ranking[0]['profile_id']).first()
                 winner_player.assign_achievement(heroes.MARS)
             for user in User.query.all():
