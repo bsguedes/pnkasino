@@ -256,10 +256,11 @@ def evaluate():
             if ranking is not None and len(ranking) > 0:
                 user = User.query.filter_by(id=ranking[0]['profile_id']).first()
                 user.assign_achievement(heroes.MARS)
-            for user in ranking:
-                if user['coins'] >= 10000:
-                    player = User.query.filter_by(id=user['profile_id']).first()
-                    player.assign_achievement(heroes.BREWMASTER)
+                for user in ranking:
+                    print(user)
+                    if user['coins'] >= 10000:
+                        player = User.query.filter_by(id=user['profile_id']).first()
+                        player.assign_achievement(heroes.BREWMASTER)
 
         flash('Evaluated achievements in  %.3f seconds' % (time.time() - start), 'success')
         return redirect(url_for('admin.index'))
